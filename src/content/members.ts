@@ -1,3 +1,11 @@
+export type Publication = {
+  title: string;
+  venue: string;
+  year: number;
+  url: string;
+  pdfUrl?: string;
+};
+
 export type MemberProfile = {
   slug: string;
   name: string;
@@ -6,7 +14,11 @@ export type MemberProfile = {
   fullBio: string;
   avatar: string;
   skills: string[];
-  links: { label: "GitHub" | "LinkedIn" | "X" | "Email"; url: string }[];
+  links: {
+    label: "GitHub" | "LinkedIn" | "X" | "Email" | "Scholar";
+    url: string;
+  }[];
+  publications?: Publication[];
 };
 
 export const members: MemberProfile[] = [
@@ -32,7 +44,47 @@ export const members: MemberProfile[] = [
         label: "LinkedIn",
         url: "https://www.linkedin.com/in/mingyangwu",
       },
+      {
+        label: "Scholar",
+        url: "https://scholar.google.com/citations?user=ND7AssQAAAAJ&hl=zh-CN",
+      },
       { label: "Email", url: "mailto:mingyang@wormforce.net" },
+    ],
+    publications: [
+      {
+        title:
+          "RealMind: Advancing visual decoding and language interaction via EEG signals",
+        venue:
+          "2025 IEEE International Conference on Multimedia and Expo (ICME), 1-6",
+        year: 2025,
+        url: "https://ieeexplore.ieee.org/abstract/document/11209041/",
+        pdfUrl: "https://arxiv.org/pdf/2410.23754",
+      },
+      {
+        title:
+          "An EEG Dataset for Multimodal Semantic Alignment and Neural Decoding during Reading and Listening",
+        venue: "Scientific Data",
+        year: 2025,
+        url: "https://www.nature.com/articles/s41597-025-06466-8",
+        pdfUrl: "https://www.nature.com/articles/s41597-025-06466-8",
+      },
+      {
+        title:
+          "MindPilot: Closed-loop Visual Stimulation Optimization for Brain Modulation with EEG-guided Diffusion",
+        venue: "arXiv preprint arXiv:2602.10552",
+        year: 2026,
+        url: "https://arxiv.org/abs/2602.10552",
+        pdfUrl: "https://arxiv.org/pdf/2602.10552",
+      },
+      {
+        title:
+          "BrainFLORA: Uncovering Brain Concept Representation via Multimodal Neural Embeddings",
+        venue:
+          "Proceedings of the 33rd ACM International Conference on Multimedia, 5577-5586",
+        year: 2025,
+        url: "https://dl.acm.org/doi/abs/10.1145/3746027.3754996",
+        pdfUrl: "https://dl.acm.org/doi/pdf/10.1145/3746027.3754996",
+      },
     ],
   },
   {

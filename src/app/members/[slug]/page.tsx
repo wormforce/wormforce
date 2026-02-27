@@ -121,6 +121,44 @@ export default async function MemberPage({ params }: MemberPageProps) {
                 </a>
               ))}
             </div>
+
+            {member.publications?.length ? (
+              <>
+                <h3 className="mt-8 text-lg font-semibold text-white">
+                  Publications
+                </h3>
+                <ul className="mt-4 space-y-3">
+                  {member.publications.map((publication) => (
+                    <li
+                      key={`${member.slug}-${publication.title}`}
+                      className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-brand-soft)] p-4"
+                    >
+                      <a
+                        href={publication.url}
+                        className="text-sm font-semibold text-white transition hover:underline"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {publication.title}
+                      </a>
+                      <p className="mt-1 text-xs leading-6 text-[var(--color-muted)]">
+                        {publication.venue} ({publication.year})
+                      </p>
+                      {publication.pdfUrl ? (
+                        <a
+                          href={publication.pdfUrl}
+                          className="mt-2 inline-flex text-xs text-[var(--color-muted)] transition hover:text-white"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          PDF
+                        </a>
+                      ) : null}
+                    </li>
+                  ))}
+                </ul>
+              </>
+            ) : null}
           </div>
         </article>
       </div>
