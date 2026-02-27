@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import type { ReactNode } from "react";
 import { MemberAvatar } from "@/components/member-avatar";
 import { getMemberBySlug, members } from "@/content/members";
 import { absoluteUrl } from "@/lib/utils";
@@ -43,6 +44,43 @@ export async function generateMetadata({
       type: "profile",
     },
   };
+}
+
+function renderInlineLinks(text: string): ReactNode[] {
+  const nodes: ReactNode[] = [];
+  const linkPattern = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g;
+  let lastIndex = 0;
+  let match = linkPattern.exec(text);
+
+  while (match) {
+    const [fullMatch, label, url] = match;
+    const matchIndex = match.index;
+
+    if (matchIndex > lastIndex) {
+      nodes.push(text.slice(lastIndex, matchIndex));
+    }
+
+    nodes.push(
+      <a
+        key={`${url}-${matchIndex}`}
+        href={url}
+        className="text-[var(--color-text)] underline decoration-[var(--color-border)] underline-offset-4 transition hover:text-white"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        {label}
+      </a>,
+    );
+
+    lastIndex = matchIndex + fullMatch.length;
+    match = linkPattern.exec(text);
+  }
+
+  if (lastIndex < text.length) {
+    nodes.push(text.slice(lastIndex));
+  }
+
+  return nodes;
 }
 
 export default async function MemberPage({ params }: MemberPageProps) {
@@ -89,9 +127,13 @@ export default async function MemberPage({ params }: MemberPageProps) {
 
           <div className="card-surface reveal rounded-3xl p-6 md:p-8">
             <h2 className="text-2xl font-semibold text-white">Profile</h2>
-            <p className="mt-4 text-sm leading-8 text-[var(--color-muted)] md:text-base">
-              {member.fullBio}
-            </p>
+            <div className="mt-4 space-y-4 text-sm leading-8 text-[var(--color-muted)] md:text-base">
+              {member.fullBio.split(/\n{2,}/).map((paragraph, index) => (
+                <p key={`${member.slug}-bio-${index}`}>
+                  {renderInlineLinks(paragraph)}
+                </p>
+              ))}
+            </div>
 
             <h3 className="mt-8 text-lg font-semibold text-white">Core Skills</h3>
             <ul className="mt-4 flex flex-wrap gap-2">
