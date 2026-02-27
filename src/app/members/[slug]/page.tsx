@@ -33,13 +33,13 @@ export async function generateMetadata({
 
   return {
     title: member.name,
-    description: member.shortBio,
+    description: member.profileShortBio ?? member.shortBio,
     alternates: {
       canonical: profileUrl,
     },
     openGraph: {
       title: `${member.name} | Wormforce`,
-      description: member.shortBio,
+      description: member.profileShortBio ?? member.shortBio,
       url: profileUrl,
       type: "profile",
     },
@@ -64,7 +64,7 @@ function renderInlineLinks(text: string): ReactNode[] {
       <a
         key={`${url}-${matchIndex}`}
         href={url}
-        className="text-[var(--color-text)] underline decoration-[var(--color-border)] underline-offset-4 transition hover:text-white"
+        className="mx-0.5 inline-flex items-center rounded-md border border-white/20 bg-white/10 px-1.5 py-0.5 font-semibold text-white transition hover:border-white hover:bg-white hover:text-black"
         target="_blank"
         rel="noopener noreferrer"
       >
@@ -90,6 +90,9 @@ export default async function MemberPage({ params }: MemberPageProps) {
   if (!member) {
     notFound();
   }
+
+  const profileRole = member.profileRole ?? member.role;
+  const profileShortBio = member.profileShortBio ?? member.shortBio;
 
   return (
     <section className="section-shell pt-24">
@@ -118,10 +121,10 @@ export default async function MemberPage({ params }: MemberPageProps) {
               {member.name}
             </h1>
             <p className="mt-2 whitespace-pre-line text-sm text-[var(--color-muted)]">
-              {member.role}
+              {profileRole}
             </p>
             <p className="mt-4 whitespace-pre-line text-sm leading-7 text-[var(--color-muted)]">
-              {member.shortBio}
+              {profileShortBio}
             </p>
           </div>
 

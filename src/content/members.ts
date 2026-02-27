@@ -11,6 +11,8 @@ export type MemberProfile = {
   name: string;
   role: string;
   shortBio: string;
+  profileRole?: string;
+  profileShortBio?: string;
   fullBio: string;
   avatar: string;
   skills: string[];
@@ -25,10 +27,12 @@ export const members: MemberProfile[] = [
   {
     slug: "mingyang-wu",
     name: "Mingyang Wu",
-    role: "Undergraduate@SUSTech\nResearch Assistant@CUHK MMLab",
-    shortBio: "I like aeroplanes and travelling.\nCanton, China",
+    role: "AI Research Engineer",
+    shortBio: "Data-centric AI, RL, and multimodal LLM research.",
+    profileRole: "Undergraduate@SUSTech\nResearch Assistant@CUHK MMLab",
+    profileShortBio: "I like aeroplanes and travelling.\nCanton, China",
     fullBio:
-      "I am currently a Research Assistant at [MMLab, The Chinese University of Hong Kong](https://mmlab.ie.cuhk.edu.hk/), advised by Professor [Xiangyu Yue](https://xyue.io/). My current research focuses on Data-Centric AI and reinforcement learning, with an emphasis on advancing audio-visual understanding in multimodal large language models.\n\nPreviously, I worked on brain-computer interfaces and neural decoding at NCC Lab, Southern University of Science and Technology, under Professor [Quanying Liu](https://scholar.google.com/citations?user=UpP9hJ8AAAAJ&hl=en). I am an undergraduate student at [Southern University of Science and Technology](https://sustech.edu.cn/) and a Co-Founder of WormForce Corp.",
+      "I am currently an RA at [CUHK MMLab](https://mmlab.ie.cuhk.edu.hk/), advised by Prof. [Xiangyu Yue](https://xyue.io/), where I study data-centric AI and RL to improve audio-video understanding in multimodal LLMs.\n\nPreviously, I worked on BCI and neural decoding at SUSTech NCC Lab with Prof. [Quanying Liu](https://scholar.google.com/citations?user=UpP9hJ8AAAAJ&hl=en). I am an UG at [SUSTech](https://sustech.edu.cn/) and Co-Founder of WormForce Corp.",
     avatar: "/images/members/member-1.jpg",
     skills: [
       "Applied AI",
