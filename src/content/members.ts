@@ -1,8 +1,9 @@
 export type Publication = {
   title: string;
+  authors?: string;
   venue: string;
-  year: number;
-  url: string;
+  year?: number;
+  url?: string;
   pdfUrl?: string;
 };
 
@@ -35,11 +36,11 @@ export const members: MemberProfile[] = [
       "I am currently an RA at [CUHK MMLab](https://mmlab.ie.cuhk.edu.hk/), advised by Prof. [Xiangyu Yue](https://xyue.io/), where I study data-centric AI and RL to improve audio-video understanding in multimodal LLMs.\n\nPreviously, I worked on BCI and neural decoding at SUSTech NCC Lab with Prof. [Quanying Liu](https://scholar.google.com/citations?user=UpP9hJ8AAAAJ&hl=en). I am an UG at [SUSTech](https://sustech.edu.cn/) and Co-Founder of WormForce Corp.",
     avatar: "/images/members/member-1.jpg",
     skills: [
-      "Applied AI",
-      "LLM Integration",
-      "Next.js",
-      "TypeScript",
-      "Product Engineering",
+      "Data-Centric AI",
+      "Reinforcement Learning",
+      "Multimodal LLMs",
+      "Audio-Video Understanding",
+      "BCI & Neural Decoding",
     ],
     links: [
       { label: "GitHub", url: "https://github.com/mingyangwu" },
@@ -54,6 +55,13 @@ export const members: MemberProfile[] = [
       { label: "Email", url: "mailto:mingyang@wormforce.net" },
     ],
     publications: [
+      {
+        title:
+          "AVCap: Reinforcing Audio-Video Joint Caption with Detail-Aware Reward",
+        authors:
+          "Mingyang Wu, Kaituo Feng, Bohao Li, Kaixiong Gong, Zihao Yin, Yi Yang, Xiangyu Yue",
+        venue: "Under Review",
+      },
       {
         title:
           "RealMind: Advancing visual decoding and language interaction via EEG signals",
