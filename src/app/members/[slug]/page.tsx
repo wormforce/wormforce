@@ -194,11 +194,6 @@ export default async function MemberPage({ params }: MemberPageProps) {
                           {publication.title}
                         </p>
                       )}
-                      {publication.authors ? (
-                        <p className="mt-1 text-xs leading-6 text-[var(--color-muted)]">
-                          {publication.authors}
-                        </p>
-                      ) : null}
                       <p className="mt-1 text-xs leading-6 text-[var(--color-muted)]">
                         {publication.year
                           ? `${publication.venue} (${publication.year})`
