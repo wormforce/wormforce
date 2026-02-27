@@ -24,7 +24,7 @@ export function MemberAvatar({
   return (
     <div className={cn("relative overflow-hidden", className)}>
       {failed ? (
-        <div className="flex h-full w-full items-center justify-center bg-[linear-gradient(140deg,#10253f,#0b1729)] text-3xl font-semibold text-[var(--color-brand)]">
+        <div className="flex h-full w-full items-center justify-center bg-[linear-gradient(140deg,#262626,#101010)] text-3xl font-semibold text-[var(--color-text)]">
           {initials}
         </div>
       ) : (

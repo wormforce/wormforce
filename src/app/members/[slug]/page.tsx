@@ -58,7 +58,7 @@ export default async function MemberPage({ params }: MemberPageProps) {
       <div className="content-shell">
         <Link
           href="/#members"
-          className="mono-label inline-flex items-center transition hover:text-[var(--color-brand)]"
+          className="mono-label inline-flex items-center transition hover:text-white"
         >
           {"<-"} Back to members
         </Link>
@@ -79,7 +79,7 @@ export default async function MemberPage({ params }: MemberPageProps) {
             <h1 className="mt-5 text-2xl font-semibold text-white">
               {member.name}
             </h1>
-            <p className="mt-2 text-sm text-[var(--color-brand)]">{member.role}</p>
+            <p className="mt-2 text-sm text-[var(--color-muted)]">{member.role}</p>
             <p className="mt-4 text-sm leading-7 text-[var(--color-muted)]">
               {member.shortBio}
             </p>
@@ -96,7 +96,7 @@ export default async function MemberPage({ params }: MemberPageProps) {
               {member.skills.map((skill) => (
                 <li
                   key={skill}
-                  className="rounded-full border border-[var(--color-border)] bg-[var(--color-brand-soft)] px-3 py-1.5 text-xs font-medium text-[var(--color-brand)]"
+                  className="rounded-full border border-[var(--color-border)] bg-[var(--color-brand-soft)] px-3 py-1.5 text-xs font-medium text-[var(--color-text)]"
                 >
                   {skill}
                 </li>
@@ -109,7 +109,7 @@ export default async function MemberPage({ params }: MemberPageProps) {
                 <a
                   key={`${member.slug}-${link.label}`}
                   href={link.url}
-                  className="rounded-full border border-[var(--color-border)] px-4 py-2 text-sm text-[var(--color-muted)] transition hover:border-[var(--color-brand)] hover:text-[var(--color-brand)]"
+                  className="rounded-full border border-[var(--color-border)] px-4 py-2 text-sm text-[var(--color-muted)] transition hover:border-[var(--color-text)] hover:text-white"
                   target={link.url.startsWith("mailto:") ? undefined : "_blank"}
                   rel={
                     link.url.startsWith("mailto:")

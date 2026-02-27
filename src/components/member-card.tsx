@@ -14,7 +14,7 @@ export function MemberCard({ member }: MemberCardProps) {
     .slice(0, 2);
 
   return (
-    <article className="card-surface reveal group rounded-3xl p-4 transition hover:-translate-y-0.5 hover:border-[var(--color-brand)] md:p-5">
+    <article className="card-surface reveal group rounded-3xl p-4 transition hover:-translate-y-0.5 hover:border-[var(--color-text)] md:p-5">
       <MemberAvatar
         src={member.avatar}
         alt={member.name}
@@ -24,7 +24,7 @@ export function MemberCard({ member }: MemberCardProps) {
 
       <div className="mt-4">
         <h3 className="text-xl font-semibold text-white">{member.name}</h3>
-        <p className="mt-1 text-sm text-[var(--color-brand)]">{member.role}</p>
+        <p className="mt-1 text-sm text-[var(--color-muted)]">{member.role}</p>
         <p className="mt-3 text-sm leading-7 text-[var(--color-muted)]">
           {member.shortBio}
         </p>
@@ -33,7 +33,7 @@ export function MemberCard({ member }: MemberCardProps) {
       <div className="mt-5">
         <Link
           href={`/members/${member.slug}`}
-          className="inline-flex items-center text-sm font-medium text-[var(--color-text)] transition group-hover:text-[var(--color-brand)]"
+          className="inline-flex items-center text-sm font-medium text-[var(--color-text)] transition group-hover:text-white"
         >
           View profile {"->"}
         </Link>

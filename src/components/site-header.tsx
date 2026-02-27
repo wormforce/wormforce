@@ -13,7 +13,7 @@ export function SiteHeader() {
     <header className="sticky top-0 z-50 border-b border-[var(--color-border)] bg-[color-mix(in_srgb,var(--color-bg)_78%,transparent)] backdrop-blur-xl">
       <div className="content-shell flex h-16 items-center justify-between gap-4">
         <Link href="/#home" className="inline-flex items-center gap-2">
-          <span className="h-2.5 w-2.5 rounded-full bg-[var(--color-brand)] shadow-[0_0_20px_var(--color-brand)]" />
+          <span className="h-2.5 w-2.5 rounded-full bg-[var(--color-text)]" />
           <span className="font-semibold tracking-[0.16em] text-white">
             WORMFORCE
           </span>
@@ -24,7 +24,7 @@ export function SiteHeader() {
             <Link
               key={item.href}
               href={item.href}
-              className="transition hover:text-[var(--color-brand)]"
+              className="transition hover:text-white"
             >
               {item.label}
             </Link>
@@ -33,7 +33,7 @@ export function SiteHeader() {
 
         <a
           href="mailto:team@wormforce.net"
-          className="inline-flex items-center rounded-full border border-[var(--color-border)] px-4 py-1.5 text-sm text-[var(--color-brand)] transition hover:border-[var(--color-brand)] hover:text-white"
+          className="inline-flex items-center rounded-full border border-[var(--color-border)] px-4 py-1.5 text-sm text-[var(--color-text)] transition hover:border-[var(--color-text)] hover:text-white"
         >
           team@wormforce.net
         </a>
@@ -44,7 +44,7 @@ export function SiteHeader() {
             <Link
               key={`mobile-${item.href}`}
               href={item.href}
-              className="rounded-full border border-[var(--color-border)] px-3 py-1.5 whitespace-nowrap transition hover:border-[var(--color-brand)] hover:text-[var(--color-brand)]"
+              className="rounded-full border border-[var(--color-border)] px-3 py-1.5 whitespace-nowrap transition hover:border-[var(--color-text)] hover:text-white"
             >
               {item.label}
             </Link>

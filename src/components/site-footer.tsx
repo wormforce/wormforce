@@ -18,7 +18,7 @@ export function SiteFooter() {
               rel={
                 link.url.startsWith("mailto:") ? undefined : "noopener noreferrer"
               }
-              className="transition hover:text-[var(--color-brand)]"
+              className="transition hover:text-white"
             >
               {link.label}
             </a>

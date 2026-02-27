@@ -1,14 +1,14 @@
 @import "tailwindcss";
 
 :root {
-  --color-bg: #040913;
-  --color-bg-soft: #09172a;
-  --color-surface: #0c1a30;
-  --color-border: #1f3658;
-  --color-text: #d9e7ff;
-  --color-muted: #8ea8c8;
-  --color-brand: #34d7ff;
-  --color-brand-soft: rgba(52, 215, 255, 0.12);
+  --color-bg: #0a0a0a;
+  --color-bg-soft: #111111;
+  --color-surface: #171717;
+  --color-border: #2c2c2c;
+  --color-text: #ececec;
+  --color-muted: #aaaaaa;
+  --color-brand: #f3f3f3;
+  --color-brand-soft: rgba(255, 255, 255, 0.08);
 }
 
 * {
@@ -24,9 +24,9 @@ body {
 body {
   font-family: var(--font-space-grotesk), "Segoe UI", sans-serif;
   background:
-    radial-gradient(circle at 15% -5%, rgba(52, 215, 255, 0.2), transparent 40%),
-    radial-gradient(circle at 90% 5%, rgba(0, 153, 255, 0.14), transparent 30%),
-    linear-gradient(180deg, var(--color-bg) 0%, #04070f 100%);
+    radial-gradient(circle at 15% -5%, rgba(255, 255, 255, 0.1), transparent 42%),
+    radial-gradient(circle at 90% 5%, rgba(255, 255, 255, 0.06), transparent 30%),
+    linear-gradient(180deg, var(--color-bg) 0%, #050505 100%);
   color: var(--color-text);
 }
 
@@ -40,10 +40,10 @@ a {
   inset: 0;
   pointer-events: none;
   background-image: linear-gradient(
-      rgba(142, 168, 200, 0.06) 1px,
+      rgba(255, 255, 255, 0.06) 1px,
       transparent 1px
     ),
-    linear-gradient(90deg, rgba(142, 168, 200, 0.06) 1px, transparent 1px);
+    linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
   background-size: 36px 36px;
   mask-image: radial-gradient(circle at center, black 20%, transparent 90%);
   z-index: -1;
@@ -66,7 +66,7 @@ a {
       color-mix(in srgb, var(--color-surface) 90%, white 10%),
       color-mix(in srgb, var(--color-bg-soft) 88%, black 12%)
     );
-  box-shadow: inset 0 1px 0 rgba(230, 245, 255, 0.05), 0 18px 40px rgba(0, 0, 0, 0.35);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 18px 40px rgba(0, 0, 0, 0.5);
 }
 
 .mono-label {
@@ -75,7 +75,7 @@ a {
   font-size: 0.76rem;
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  color: var(--color-brand);
+  color: var(--color-muted);
 }
 
 .no-scrollbar {

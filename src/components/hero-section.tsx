@@ -24,13 +24,13 @@ export function HeroSection({ team, memberCount }: HeroSectionProps) {
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
               href="/#members"
-              className="inline-flex items-center rounded-full bg-[var(--color-brand)] px-5 py-2.5 text-sm font-semibold text-[#041018] transition hover:brightness-110"
+              className="inline-flex items-center rounded-full bg-[var(--color-brand)] px-5 py-2.5 text-sm font-semibold text-[#0a0a0a] transition hover:brightness-105"
             >
               Meet the Team
             </Link>
             <Link
               href="/projects"
-              className="inline-flex items-center rounded-full border border-[var(--color-border)] px-5 py-2.5 text-sm font-semibold text-[var(--color-text)] transition hover:border-[var(--color-brand)] hover:text-[var(--color-brand)]"
+              className="inline-flex items-center rounded-full border border-[var(--color-border)] px-5 py-2.5 text-sm font-semibold text-[var(--color-text)] transition hover:border-[var(--color-text)] hover:text-white"
             >
               View Projects
             </Link>
@@ -60,7 +60,7 @@ export function HeroSection({ team, memberCount }: HeroSectionProps) {
               <dt className="text-xs uppercase tracking-[0.12em] text-[var(--color-muted)]">
                 Contact
               </dt>
-              <dd className="mt-1 text-sm text-[var(--color-brand)]">
+              <dd className="mt-1 text-sm text-[var(--color-text)]">
                 {team.contactEmail}
               </dd>
             </div>

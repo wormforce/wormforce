@@ -17,7 +17,7 @@ export function ProjectsPreview() {
           <div className="mt-6">
             <Link
               href="/projects"
-              className="inline-flex items-center rounded-full border border-[var(--color-border)] px-5 py-2 text-sm font-medium text-[var(--color-brand)] transition hover:border-[var(--color-brand)] hover:text-white"
+              className="inline-flex items-center rounded-full border border-[var(--color-border)] px-5 py-2 text-sm font-medium text-[var(--color-text)] transition hover:border-[var(--color-text)] hover:text-white"
             >
               Open Projects Page
             </Link>
