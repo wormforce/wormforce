@@ -116,6 +116,7 @@ export default async function MemberPage({ params }: MemberPageProps) {
                 .slice(0, 2)}
               className="h-[280px] w-full rounded-2xl border border-[var(--color-border)]"
               priority
+              objectPosition={member.avatarObjectPosition ?? "center"}
             />
             <h1 className="mt-5 text-2xl font-semibold text-white">
               {member.name}

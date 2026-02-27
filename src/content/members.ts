@@ -16,6 +16,8 @@ export type MemberProfile = {
   profileShortBio?: string;
   fullBio: string;
   avatar: string;
+  /** Image object-position: "top" for top-center crop, default "center" */
+  avatarObjectPosition?: "top" | "center";
   skills: string[];
   links: {
     label: "GitHub" | "LinkedIn" | "X" | "Email" | "Scholar";
@@ -99,14 +101,18 @@ export const members: MemberProfile[] = [
     ],
   },
   {
-    slug: "nolan-park",
-    name: "Nolan Park",
+    slug: "kunpeng-xie",
+    name: "Kunpeng Xie",
     role: "Product Designer",
     shortBio:
-      "Shapes product direction and interaction systems for focused execution.",
+      "Product design, interaction systems, and user-centered product delivery.",
+    profileRole: "Product Designer\nCo-Founder@WormForce",
+    profileShortBio:
+      "Product and experience enthusiast.\nWormForce Corp.",
     fullBio:
-      "Nolan bridges product strategy and interface execution. He translates ambiguous needs into clear flows, measurable goals, and visual systems that keep teams aligned from ideation to shipped features.",
-    avatar: "/images/members/member-2.jpg",
+      "I focus on product design and interaction systems, turning user needs into clear flows and visual systems. I work with the team to keep product direction aligned from ideation to shipped features. Co-Founder of [WormForce](https://wormforce.net) Corp.",
+    avatar: "/images/members/kunpeng-xie.jpg",
+    avatarObjectPosition: "top",
     skills: [
       "Product Strategy",
       "Interaction Design",
@@ -115,12 +121,8 @@ export const members: MemberProfile[] = [
       "Prototyping",
     ],
     links: [
-      { label: "X", url: "https://x.com/nolan_park" },
-      {
-        label: "LinkedIn",
-        url: "https://www.linkedin.com/in/nolan-park",
-      },
-      { label: "Email", url: "mailto:nolan@wormforce.net" },
+      { label: "GitHub", url: "https://github.com/pentaoa" },
+      { label: "Email", url: "mailto:xiekunpn@gmail.com" },
     ],
   },
   {

@@ -10,6 +10,8 @@ type MemberAvatarProps = {
   initials: string;
   className?: string;
   priority?: boolean;
+  /** "top" = top-center crop, "center" = default */
+  objectPosition?: "top" | "center";
 };
 
 export function MemberAvatar({
@@ -18,6 +20,7 @@ export function MemberAvatar({
   initials,
   className,
   priority = false,
+  objectPosition = "center",
 }: MemberAvatarProps) {
   const [failed, setFailed] = useState(false);
 
@@ -34,7 +37,10 @@ export function MemberAvatar({
           fill
           priority={priority}
           sizes="(min-width: 1024px) 320px, (min-width: 768px) 40vw, 100vw"
-          className="object-cover"
+          className={cn(
+            "object-cover",
+            objectPosition === "top" && "object-top",
+          )}
           onError={() => setFailed(true)}
         />
       )}

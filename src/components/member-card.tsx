@@ -20,6 +20,7 @@ export function MemberCard({ member }: MemberCardProps) {
         alt={member.name}
         initials={initials}
         className="aspect-[4/3] w-full rounded-2xl border border-[var(--color-border)]"
+        objectPosition={member.avatarObjectPosition ?? "center"}
       />
 
       <div className="mt-4">
