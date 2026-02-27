@@ -12,11 +12,11 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 border-b border-[var(--color-border)] bg-[color-mix(in_srgb,var(--color-bg)_78%,transparent)] backdrop-blur-xl">
       <div className="content-shell flex h-16 items-center justify-between gap-4">
-        <Link href="/#home" className="inline-flex items-center gap-2">
+        <Link href="/#home" className="inline-flex items-center gap-5">
           <img
             src="/icon.svg"
             alt=""
-            className="h-5 w-auto shrink-0 invert"
+            className="h-8 w-auto shrink-0 invert"
             width={152}
             height={116}
             aria-hidden
