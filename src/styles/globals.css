@@ -1,0 +1,107 @@
+@import "tailwindcss";
+
+:root {
+  --color-bg: #040913;
+  --color-bg-soft: #09172a;
+  --color-surface: #0c1a30;
+  --color-border: #1f3658;
+  --color-text: #d9e7ff;
+  --color-muted: #8ea8c8;
+  --color-brand: #34d7ff;
+  --color-brand-soft: rgba(52, 215, 255, 0.12);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  font-family: var(--font-space-grotesk), "Segoe UI", sans-serif;
+  background:
+    radial-gradient(circle at 15% -5%, rgba(52, 215, 255, 0.2), transparent 40%),
+    radial-gradient(circle at 90% 5%, rgba(0, 153, 255, 0.14), transparent 30%),
+    linear-gradient(180deg, var(--color-bg) 0%, #04070f 100%);
+  color: var(--color-text);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.site-radial-bg {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image: linear-gradient(
+      rgba(142, 168, 200, 0.06) 1px,
+      transparent 1px
+    ),
+    linear-gradient(90deg, rgba(142, 168, 200, 0.06) 1px, transparent 1px);
+  background-size: 36px 36px;
+  mask-image: radial-gradient(circle at center, black 20%, transparent 90%);
+  z-index: -1;
+}
+
+.content-shell {
+  width: min(1120px, calc(100% - 2rem));
+  margin-inline: auto;
+}
+
+.section-shell {
+  padding-block: 2.8rem;
+}
+
+.card-surface {
+  border: 1px solid var(--color-border);
+  background:
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--color-surface) 90%, white 10%),
+      color-mix(in srgb, var(--color-bg-soft) 88%, black 12%)
+    );
+  box-shadow: inset 0 1px 0 rgba(230, 245, 255, 0.05), 0 18px 40px rgba(0, 0, 0, 0.35);
+}
+
+.mono-label {
+  display: inline-flex;
+  font-family: var(--font-space-mono), monospace;
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--color-brand);
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  animation: reveal-up 700ms ease forwards;
+}
+
+@keyframes reveal-up {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (min-width: 768px) {
+  .section-shell {
+    padding-block: 3.8rem;
+  }
+}
