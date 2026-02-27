@@ -11,25 +11,28 @@ export type MemberProfile = {
 
 export const members: MemberProfile[] = [
   {
-    slug: "aiden-luo",
-    name: "Aiden Luo",
+    slug: "mingyang-wu",
+    name: "Mingyang Wu",
     role: "AI Engineer",
     shortBio:
-      "Builds applied AI workflows and inference pipelines for product teams.",
+      "Builds applied AI products and reliable end-to-end web experiences.",
     fullBio:
-      "Aiden focuses on turning model capabilities into dependable product features. His work spans prompt architecture, retrieval quality tuning, and low-latency serving patterns that hold up under real user traffic.",
+      "Mingyang focuses on turning model capabilities into dependable product features. His work spans model integration, backend services, and frontend delivery to ship practical AI experiences quickly.",
     avatar: "/images/members/member-1.jpg",
     skills: [
-      "Applied LLMs",
-      "RAG Systems",
-      "Prompt Evaluation",
-      "Python",
-      "Observability",
+      "Applied AI",
+      "LLM Integration",
+      "Next.js",
+      "TypeScript",
+      "Product Engineering",
     ],
     links: [
-      { label: "GitHub", url: "https://github.com/aiden-luo" },
-      { label: "X", url: "https://x.com/aiden_luo" },
-      { label: "Email", url: "mailto:aiden@wormforce.net" },
+      { label: "GitHub", url: "https://github.com/mingyangwu" },
+      {
+        label: "LinkedIn",
+        url: "https://www.linkedin.com/in/mingyangwu",
+      },
+      { label: "Email", url: "mailto:mingyang@wormforce.net" },
     ],
   },
   {
