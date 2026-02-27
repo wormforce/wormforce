@@ -24,7 +24,7 @@ export function HeroSection({ team, memberCount }: HeroSectionProps) {
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
               href="/#members"
-              className="inline-flex items-center rounded-full bg-[var(--color-brand)] px-5 py-2.5 text-sm font-semibold text-black transition hover:brightness-105 hover:text-black"
+              className="inline-flex items-center rounded-full border border-[#3a3a3a] bg-[#1a1a1a] px-5 py-2.5 text-sm font-semibold text-white transition hover:border-[var(--color-brand)] hover:bg-[var(--color-brand)] hover:text-black"
             >
               Meet the Team
             </Link>
