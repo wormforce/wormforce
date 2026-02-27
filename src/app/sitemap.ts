@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { members } from "@/content/members";
+import { projects } from "@/content/projects";
 import { absoluteUrl } from "@/lib/utils";
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -27,5 +28,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.8,
   }));
 
-  return [...pages, ...memberPages];
+  const projectPages: MetadataRoute.Sitemap = projects.map((project) => ({
+    url: absoluteUrl(`/projects/${project.slug}`),
+    lastModified: now,
+    changeFrequency: "monthly",
+    priority: 0.75,
+  }));
+
+  return [...pages, ...memberPages, ...projectPages];
 }

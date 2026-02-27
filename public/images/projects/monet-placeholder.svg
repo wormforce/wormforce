@@ -1,0 +1,24 @@
+<svg width="1200" height="780" viewBox="0 0 1200 780" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="780" fill="#0F0F0F"/>
+  <rect x="48" y="48" width="1104" height="684" rx="48" fill="url(#paint0_linear_200_1)" stroke="#2E2E2E"/>
+  <circle cx="220" cy="210" r="96" fill="#1B1B1B" stroke="#3A3A3A"/>
+  <circle cx="220" cy="210" r="44" fill="#E8E8E8"/>
+  <rect x="360" y="160" width="520" height="34" rx="17" fill="#EAEAEA"/>
+  <rect x="360" y="220" width="420" height="22" rx="11" fill="#B9B9B9"/>
+  <rect x="360" y="264" width="300" height="22" rx="11" fill="#9B9B9B"/>
+  <rect x="128" y="388" width="944" height="252" rx="28" fill="#141414" stroke="#313131"/>
+  <rect x="164" y="430" width="278" height="26" rx="13" fill="#F1F1F1"/>
+  <rect x="164" y="476" width="570" height="18" rx="9" fill="#A2A2A2"/>
+  <rect x="164" y="510" width="514" height="18" rx="9" fill="#7E7E7E"/>
+  <rect x="164" y="564" width="180" height="46" rx="23" fill="#ECECEC"/>
+  <text x="132" y="706" fill="#A3A3A3" font-family="Inter, Arial, sans-serif" font-size="22" letter-spacing="1.2">
+    MONET • PLACEHOLDER SCREENSHOT
+  </text>
+  <defs>
+    <linearGradient id="paint0_linear_200_1" x1="83" y1="87" x2="1014" y2="704" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#202020"/>
+      <stop offset="0.55" stop-color="#151515"/>
+      <stop offset="1" stop-color="#0D0D0D"/>
+    </linearGradient>
+  </defs>
+</svg>
