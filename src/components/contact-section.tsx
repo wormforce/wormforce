@@ -20,7 +20,7 @@ export function ContactSection({ team }: ContactSectionProps) {
 
           <a
             href={`mailto:${team.contactEmail}`}
-            className="mt-6 inline-flex items-center rounded-full bg-[var(--color-brand)] px-5 py-2.5 text-sm font-semibold text-[#0a0a0a] transition hover:brightness-105"
+            className="mt-6 inline-flex items-center rounded-full bg-[var(--color-brand)] px-5 py-2.5 text-sm font-semibold text-black transition hover:brightness-105 hover:text-black"
           >
             {team.contactEmail}
           </a>
