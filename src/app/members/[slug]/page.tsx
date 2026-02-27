@@ -180,16 +180,29 @@ export default async function MemberPage({ params }: MemberPageProps) {
                       key={`${member.slug}-${publication.title}`}
                       className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-brand-soft)] p-4"
                     >
-                      <a
-                        href={publication.url}
-                        className="text-sm font-semibold text-white transition hover:underline"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        {publication.title}
-                      </a>
+                      {publication.url ? (
+                        <a
+                          href={publication.url}
+                          className="text-sm font-semibold text-white transition hover:underline"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {publication.title}
+                        </a>
+                      ) : (
+                        <p className="text-sm font-semibold text-white">
+                          {publication.title}
+                        </p>
+                      )}
+                      {publication.authors ? (
+                        <p className="mt-1 text-xs leading-6 text-[var(--color-muted)]">
+                          {publication.authors}
+                        </p>
+                      ) : null}
                       <p className="mt-1 text-xs leading-6 text-[var(--color-muted)]">
-                        {publication.venue} ({publication.year})
+                        {publication.year
+                          ? `${publication.venue} (${publication.year})`
+                          : publication.venue}
                       </p>
                       {publication.pdfUrl ? (
                         <a
