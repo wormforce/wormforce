@@ -12,8 +12,14 @@ export function HeroSection({ team, memberCount }: HeroSectionProps) {
       <div className="content-shell grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:gap-10">
         <div className="reveal">
           <p className="mono-label">Independent Engineering Team</p>
-          <h1 className="mt-4 text-balance text-4xl font-semibold leading-tight tracking-tight text-white md:text-5xl">
-            {team.name}
+          <h1 className="mt-4">
+            <img
+              src="/handwrite.svg"
+              alt={team.name}
+              className="h-12 w-auto md:h-14"
+              width={385}
+              height={81}
+            />
           </h1>
           <p className="mt-4 max-w-2xl text-lg leading-8 text-[var(--color-text)] md:text-xl">
             {team.tagline}

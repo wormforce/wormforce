@@ -13,10 +13,21 @@ export function SiteHeader() {
     <header className="sticky top-0 z-50 border-b border-[var(--color-border)] bg-[color-mix(in_srgb,var(--color-bg)_78%,transparent)] backdrop-blur-xl">
       <div className="content-shell flex h-16 items-center justify-between gap-4">
         <Link href="/#home" className="inline-flex items-center gap-2">
-          <span className="h-2.5 w-2.5 rounded-full bg-[var(--color-text)]" />
-          <span className="font-semibold tracking-[0.16em] text-white">
-            WORMFORCE
-          </span>
+          <img
+            src="/icon.svg"
+            alt=""
+            className="h-5 w-auto shrink-0 invert"
+            width={152}
+            height={116}
+            aria-hidden
+          />
+          <img
+            src="/handwrite.svg"
+            alt="Wormforce"
+            className="h-7 w-auto"
+            width={385}
+            height={81}
+          />
         </Link>
 
         <nav className="hidden items-center gap-6 text-sm text-[var(--color-muted)] md:flex">

@@ -36,28 +36,16 @@ export const members: MemberProfile[] = [
     ],
   },
   {
-    slug: "mira-chen",
-    name: "Mira Chen",
-    role: "Full-Stack Engineer",
-    shortBio:
-      "Owns web architecture, API integration, and end-to-end quality delivery.",
-    fullBio:
-      "Mira designs and implements full-stack systems with a strong focus on code health and operability. She leads the transition from prototype to production through typed interfaces, testable modules, and stable deployment workflows.",
+    slug: "xie-kunpeng",
+    name: "Kunpeng Xie",
+    role: "TBD",
+    shortBio: "TBD",
+    fullBio: "TBD",
     avatar: "/images/members/member-2.jpg",
-    skills: [
-      "Next.js",
-      "TypeScript",
-      "API Design",
-      "PostgreSQL",
-      "CI/CD",
-    ],
+    skills: [],
     links: [
-      { label: "GitHub", url: "https://github.com/mira-chen" },
-      {
-        label: "LinkedIn",
-        url: "https://www.linkedin.com/in/mira-chen",
-      },
-      { label: "Email", url: "mailto:mira@wormforce.net" },
+      { label: "GitHub", url: "https://github.com/pentaoa" },
+      { label: "Email", url: "mailto:xiekunpn@gmail.com" },
     ],
   },
   {
