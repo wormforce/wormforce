@@ -128,12 +128,12 @@ export const members: MemberProfile[] = [
     name: "Quanbo Zhao",
     role: "All-situation Engineer",
     shortBio:
-      "A multidisciplinary engineer highly skilled in both hardware and software, featuring specialized expertise in AI image processing alongside extensive experience in optical imaging, space cameras, computer vision, AR, iOS/Android, and full-stack development.",
+      "Versatile engineer spanning optical systems, AI vision, and full-stack development.",
     fullBio:
       "I am a versatile tech generalist combining hardware knowledge with robust software engineering capabilities. My expertise encompasses optical imaging, aerospace cameras, computer vision, and deep learning for image/sequence processing. Additionally, I am an experienced developer across AR, mobile (Android/iOS), and frontend/backend full-stack environments.",
     avatar: "/images/members/member-3.jpg",
     skills: [
-      "Deep Learning Algorithms",
+      "Deep Learning",
       "Computer Vision",
       "Optical Imaging",
       "AR & Mobile Apps",
