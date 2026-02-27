@@ -34,7 +34,7 @@ export const members: MemberProfile[] = [
     profileShortBio: "I like aeroplanes and travelling.\nCanton, China",
     fullBio:
       "I am currently an RA at [CUHK MMLab](https://mmlab.ie.cuhk.edu.hk/), advised by Prof. [Xiangyu Yue](https://xyue.io/), where I study data-centric AI and RL to improve audio-video understanding in multimodal LLMs.\n\nPreviously, I worked on BCI and neural decoding at SUSTech NCC Lab with Prof. [Quanying Liu](https://scholar.google.com/citations?user=UpP9hJ8AAAAJ&hl=en). I am an UG at [SUSTech](https://sustech.edu.cn/) and Co-Founder of WormForce Corp.",
-    avatar: "/images/members/member-1.jpg",
+    avatar: "/images/members/mingyang-wu.jpg",
     skills: [
       "Data-Centric AI",
       "Reinforcement Learning",
@@ -82,7 +82,7 @@ export const members: MemberProfile[] = [
       {
         title:
           "MindPilot: Closed-loop Visual Stimulation Optimization for Brain Modulation with EEG-guided Diffusion",
-        venue: "arXiv preprint arXiv:2602.10552",
+        venue: "ICLR 2026",
         year: 2026,
         url: "https://arxiv.org/abs/2602.10552",
         pdfUrl: "https://arxiv.org/pdf/2602.10552",
