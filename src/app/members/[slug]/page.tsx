@@ -63,7 +63,7 @@ export default async function MemberPage({ params }: MemberPageProps) {
           {"<-"} Back to members
         </Link>
 
-        <article className="mt-6 grid gap-8 lg:grid-cols-[320px_1fr]">
+        <article className="mt-6 grid items-start gap-8 lg:grid-cols-[320px_1fr]">
           <div className="card-surface reveal rounded-3xl p-5">
             <MemberAvatar
               src={member.avatar}
@@ -79,8 +79,10 @@ export default async function MemberPage({ params }: MemberPageProps) {
             <h1 className="mt-5 text-2xl font-semibold text-white">
               {member.name}
             </h1>
-            <p className="mt-2 text-sm text-[var(--color-muted)]">{member.role}</p>
-            <p className="mt-4 text-sm leading-7 text-[var(--color-muted)]">
+            <p className="mt-2 whitespace-pre-line text-sm text-[var(--color-muted)]">
+              {member.role}
+            </p>
+            <p className="mt-4 whitespace-pre-line text-sm leading-7 text-[var(--color-muted)]">
               {member.shortBio}
             </p>
           </div>

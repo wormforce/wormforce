@@ -25,9 +25,8 @@ export const members: MemberProfile[] = [
   {
     slug: "mingyang-wu",
     name: "Mingyang Wu",
-    role: "AI Engineer",
-    shortBio:
-      "Builds applied AI products and reliable end-to-end web experiences.",
+    role: "Undergraduate@SUSTech\nResearch Assistant@CUHK MMLab",
+    shortBio: "I like aeroplanes and travelling.\nCanton, China",
     fullBio:
       "Mingyang focuses on turning model capabilities into dependable product features. His work spans model integration, backend services, and frontend delivery to ship practical AI experiences quickly.",
     avatar: "/images/members/member-1.jpg",
