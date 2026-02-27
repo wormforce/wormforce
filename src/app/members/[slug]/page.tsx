@@ -64,7 +64,7 @@ function renderInlineLinks(text: string): ReactNode[] {
       <a
         key={`${url}-${matchIndex}`}
         href={url}
-        className="mx-0.5 inline-flex items-center rounded-md border border-white/20 bg-white/10 px-1.5 py-0.5 font-semibold text-white transition hover:border-white hover:bg-white hover:text-black"
+        className="font-semibold text-white underline decoration-white/55 underline-offset-4 transition hover:text-[var(--color-brand)] hover:decoration-white"
         target="_blank"
         rel="noopener noreferrer"
       >
