@@ -21,6 +21,10 @@ body {
   min-height: 100%;
 }
 
+html {
+  background: var(--color-bg);
+}
+
 body {
   font-family: var(--font-space-grotesk), "Segoe UI", sans-serif;
   background:
