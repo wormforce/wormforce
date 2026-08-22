@@ -45,7 +45,7 @@ export const members: MemberProfile[] = [
       "BCI & Neural Decoding",
     ],
     links: [
-      { label: "GitHub", url: "https://github.com/mingyangwu" },
+      { label: "GitHub", url: "https://github.com/aprylewu" },
       {
         label: "LinkedIn",
         url: "https://www.linkedin.com/in/mingyangwu",
@@ -63,6 +63,8 @@ export const members: MemberProfile[] = [
         authors:
           "Mingyang Wu, Kaituo Feng, Bohao Li, Kaixiong Gong, Zihao Yin, Yi Yang, Xiangyu Yue",
         venue: "Under Review",
+        url: "https://arxiv.org/abs/2608.06930",
+        pdfUrl: "https://arxiv.org/pdf/2608.06930",
       },
       {
         title:
