@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { BattutaProductPage } from "@/components/battuta-product-page";
 import { getProjectBySlug, projects } from "@/content/projects";
 import { absoluteUrl } from "@/lib/utils";
 
@@ -41,7 +42,27 @@ export async function generateMetadata({
       description: project.shortDescription,
       url: projectUrl,
       type: "website",
+      images:
+        project.slug === "battuta"
+          ? [
+              {
+                url: absoluteUrl("/battuta/og.png"),
+                width: 1920,
+                height: 1080,
+                alt: "Battuta product card",
+              },
+            ]
+          : undefined,
     },
+    twitter:
+      project.slug === "battuta"
+        ? {
+            card: "summary_large_image",
+            title: "Battuta | Wormforce",
+            description: project.shortDescription,
+            images: [absoluteUrl("/battuta/og.png")],
+          }
+        : undefined,
   };
 }
 
@@ -51,6 +72,10 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
 
   if (!project) {
     notFound();
+  }
+
+  if (project.slug === "battuta") {
+    return <BattutaProductPage />;
   }
 
   return (

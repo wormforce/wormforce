@@ -17,37 +17,37 @@ export type ProjectProfile = {
 
 export const projects: ProjectProfile[] = [
   {
-    slug: "monet",
-    name: "MoNet",
-    platform: "iOS App",
-    status: "Preview",
-    tagline: "A focused iOS workspace for visual thinking and fast momentum.",
+    slug: "battuta",
+    name: "Battuta",
+    platform: "macOS App",
+    status: "Live",
+    tagline: "Bring the sound of your favorite keyboard to every Mac keystroke.",
     shortDescription:
-      "MoNet is a mobile-first product for capturing, organizing, and iterating visual ideas with speed and clarity.",
+      "A menu bar app with 20 keyboard sound profiles, five click styles, DIY sound packs, and private local typing statistics.",
     fullDescription:
-      "MoNet is an iOS application built by Wormforce to help teams and creators turn scattered visual references into structured project momentum. It combines lightweight collection, AI-assisted understanding, and clear execution views in one minimal workflow.",
-    coverImage: "/images/projects/monet-placeholder.svg",
-    coverImageAlt: "MoNet product preview placeholder",
+      "Battuta turns keyboard and pointer events into responsive, natural mechanical feedback across macOS. Audio samples are preloaded for low-latency playback, while typing analytics remain aggregated and local to the device.",
+    coverImage: "/battuta/og.png",
+    coverImageAlt: "Battuta macOS keyboard sound app product card",
     highlights: [
-      "Native iOS experience with clean interaction rhythm.",
-      "Visual-first workflow from capture to execution.",
-      "Designed for low-friction daily use on mobile.",
+      "20 keyboard profiles and five independent pointer click styles.",
+      "DIY editor for per-key press and release samples.",
+      "Private local statistics without storing typed content.",
     ],
     featureBlocks: [
       {
-        title: "Capture",
+        title: "Listen",
         description:
-          "Save references, screenshots, and quick notes in seconds with minimal interruption.",
+          "Hear distinct press, release, row, and large-key samples with balanced natural variation.",
       },
       {
-        title: "Organize",
+        title: "Create",
         description:
-          "Group visual items into focused boards and keep context clear as projects grow.",
+          "Import recordings and build a complete custom sound pack in the DIY editor.",
       },
       {
-        title: "Execute",
+        title: "Understand",
         description:
-          "Convert ideas into actionable flows with concise summaries and next-step clarity.",
+          "Explore typing trends, active times, apps, and key distribution without recording text.",
       },
     ],
   },
