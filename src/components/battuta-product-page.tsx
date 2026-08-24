@@ -68,7 +68,7 @@ const faqItems = [
 
 export function BattutaProductPage() {
   return (
-    <div className="battuta-product">
+    <div className="battuta-product" lang="zh-CN">
       <nav className="battuta-subnav" aria-label="Battuta 产品导航">
         <div className="battuta-subnav-inner">
           <a className="brand-lockup" href="#top" aria-label="Battuta 首页">
@@ -225,7 +225,10 @@ export function BattutaProductPage() {
         <div className="section-inner">
           <div className="section-heading section-heading-centered dark-copy">
             <p className="section-kicker green">不只听见，也能看见</p>
-            <h2>你的打字习惯，留下一张地图。</h2>
+            <h2>
+              <span className="headline-line">你的打字习惯，</span>
+              <span className="headline-line">留下一张地图。</span>
+            </h2>
             <p>
               查看今日输入量、峰值速度、常用应用、七日趋势、年度热力图与逐键分布。
               统计只保留聚合数量、物理键码、时间和前台应用，不保存你写下的内容。
@@ -263,7 +266,10 @@ export function BattutaProductPage() {
         <div className="section-inner">
           <div className="section-heading">
             <p className="section-kicker lime">让它真正属于你</p>
-            <h2>不止选择。还可以自己制作。</h2>
+            <h2>
+              <span className="headline-line">不止选择。</span>
+              <span className="headline-line">还可以自己制作。</span>
+            </h2>
           </div>
 
           <div className="bento-grid">
@@ -337,7 +343,10 @@ export function BattutaProductPage() {
         <div className="section-inner">
           <div className="section-heading section-heading-centered dark-copy">
             <p className="section-kicker green">开始使用</p>
-            <h2>三步，让 Mac 发出你喜欢的声音。</h2>
+            <h2>
+              <span className="headline-line">三步，让 Mac 发出</span>
+              <span className="headline-line">你喜欢的声音。</span>
+            </h2>
             <p>当前版本无需 Apple Developer 账号即可安装，但尚未经过 Apple 公证，因此第一次打开需要手动允许。</p>
           </div>
 
