@@ -1,4 +1,4 @@
-const SITE_URL = "https://wormforce.net";
+const SITE_URL = "https://www.wormforce.net";
 
 export function cn(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(" ");

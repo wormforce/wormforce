@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 
 const downloadHref = '/battuta/downloads/Battuta-1.0.0-unnotarized.dmg';
 
@@ -335,6 +336,9 @@ export function BattutaProductPage() {
               <span>不上传输入统计</span>
               <span>MIT 开源可审查</span>
             </div>
+            <Link className="privacy-policy-link" href="/projects/battuta/privacy">
+              查看完整隐私政策 <span aria-hidden="true">↗</span>
+            </Link>
           </div>
         </div>
       </section>
@@ -401,6 +405,7 @@ export function BattutaProductPage() {
           <p>给每一次输入，配上你喜欢的声音。</p>
           <div>
             <a href="https://github.com/7b7b7b/battuta" target="_blank" rel="noreferrer">GitHub</a>
+            <Link href="/projects/battuta/privacy">隐私政策</Link>
             <a href="https://github.com/7b7b7b/battuta/blob/main/LICENSE" target="_blank" rel="noreferrer">MIT License</a>
           </div>
         </div>
