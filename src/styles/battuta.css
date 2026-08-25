@@ -172,6 +172,7 @@
 
 .hero-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 14px;
   margin-top: 34px;
 }
@@ -198,7 +199,19 @@
 
 .battuta-product .button-primary:hover { box-shadow: 0 20px 55px rgba(191, 242, 67, 0.23); }
 .battuta-product .button-secondary { border: 1px solid var(--line); color: var(--ink); background: rgba(255, 255, 255, 0.05); }
+.battuta-product .button-github {
+  border: 1px solid rgba(216, 255, 115, 0.34);
+  color: var(--lime);
+  background: rgba(216, 255, 115, 0.07);
+}
+.battuta-product .button-github:hover { background: rgba(216, 255, 115, 0.12); }
 .battuta-product .button-dark { color: #fff; background: #161713; }
+.battuta-product .button-outline-dark {
+  border: 1px solid rgba(18, 20, 15, 0.26);
+  color: #12140f;
+  background: rgba(255, 255, 255, 0.18);
+}
+.battuta-product .button-outline-dark:hover { background: rgba(255, 255, 255, 0.34); }
 .compatibility { margin: 18px 0 0; color: #767b72; font-size: 13px; }
 
 .hero-visual {
@@ -568,7 +581,8 @@
 .download-version { margin: 0 0 8px; color: #536721; font-size: 13px; font-weight: 700; }
 .download-panel h3 { margin: 0; font-size: clamp(28px, 2.4vw, 40px); letter-spacing: -0.045em; }
 .download-panel > div > p:last-child { margin: 10px 0 0; color: #536721; font-size: 14px; }
-.download-actions { display: flex; flex-direction: column; align-items: center; gap: 13px; }
+.download-actions { min-width: 210px; display: flex; flex-direction: column; align-items: stretch; gap: 10px; }
+.download-actions .button { width: 100%; white-space: nowrap; }
 .battuta-product .text-link { color: #405018; font-size: 12px; font-weight: 650; }
 
 .faq-section { padding: 78px 0 128px; }

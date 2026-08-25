@@ -19,17 +19,17 @@ export const projects: ProjectProfile[] = [
   {
     slug: "battuta",
     name: "Battuta",
-    platform: "macOS App",
+    platform: "macOS & Windows",
     status: "Live",
-    tagline: "Bring the sound of your favorite keyboard to every Mac keystroke.",
+    tagline: "Bring the sound of your favorite keyboard to every keystroke on macOS and Windows.",
     shortDescription:
-      "A menu bar app with 20 keyboard sound profiles, five click styles, DIY sound packs, and private local typing statistics.",
+      "A native desktop app with 21 keyboard sound profiles, five click styles, DIY sound packs, and private local typing statistics.",
     fullDescription:
-      "Battuta turns keyboard and pointer events into responsive, natural mechanical feedback across macOS. Audio samples are preloaded for low-latency playback, while typing analytics remain aggregated and local to the device.",
-    coverImage: "/battuta/og.png",
-    coverImageAlt: "Battuta macOS keyboard sound app product card",
+      "Battuta turns keyboard and pointer events into responsive, natural mechanical feedback across macOS and Windows. The selected profile's recordings are preloaded for low-latency playback, while all 265 samples and typing analytics remain local to the device.",
+    coverImage: "/battuta/og-v1.1.1.png",
+    coverImageAlt: "Battuta keyboard sound app for macOS and Windows",
     highlights: [
-      "20 keyboard profiles and five independent pointer click styles.",
+      "21 keyboard profiles, including BCP (Suit80), and five independent pointer click styles.",
       "DIY editor for per-key press and release samples.",
       "Private local statistics without storing typed content.",
     ],

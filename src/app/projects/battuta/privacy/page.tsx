@@ -23,10 +23,10 @@ export const metadata: Metadata = {
     type: "article",
     images: [
       {
-        url: absoluteUrl("/battuta/og.png"),
+        url: absoluteUrl("/battuta/og-v1.1.1.png"),
         width: 1920,
         height: 1080,
-        alt: "Battuta product card",
+        alt: "Battuta 1.1.1 keyboard sound app for macOS and Windows",
       },
     ],
   },
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Battuta 隐私政策 / Privacy Policy",
     description: "Battuta 如何处理和保护你的数据。",
-    images: [absoluteUrl("/battuta/og.png")],
+    images: [absoluteUrl("/battuta/og-v1.1.1.png")],
   },
   robots: {
     index: true,

@@ -1,13 +1,16 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-const downloadHref = '/battuta/downloads/Battuta-1.0.0-unnotarized.dmg';
+const repositoryHref = 'https://github.com/7b7b7b/battuta';
+const releaseAssetHref = `${repositoryHref}/releases/download/v1.1.1`;
+const macDownloadHref = `${releaseAssetHref}/Battuta-1.1.1-unnotarized.dmg`;
+const windowsDownloadHref = `${releaseAssetHref}/Battuta-Windows-1.1.1-win-x64.zip`;
 
 const soundFamilies = [
   {
     name: '段落',
     description: '明确反馈，不必大声。',
-    examples: 'Holy Panda · MX Brown · MX Clear · G915 Brown',
+    examples: 'Holy Panda · MX Brown · BCP (Suit80) · G915 Brown',
   },
   {
     name: '点击',
@@ -29,18 +32,18 @@ const soundFamilies = [
 const installSteps = [
   {
     number: '01',
-    title: '下载并拖入“应用程序”',
-    body: '打开 DMG，把 Battuta 拖到其中的 Applications 快捷方式。不要直接从磁盘映像运行。',
+    title: '选择平台并下载',
+    body: 'macOS 下载 DMG 并拖入“应用程序”；Windows 下载 ZIP，完整解压后运行 Battuta.exe。',
   },
   {
     number: '02',
-    title: '首次手动允许打开',
-    body: '在“应用程序”里按住 Control 点按 Battuta，选择“打开”；如仍被拦截，请到“隐私与安全性”选择“仍要打开”。',
+    title: '完成首次系统允许',
+    body: 'macOS 需手动允许打开并开启“输入监控”；Windows 便携版暂未签名，SmartScreen 出现时可查看详细信息后选择运行。',
   },
   {
     number: '03',
-    title: '开启“输入监控”',
-    body: '从菜单栏 Battuta 面板请求授权，在系统设置中允许输入监控，然后退出并重新打开应用。',
+    title: '让它常驻后台',
+    body: 'Battuta 会常驻 macOS 菜单栏或 Windows 系统托盘，也可以设置为登录后自动启动。',
   },
 ];
 
@@ -51,9 +54,9 @@ const faqItems = [
       '不会。Battuta 只用硬件键码、按下与抬起状态来选择声音，不读取字符内容，也不会保存或上传密码、输入文本或指针位置。',
   },
   {
-    question: '为什么需要“输入监控”权限？',
+    question: '为什么需要系统输入权限？',
     answer:
-      'macOS 只有在用户明确允许后，才会把全局键盘事件交给 Battuta。这个权限让它能在浏览器、编辑器和聊天软件之间持续工作。',
+      'Battuta 需要接收全局的物理按键与鼠标事件，才能跨浏览器、编辑器和聊天软件持续工作。macOS 会要求“输入监控”授权；Windows 使用系统输入接口，但两端都不会读取字符内容。',
   },
   {
     question: '声音会不会跟不上打字？',
@@ -81,7 +84,8 @@ export function BattutaProductPage() {
             <a href="#stats">统计</a>
             <a href="#privacy">隐私</a>
             <a href="#install">安装</a>
-            <a className="nav-download" href={downloadHref} download>
+            <a href={repositoryHref} target="_blank" rel="noreferrer">GitHub ↗</a>
+            <a className="nav-download" href="#install">
               下载
             </a>
           </div>
@@ -90,25 +94,28 @@ export function BattutaProductPage() {
 
       <header className="hero" id="top">
         <div className="hero-copy">
-          <p className="eyebrow">Battuta for macOS</p>
+          <p className="eyebrow">Battuta for macOS + Windows</p>
           <h1>
             把喜欢的键盘声音，
-            <span>装进你的 Mac。</span>
+            <span>装进你的电脑。</span>
           </h1>
           <p className="hero-lede">
-            一款常驻菜单栏的键盘与点击音效应用。从浏览器、编辑器到聊天软件，
-            每一次输入都有清晰、自然的机械反馈。
+            一款常驻菜单栏或系统托盘的键盘与点击音效应用。从浏览器、编辑器到聊天软件，
+            在 Mac 和 Windows 上，每一次输入都有清晰、自然的机械反馈。
           </p>
           <div className="hero-actions">
-            <a className="button button-primary" href={downloadHref} download>
-              免费下载
+            <a className="button button-primary" href={macDownloadHref}>
+              下载 macOS
             </a>
-            <a className="button button-secondary" href="#sound">
-              先听效果
+            <a className="button button-secondary" href={windowsDownloadHref}>
+              下载 Windows
+            </a>
+            <a className="button button-github" href={repositoryHref} target="_blank" rel="noreferrer">
+              <span aria-hidden="true">★</span> GitHub Star ↗
             </a>
           </div>
           <p className="compatibility">
-            macOS 13+ · Apple Silicon 与 Intel · Battuta 1.0.0
+            macOS 13+ · Windows 10/11 x64 · Battuta 1.1.1
           </p>
         </div>
 
@@ -126,10 +133,10 @@ export function BattutaProductPage() {
         </div>
 
         <div className="hero-metrics" aria-label="Battuta 功能概览">
-          <div><strong>20</strong><span>种键盘音色</span></div>
+          <div><strong>21</strong><span>种键盘音色</span></div>
           <div><strong>5</strong><span>种点击风格</span></div>
-          <div><strong>237</strong><span>段本地录音</span></div>
-          <div className="metrics-note">本地处理 · 不记录输入内容</div>
+          <div><strong>265</strong><span>段本地录音</span></div>
+          <div className="metrics-note">macOS + Windows · 本地处理 · 不记录输入内容</div>
         </div>
       </header>
 
@@ -201,12 +208,12 @@ export function BattutaProductPage() {
         <div className="section-inner">
           <div className="split-heading">
             <div>
-              <p className="section-kicker">20 种键盘音色</p>
+              <p className="section-kicker">21 种键盘音色</p>
               <h2>从轻薄到厚重，<br />总有一种适合今天。</h2>
             </div>
             <p>
               内置音色覆盖段落、点击、线性、静电容和屈曲弹簧等不同结构。
-              不是只换一个滤镜，而是为不同键位准备对应的按下与回弹素材。
+              新加入的 BCP (Suit80) 带来 28 段逐行、大小键与交替小键录音；每一种都不只是换一个滤镜。
             </p>
           </div>
 
@@ -310,8 +317,8 @@ export function BattutaProductPage() {
 
             <article className="bento-card bento-startup">
               <p className="card-label">日常使用</p>
-              <h3>登录启动。后续一键更新。</h3>
-              <p>安装完成后可以常驻菜单栏；从 1.0.0 升级到后续版本时，应用会校验更新包并自动替换重启。</p>
+              <h3>登录启动。更新也很轻松。</h3>
+              <p>macOS 可在应用内校验更新包并自动替换重启；Windows 便携版发现新版后会带你前往已验证的 Release 页面。</p>
               <div className="status-line"><i />Battuta 正在运行</div>
             </article>
           </div>
@@ -329,7 +336,7 @@ export function BattutaProductPage() {
               Battuta 只识别用于播放声音和生成聚合统计所需的硬件事件：物理键码、鼠标按钮、按下或抬起、时间以及前台应用。
             </p>
             <p>
-              字符内容、密码、鼠标位置不会被读取、保存或上传。声音、DIY 音色包和输入统计都留在你的 Mac 上。
+              字符内容、密码、鼠标位置不会被读取、保存或上传。声音、DIY 音色包和输入统计都留在你的设备上。
             </p>
             <div className="privacy-points">
               <span>不读取字符内容</span>
@@ -348,10 +355,10 @@ export function BattutaProductPage() {
           <div className="section-heading section-heading-centered dark-copy">
             <p className="section-kicker green">开始使用</p>
             <h2>
-              <span className="headline-line">三步，让 Mac 发出</span>
+              <span className="headline-line">三步，让电脑发出</span>
               <span className="headline-line">你喜欢的声音。</span>
             </h2>
-            <p>当前版本无需 Apple Developer 账号即可安装，但尚未经过 Apple 公证，因此第一次打开需要手动允许。</p>
+            <p>macOS 与 Windows 都提供可直接下载的版本；首次打开时，系统可能要求你手动确认权限或安全提示。</p>
           </div>
 
           <div className="install-grid">
@@ -367,13 +374,14 @@ export function BattutaProductPage() {
           <div className="download-panel">
             <Image src="/battuta/battuta-icon.png" alt="" width={204} height={204} />
             <div>
-              <p className="download-version">Battuta 1.0.0 for macOS</p>
+              <p className="download-version">Battuta 1.1.1 · macOS + Windows</p>
               <h3>现在，给下一次敲击一个声音。</h3>
-              <p>Universal App · macOS 13+ · 约 8 MB · MIT 开源</p>
+              <p>Mac Universal App 约 9 MB · Windows x64 便携版约 82 MB · MIT 开源</p>
             </div>
             <div className="download-actions">
-              <a className="button button-dark" href={downloadHref} download>下载 DMG</a>
-              <a className="text-link" href="https://github.com/7b7b7b/battuta/releases/latest" target="_blank" rel="noreferrer">GitHub 备用下载 ↗</a>
+              <a className="button button-dark" href={macDownloadHref}>下载 macOS DMG</a>
+              <a className="button button-outline-dark" href={windowsDownloadHref}>下载 Windows ZIP</a>
+              <a className="text-link" href={repositoryHref} target="_blank" rel="noreferrer">去 GitHub Star 项目 ↗</a>
             </div>
           </div>
         </div>
