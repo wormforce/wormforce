@@ -499,10 +499,11 @@
 }
 
 .click-pills {
-  display: flex;
+  display: grid;
+  grid-template-columns: 4ch 76px 4ch;
   align-items: center;
   justify-content: flex-end;
-  gap: 14px;
+  column-gap: 14px;
   margin-top: auto;
   padding-top: 34px;
   color: #74796f;
@@ -510,7 +511,8 @@
   font-size: 12px;
 }
 
-.click-pills i { width: 76px; height: 32px; border: 1px solid rgba(216,255,115,.18); border-radius: 999px; background: linear-gradient(90deg, var(--lime) 0 42%, #252922 42%); }
+.click-pills span { text-align: center; }
+.click-pills i { width: 76px; height: 32px; border: 1px solid rgba(216,255,115,.18); border-radius: 999px; background: linear-gradient(90deg, var(--lime) 0 50%, #252922 50%); }
 
 .status-line {
   display: inline-flex;
