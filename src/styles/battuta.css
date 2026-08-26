@@ -582,10 +582,11 @@
 .download-panel > img { width: 102px; height: 102px; object-fit: contain; }
 .download-version { margin: 0 0 8px; color: #536721; font-size: 13px; font-weight: 700; }
 .download-panel h3 { margin: 0; font-size: clamp(28px, 2.4vw, 40px); letter-spacing: -0.045em; }
-.download-panel > div > p:last-child { margin: 10px 0 0; color: #536721; font-size: 14px; }
-.download-actions { min-width: 210px; display: flex; flex-direction: column; align-items: stretch; gap: 10px; }
+.download-meta { margin: 10px 0 0; color: #536721; font-size: 14px; }
+.download-note { max-width: 690px; margin: 7px 0 0; color: #455315; font-size: 12px; line-height: 1.5; }
+.download-actions { min-width: 232px; display: flex; flex-direction: column; align-items: stretch; gap: 10px; }
 .download-actions .button { width: 100%; white-space: nowrap; }
-.battuta-product .text-link { color: #405018; font-size: 12px; font-weight: 650; }
+.battuta-product .text-link { color: #405018; font-size: 12px; font-weight: 650; text-align: center; }
 
 .faq-section { padding: 78px 0 128px; }
 
@@ -1195,7 +1196,8 @@
   .download-panel { grid-template-columns: 1fr; gap: 18px; text-align: center; justify-items: center; padding: 26px 20px; border-radius: 24px; }
   .download-panel > img { width: 82px; height: 82px; }
   .download-panel h3 { font-size: 28px; }
-  .download-panel > div > p:last-child { font-size: 13px; }
+  .download-meta { font-size: 13px; }
+  .download-note { font-size: 12px; }
   .download-actions { flex-direction: column; width: 100%; gap: 8px; }
   .download-actions .text-link { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; }
 

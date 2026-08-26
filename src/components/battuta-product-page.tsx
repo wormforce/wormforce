@@ -2,9 +2,10 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 const repositoryHref = 'https://github.com/wormforce/battuta';
-const releaseAssetHref = `${repositoryHref}/releases/download/v1.1.1`;
-const macDownloadHref = `${releaseAssetHref}/Battuta-1.1.1-unnotarized.dmg`;
-const windowsDownloadHref = `${releaseAssetHref}/Battuta-Windows-1.1.1-win-x64.zip`;
+const latestReleaseHref = `${repositoryHref}/releases/tag/v1.1.2`;
+const macDownloadHref = `${repositoryHref}/releases/download/v1.1.2/Battuta-1.1.2-unnotarized.dmg`;
+const windowsStoreHref = 'https://apps.microsoft.com/detail/9NDHDBM6F3DR?hl=zh-cn&gl=CN';
+const windowsPortableDownloadHref = `${repositoryHref}/releases/download/v1.1.2/Battuta-Windows-1.1.2-win-x64.zip`;
 
 const soundFamilies = [
   {
@@ -32,13 +33,13 @@ const soundFamilies = [
 const installSteps = [
   {
     number: '01',
-    title: '选择平台并下载',
-    body: 'macOS 下载 DMG 并拖入“应用程序”；Windows 下载 ZIP，完整解压后运行 Battuta.exe。',
+    title: '选择安装方式',
+    body: 'macOS 下载 DMG 并拖入“应用程序”；Windows 推荐从 Microsoft Store 安装，也保留可完整解压后运行的 ZIP 便携版。',
   },
   {
     number: '02',
     title: '完成首次系统允许',
-    body: 'macOS 需手动允许打开并开启“输入监控”；Windows 便携版暂未签名，SmartScreen 出现时可查看详细信息后选择运行。',
+    body: 'macOS 需手动允许打开并开启“输入监控”；Windows Store 版由商店签名安装，ZIP 便携版可能触发 SmartScreen。',
   },
   {
     number: '03',
@@ -107,15 +108,18 @@ export function BattutaProductPage() {
             <a className="button button-primary" href={macDownloadHref}>
               下载 macOS
             </a>
-            <a className="button button-secondary" href={windowsDownloadHref}>
-              下载 Windows
+            <a className="button button-secondary" href={windowsStoreHref} target="_blank" rel="noreferrer">
+              Microsoft Store ↗
+            </a>
+            <a className="button button-secondary" href={windowsPortableDownloadHref}>
+              Windows ZIP
             </a>
             <a className="button button-github" href={repositoryHref} target="_blank" rel="noreferrer">
               <span aria-hidden="true">★</span> GitHub Star ↗
             </a>
           </div>
           <p className="compatibility">
-            macOS 13+ · Windows 10/11 x64 · Battuta 1.1.1
+            macOS 13+ · Windows 10/11 x64 · 最新版 1.1.2
           </p>
         </div>
 
@@ -239,6 +243,7 @@ export function BattutaProductPage() {
             </h2>
             <p>
               查看今日输入量、峰值速度、常用应用、七日趋势、年度热力图与逐键分布。
+              1.1.2 会依据当前数据自动调整连续色阶，悬停或点击格子即可立即查看时段与输入量。
               统计只保留聚合数量、物理键码、时间和前台应用，不保存你写下的内容。
             </p>
           </div>
@@ -318,7 +323,7 @@ export function BattutaProductPage() {
             <article className="bento-card bento-startup">
               <p className="card-label">日常使用</p>
               <h3>登录启动。更新也很轻松。</h3>
-              <p>macOS 可在应用内校验更新包并自动替换重启；Windows 便携版发现新版后会带你前往已验证的 Release 页面。</p>
+              <p>macOS 从 1.1.1 升级到 1.1.2 需手动安装一次，之后继续使用应用内更新；Windows Store 版由商店自动更新，ZIP 版从 GitHub Release 手动更新。</p>
               <div className="status-line"><i />Battuta 正在运行</div>
             </article>
           </div>
@@ -358,7 +363,7 @@ export function BattutaProductPage() {
               <span className="headline-line">三步，让电脑发出</span>
               <span className="headline-line">你喜欢的声音。</span>
             </h2>
-            <p>macOS 与 Windows 都提供可直接下载的版本；首次打开时，系统可能要求你手动确认权限或安全提示。</p>
+            <p>macOS 提供 DMG；Windows 推荐通过 Microsoft Store 安装，同时保留 ZIP 便携版供离线或免安装使用。</p>
           </div>
 
           <div className="install-grid">
@@ -374,13 +379,16 @@ export function BattutaProductPage() {
           <div className="download-panel">
             <Image src="/battuta/battuta-icon.png" alt="" width={204} height={204} />
             <div>
-              <p className="download-version">Battuta 1.1.1 · macOS + Windows</p>
+              <p className="download-version">Battuta 1.1.2 · macOS + Windows Store</p>
               <h3>现在，给下一次敲击一个声音。</h3>
-              <p>Mac Universal App 约 9 MB · Windows x64 便携版约 82 MB · MIT 开源</p>
+              <p className="download-meta">Mac Universal App 约 9 MB · Windows 10/11 x64 · MIT 开源</p>
+              <p className="download-note">Mac 1.1.1 用户需手动覆盖安装 1.1.2 一次；Windows 可选商店安装或同版本 ZIP 便携版。</p>
             </div>
             <div className="download-actions">
               <a className="button button-dark" href={macDownloadHref}>下载 macOS DMG</a>
-              <a className="button button-outline-dark" href={windowsDownloadHref}>下载 Windows ZIP</a>
+              <a className="button button-dark" href={windowsStoreHref} target="_blank" rel="noreferrer">Microsoft Store ↗</a>
+              <a className="button button-outline-dark" href={windowsPortableDownloadHref}>下载 Windows ZIP</a>
+              <a className="text-link" href={latestReleaseHref} target="_blank" rel="noreferrer">查看 1.1.2 发布说明 ↗</a>
               <a className="text-link" href={repositoryHref} target="_blank" rel="noreferrer">去 GitHub Star 项目 ↗</a>
             </div>
           </div>

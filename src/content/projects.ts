@@ -26,7 +26,7 @@ export const projects: ProjectProfile[] = [
       "A native desktop app with 21 keyboard sound profiles, five click styles, DIY sound packs, and private local typing statistics.",
     fullDescription:
       "Battuta turns keyboard and pointer events into responsive, natural mechanical feedback across macOS and Windows. The selected profile's recordings are preloaded for low-latency playback, while all 265 samples and typing analytics remain local to the device.",
-    coverImage: "/battuta/og-v1.1.1.png",
+    coverImage: "/battuta/og-v1.1.2.png",
     coverImageAlt: "Battuta keyboard sound app for macOS and Windows",
     highlights: [
       "21 keyboard profiles, including BCP (Suit80), and five independent pointer click styles.",

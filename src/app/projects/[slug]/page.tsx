@@ -46,10 +46,10 @@ export async function generateMetadata({
         project.slug === "battuta"
           ? [
               {
-                url: absoluteUrl("/battuta/og-v1.1.1.png"),
-                width: 1920,
-                height: 1080,
-                alt: "Battuta 1.1.1 keyboard sound app for macOS and Windows",
+                url: absoluteUrl("/battuta/og-v1.1.2.png"),
+                width: 1672,
+                height: 941,
+                alt: "Battuta 1.1.2 keyboard sound app for macOS and Windows",
               },
             ]
           : undefined,
@@ -60,7 +60,7 @@ export async function generateMetadata({
             card: "summary_large_image",
             title: "Battuta | Wormforce",
             description: project.shortDescription,
-            images: [absoluteUrl("/battuta/og-v1.1.1.png")],
+            images: [absoluteUrl("/battuta/og-v1.1.2.png")],
           }
         : undefined,
   };
