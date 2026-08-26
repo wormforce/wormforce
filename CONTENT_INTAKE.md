@@ -20,7 +20,7 @@ team:
 
   social_links:
     - label: "GitHub"
-      url: "TODO"                  # 例如 https://github.com/7b7b7b/wormforce
+      url: "TODO"                  # 例如 https://github.com/wormforce/wormforce
     - label: "X"
       url: "TODO"                  # 例如 https://x.com/your_handle
     - label: "Email"

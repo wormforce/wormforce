@@ -51,7 +51,7 @@ GitHub Actions workflow:
 
 ## Deploy to Vercel
 
-1. Import repo `https://github.com/7b7b7b/wormforce` in Vercel.
+1. Import repo `https://github.com/wormforce/wormforce` in Vercel.
 2. Keep framework preset as `Next.js`.
 3. Set production branch to `main`.
 4. Add domains:

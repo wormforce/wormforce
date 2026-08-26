@@ -17,7 +17,7 @@ export const teamProfile: TeamProfile = {
     "Build useful tools that stay fast, understandable, and maintainable as they scale from first release to real-world usage.",
   contactEmail: "team@wormforce.net",
   socialLinks: [
-    { label: "GitHub", url: "https://github.com/7b7b7b/wormforce" },
+    { label: "GitHub", url: "https://github.com/wormforce/wormforce" },
     { label: "X", url: "https://x.com/wormforce" },
     { label: "Email", url: "mailto:team@wormforce.net" },
   ],
