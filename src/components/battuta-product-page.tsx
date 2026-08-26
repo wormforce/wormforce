@@ -2,10 +2,10 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 const repositoryHref = 'https://github.com/wormforce/battuta';
-const latestReleaseHref = `${repositoryHref}/releases/tag/v1.1.2`;
-const macDownloadHref = `${repositoryHref}/releases/download/v1.1.2/Battuta-1.1.2-unnotarized.dmg`;
-const windowsStoreHref = 'https://apps.microsoft.com/detail/9NDHDBM6F3DR?hl=zh-cn&gl=CN';
-const windowsPortableDownloadHref = `${repositoryHref}/releases/download/v1.1.2/Battuta-Windows-1.1.2-win-x64.zip`;
+const latestReleaseHref = `${repositoryHref}/releases/tag/v1.2.0`;
+const macDownloadHref = `${repositoryHref}/releases/download/v1.2.0/Battuta-1.2.0-unnotarized.dmg`;
+const windowsStoreHref = 'https://apps.microsoft.com/detail/9NDHDBM6F3DR?hl=zh-cn&gl=CN&ocid=pdpshare';
+const windowsPortableDownloadHref = `${repositoryHref}/releases/download/v1.2.0/Battuta-Windows-1.2.0-win-x64.zip`;
 
 const soundFamilies = [
   {
@@ -119,7 +119,7 @@ export function BattutaProductPage() {
             </a>
           </div>
           <p className="compatibility">
-            macOS 13+ · Windows 10/11 x64 · 最新版 1.1.2
+            macOS 13+ · Windows 10/11 x64 · 最新版 1.2.0
           </p>
         </div>
 
@@ -243,7 +243,7 @@ export function BattutaProductPage() {
             </h2>
             <p>
               查看今日输入量、峰值速度、常用应用、七日趋势、年度热力图与逐键分布。
-              1.1.2 会依据当前数据自动调整连续色阶，悬停或点击格子即可立即查看时段与输入量。
+              1.2.0 保留经典荧光绿与青色配色，并依据当前数据自动调整连续色阶；悬停或点击格子即可立即查看时段与输入量。
               统计只保留聚合数量、物理键码、时间和前台应用，不保存你写下的内容。
             </p>
           </div>
@@ -323,7 +323,7 @@ export function BattutaProductPage() {
             <article className="bento-card bento-startup">
               <p className="card-label">日常使用</p>
               <h3>登录启动。更新也很轻松。</h3>
-              <p>macOS 从 1.1.1 升级到 1.1.2 需手动安装一次，之后继续使用应用内更新；Windows Store 版由商店自动更新，ZIP 版从 GitHub Release 手动更新。</p>
+              <p>旧版 macOS 用户需手动覆盖安装 1.2.0 一次，以切换到新的更新源；之后继续使用应用内更新。Windows Store 版由商店自动更新，ZIP 版从 GitHub Release 手动更新。</p>
               <div className="status-line"><i />Battuta 正在运行</div>
             </article>
           </div>
@@ -379,16 +379,16 @@ export function BattutaProductPage() {
           <div className="download-panel">
             <Image src="/battuta/battuta-icon.png" alt="" width={204} height={204} />
             <div>
-              <p className="download-version">Battuta 1.1.2 · macOS + Windows Store</p>
+              <p className="download-version">Battuta 1.2.0 · macOS + Windows</p>
               <h3>现在，给下一次敲击一个声音。</h3>
               <p className="download-meta">Mac Universal App 约 9 MB · Windows 10/11 x64 · MIT 开源</p>
-              <p className="download-note">Mac 1.1.1 用户需手动覆盖安装 1.1.2 一次；Windows 可选商店安装或同版本 ZIP 便携版。</p>
+              <p className="download-note">旧版 Mac 用户需手动覆盖安装 1.2.0 一次；Windows 可选商店安装，或直接下载同版本 ZIP 便携版。</p>
             </div>
             <div className="download-actions">
               <a className="button button-dark" href={macDownloadHref}>下载 macOS DMG</a>
               <a className="button button-dark" href={windowsStoreHref} target="_blank" rel="noreferrer">Microsoft Store ↗</a>
               <a className="button button-outline-dark" href={windowsPortableDownloadHref}>下载 Windows ZIP</a>
-              <a className="text-link" href={latestReleaseHref} target="_blank" rel="noreferrer">查看 1.1.2 发布说明 ↗</a>
+              <a className="text-link" href={latestReleaseHref} target="_blank" rel="noreferrer">查看 1.2.0 发布说明 ↗</a>
               <a className="text-link" href={repositoryHref} target="_blank" rel="noreferrer">去 GitHub Star 项目 ↗</a>
             </div>
           </div>
