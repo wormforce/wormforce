@@ -59,10 +59,15 @@ export const members: MemberProfile[] = [
     publications: [
       {
         title:
+          "AVTime: Reinforcing Long-Video Timeline Generation with a Bidirectional Time–Semantic Consistency Reward",
+        venue: "Under Review",
+      },
+      {
+        title:
           "AVCap: Reinforcing Audio-Video Joint Caption with Detail-Aware Reward",
         authors:
           "Mingyang Wu, Kaituo Feng, Bohao Li, Kaixiong Gong, Zihao Yin, Yi Yang, Xiangyu Yue",
-        venue: "Under Review",
+        venue: "arXiv:2608.06930",
         url: "https://arxiv.org/abs/2608.06930",
         pdfUrl: "https://arxiv.org/pdf/2608.06930",
       },
