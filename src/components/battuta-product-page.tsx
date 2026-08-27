@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { BattutaTypingDemo } from '@/components/battuta-typing-demo';
 
 const repositoryHref = 'https://github.com/wormforce/battuta';
 const latestReleaseHref = `${repositoryHref}/releases/tag/v1.2.0`;
@@ -81,6 +82,7 @@ export function BattutaProductPage() {
             <span>Battuta</span>
           </a>
           <div className="nav-links">
+            <a href="#try">试打</a>
             <a href="#sound">音效</a>
             <a href="#stats">统计</a>
             <a href="#privacy">隐私</a>
@@ -121,6 +123,9 @@ export function BattutaProductPage() {
           <p className="compatibility">
             macOS 13+ · Windows 10/11 x64 · 最新版 1.2.0
           </p>
+          <a className="hero-try-link" href="#try">
+            先不下载，在线试打 <span aria-hidden="true">↓</span>
+          </a>
         </div>
 
         <div className="hero-visual" aria-label="Battuta 应用图标">
@@ -143,6 +148,8 @@ export function BattutaProductPage() {
           <div className="metrics-note">macOS + Windows · 本地处理 · 不记录输入内容</div>
         </div>
       </header>
+
+      <BattutaTypingDemo />
 
       <section className="manifesto light-section">
         <div className="section-inner manifesto-grid">

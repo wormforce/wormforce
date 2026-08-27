@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "sync:battuta-demo-audio": "node scripts/build-battuta-demo-audio.mjs"
   },
   "dependencies": {
     "@vercel/analytics": "^1.6.1",
