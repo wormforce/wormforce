@@ -237,9 +237,27 @@ export function SustechCliProductPage() {
             <p>公开数据无需登录；需要账户的服务使用本地命名配置，密码由操作系统凭据存储保管。</p>
           </div>
           <ol className="sc-steps">
-            <li><span>01</span><div><h3>安装并自检</h3><code>npm install --global sustech-cli</code><code>sustech doctor</code></div></li>
-            <li><span>02</span><div><h3>从公开数据开始</h3><code>sustech calendar day 2026-09-01</code><code>sustech transit lines</code></div></li>
-            <li><span>03</span><div><h3>需要时再登录</h3><code>sustech auth login</code><code>sustech tis schedule</code></div></li>
+            <li>
+              <span>01</span>
+              <div className="sc-step-content">
+                <h3>安装并自检</h3>
+                <div className="sc-step-commands"><code>npm install --global sustech-cli</code><code>sustech doctor</code></div>
+              </div>
+            </li>
+            <li>
+              <span>02</span>
+              <div className="sc-step-content">
+                <h3>从公开数据开始</h3>
+                <div className="sc-step-commands"><code>sustech calendar day 2026-09-01</code><code>sustech transit lines</code></div>
+              </div>
+            </li>
+            <li>
+              <span>03</span>
+              <div className="sc-step-content">
+                <h3>需要时再登录</h3>
+                <div className="sc-step-commands"><code>sustech auth login</code><code>sustech tis schedule</code></div>
+              </div>
+            </li>
           </ol>
         </div>
       </section>

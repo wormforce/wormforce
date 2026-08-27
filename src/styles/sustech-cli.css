@@ -112,17 +112,18 @@
 .sc-tabs button[aria-pressed="true"] { border-radius: 8px; color: #fff; background: var(--sc-green); box-shadow: 0 7px 15px rgba(0, 71, 71, .16); }
 .sc-output-demo pre { min-height: 355px; overflow-x: auto; margin: 0; padding: 27px 30px; color: #cde0df; background: #003a3c; font-family: var(--font-space-mono), monospace; font-size: 13px; line-height: 1.75; }
 
-.sc-workflow { padding: 130px 0; background: #fff; }
+.sc-workflow { padding: 112px 0; background: #fff; }
 .sc-workflow-heading { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: end; }
 .sc-workflow-heading h2 { margin: 0; color: var(--sc-green); font-size: clamp(44px, 4vw, 67px); font-weight: 750; letter-spacing: -0.055em; line-height: 1.08; }
 .sc-workflow-heading p { max-width: 560px; margin: 0; color: var(--sc-muted); font-size: 18px; line-height: 1.8; }
-.sc-steps { margin: 80px 0 0; padding: 0; list-style: none; border-top: 1px solid var(--sc-line); }
-.sc-steps li { min-height: 160px; display: grid; grid-template-columns: 110px 250px 1fr; align-items: center; border-bottom: 1px solid var(--sc-line); }
+.sc-steps { margin: 58px 0 0; padding: 0; list-style: none; border-top: 1px solid var(--sc-line); }
+.sc-steps li { min-height: 108px; display: grid; grid-template-columns: 72px 1fr; align-items: center; border-bottom: 1px solid var(--sc-line); }
 .sc-steps > li > span { color: var(--sc-cyan); font-family: var(--font-space-mono), monospace; font-size: 14px; }
 .sc-steps li:nth-child(1) > span { color: var(--sc-orange); }
-.sc-steps li div { display: contents; }
+.sc-step-content { display: grid; grid-template-columns: minmax(210px, .42fr) 1fr; gap: 28px; align-items: center; }
 .sc-steps h3 { margin: 0; color: var(--sc-green); font-size: 24px; font-weight: 690; letter-spacing: -0.03em; }
-.sc-steps code { display: block; margin: 5px 0; color: #385052; font-family: var(--font-space-mono), monospace; font-size: 13px; }
+.sc-step-commands { display: flex; flex-wrap: wrap; gap: 9px; }
+.sc-steps code { display: block; padding: 9px 12px; border: 1px solid #dfe6e6; border-radius: 9px; color: #385052; background: #f8fafa; font-family: var(--font-space-mono), monospace; font-size: 12px; white-space: nowrap; }
 
 .sc-install { padding: 136px 0 32px; text-align: center; background: #fbfcfc; }
 .sc-install-inner > p { margin: 24px 0 0; color: var(--sc-muted); font-size: 18px; }
@@ -195,11 +196,12 @@
   .sc-tabs button { flex: 1; min-width: 0; }
   .sc-output-demo pre { min-height: 330px; padding: 22px 18px; font-size: 10px; }
   .sc-workflow-heading { grid-template-columns: 1fr; align-items: start; }
-  .sc-steps { margin-top: 48px; }
-  .sc-steps li { grid-template-columns: 54px 1fr; gap: 18px; padding: 24px 0; }
-  .sc-steps li div { display: block; }
-  .sc-steps h3 { margin-bottom: 12px; font-size: 20px; }
-  .sc-steps code { overflow-wrap: anywhere; font-size: 10px; }
+  .sc-steps { margin-top: 42px; }
+  .sc-steps li { grid-template-columns: 42px 1fr; gap: 12px; padding: 20px 0; }
+  .sc-step-content { display: block; }
+  .sc-steps h3 { font-size: 20px; }
+  .sc-step-commands { gap: 7px; margin-top: 12px; }
+  .sc-steps code { padding: 8px 9px; overflow-wrap: anywhere; font-size: 10px; white-space: normal; }
   .sc-install { padding-top: 94px; }
   .sc-install-command { min-height: 0; align-items: stretch; flex-direction: column; padding: 22px; }
   .sc-install-command code { overflow-x: auto; padding: 7px 0; font-size: 15px; }

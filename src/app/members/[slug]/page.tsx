@@ -130,16 +130,28 @@ export default async function MemberPage({ params }: MemberPageProps) {
           </div>
 
           <div className="card-surface reveal rounded-3xl p-6 md:p-8">
-            <h2 className="text-2xl font-semibold text-white">Profile</h2>
-            <div className="mt-4 space-y-4 text-sm leading-8 text-[var(--color-muted)] md:text-base">
-              {member.fullBio.split(/\n{2,}/).map((paragraph, index) => (
-                <p key={`${member.slug}-bio-${index}`}>
-                  {renderInlineLinks(paragraph)}
-                </p>
-              ))}
-            </div>
+            {member.fullBio ? (
+              <>
+                <h2 className="text-2xl font-semibold text-white">Profile</h2>
+                <div className="mt-4 space-y-4 text-sm leading-8 text-[var(--color-muted)] md:text-base">
+                  {member.fullBio.split(/\n{2,}/).map((paragraph, index) => (
+                    <p key={`${member.slug}-bio-${index}`}>
+                      {renderInlineLinks(paragraph)}
+                    </p>
+                  ))}
+                </div>
+              </>
+            ) : null}
 
-            <h3 className="mt-8 text-lg font-semibold text-white">Core Skills</h3>
+            <h3
+              className={
+                member.fullBio
+                  ? "mt-8 text-lg font-semibold text-white"
+                  : "text-lg font-semibold text-white"
+              }
+            >
+              Core Skills
+            </h3>
             <ul className="mt-4 flex flex-wrap gap-2">
               {member.skills.map((skill) => (
                 <li

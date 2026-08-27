@@ -14,13 +14,13 @@ export type MemberProfile = {
   shortBio: string;
   profileRole?: string;
   profileShortBio?: string;
-  fullBio: string;
+  fullBio?: string;
   avatar: string;
   /** Image object-position: "top" for top-center crop, default "center" */
   avatarObjectPosition?: "top" | "center";
   skills: string[];
   links: {
-    label: "GitHub" | "LinkedIn" | "X" | "Email" | "Scholar";
+    label: "GitHub" | "LinkedIn" | "X" | "Email" | "Scholar" | "Blog";
     url: string;
   }[];
   publications?: Publication[];
@@ -116,8 +116,6 @@ export const members: MemberProfile[] = [
     profileRole: "Product Engineer\nCo-Founder@WormForce",
     profileShortBio:
       "Neuroscience, product, and multimodal systems.\nWormForce Corp.",
-    fullBio:
-      "I am currently a Product Engineer at [WormForce](https://wormforce.net), where I bring a neuroscience lens to product layout, brand systems, and multimodal experiences—from research framing to shipped interfaces.\n\nAs a neuroscience specialist, I work closely with multimodal models and closed-loop neural interfaces alongside the team. I am Co-Founder of WormForce Corp.",
     avatar: "/images/members/member-2.jpg",
     skills: [
       "Neuroscience",
@@ -125,20 +123,12 @@ export const members: MemberProfile[] = [
       "Multimodal Models",
       "BCI & Neural Interfaces",
       "Product Engineering",
+      "Linux & Unix",
     ],
     links: [
       { label: "GitHub", url: "https://github.com/pentaoa" },
       { label: "Email", url: "mailto:xiekunpn@gmail.com" },
-    ],
-    publications: [
-      {
-        title:
-          "MindPilot: Closed-loop Visual Stimulation Optimization for Brain Modulation with EEG-guided Diffusion",
-        venue: "ICLR 2026",
-        year: 2026,
-        url: "https://arxiv.org/abs/2602.10552",
-        pdfUrl: "https://arxiv.org/pdf/2602.10552",
-      },
+      { label: "Blog", url: "https://www.kunpeng.blog/en" },
     ],
   },
   {
