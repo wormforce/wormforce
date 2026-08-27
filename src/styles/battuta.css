@@ -1778,7 +1778,6 @@
 
 .typing-demo-footer #battuta-demo-privacy { max-width: 690px; }
 .typing-demo-footer #battuta-demo-privacy span { margin-right: 7px; color: var(--lime); }
-.typing-demo-footer .typing-demo-attribution { flex: 0 0 auto; text-align: right; }
 
 .typing-demo-credits {
   flex: 0 0 auto;
@@ -2119,7 +2118,6 @@
   .typing-demo-chart svg { height: 124px; }
   .typing-demo-keyboard { min-width: 500px; }
   .typing-demo-footer { display: grid; gap: 10px; margin-top: 17px; padding-top: 16px; }
-  .typing-demo-footer .typing-demo-attribution { text-align: left; }
   .typing-demo-credits { justify-items: start; text-align: left; }
   .typing-demo-conversion { flex-direction: column; align-items: stretch; gap: 13px; padding-inline: 18px; }
   .typing-demo-conversion.is-visible { max-height: 160px; padding-block: 17px; }

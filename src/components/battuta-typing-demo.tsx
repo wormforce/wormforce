@@ -71,6 +71,8 @@ type PendingResumePress = {
   profileID: string;
   code: string;
   requestedAt: number;
+  releaseAfterSeconds?: number;
+  maximumDelayMS?: number;
 };
 
 type AudioState = 'loading' | 'awaiting' | 'activating' | 'ready' | 'switching' | 'error';
@@ -112,6 +114,17 @@ const playbackRecipes = [
   { gain: 1.02, rate: 0.992 },
 ];
 const playbackOrder = [0, 2, 1, 3, 1, 0, 3, 2, 3, 1, 2, 0, 2, 3, 0, 1];
+
+function isSoftTypingInput(inputType: string) {
+  return /^(insertText|insertCompositionText|insertLineBreak|insertParagraph|deleteContentBackward|deleteContentForward)$/.test(inputType);
+}
+
+function softInputCode(inputType: string, data: string | null) {
+  if (inputType === 'deleteContentBackward' || inputType === 'deleteContentForward') return 'Backspace';
+  if (inputType === 'insertLineBreak' || inputType === 'insertParagraph') return 'Enter';
+  if (data === ' ') return 'Space';
+  return 'KeyA';
+}
 
 const row0Codes = new Set([
   'Backquote', 'Digit1', 'Digit2', 'Digit3', 'Digit4', 'Digit5', 'Digit6',
@@ -680,7 +693,9 @@ class TypingAudioEngine {
 
   async activate(profileID: string) {
     if (this.contextPoisoned || this.context?.state === 'closed') this.rebuildContext();
+    this.configureAudioSession();
     this.ensureContext();
+    this.primeOutput();
     await this.resume();
     if (this.context?.state !== 'running') throw new Error('Battuta audio output did not start');
     await this.loadProfile(profileID);
@@ -711,6 +726,13 @@ class TypingAudioEngine {
       });
     }
     await this.resumePromise;
+  }
+
+  resumeFromGesture() {
+    this.configureAudioSession();
+    this.ensureContext();
+    this.primeOutput();
+    return this.resume();
   }
 
   async loadProfile(profileID: string) {
@@ -747,6 +769,8 @@ class TypingAudioEngine {
     if (context.state !== 'running') {
       if (phase === 'press') {
         this.pendingResumePress = { profileID, code, requestedAt: performance.now() };
+        this.configureAudioSession();
+        this.primeOutput();
       } else if (this.pendingResumePress?.code === code) {
         this.pendingResumePress = null;
       }
@@ -809,10 +833,24 @@ class TypingAudioEngine {
   }
 
   tap(profileID: string, code = 'KeyA') {
-    if (!this.context) return;
+    if (!this.context) return false;
+    if (this.context.state !== 'running') {
+      this.configureAudioSession();
+      this.primeOutput();
+      this.pendingResumePress = {
+        profileID,
+        code,
+        requestedAt: performance.now(),
+        releaseAfterSeconds: 0.055,
+        maximumDelayMS: 500,
+      };
+      this.requestPlaybackResume();
+      return true;
+    }
     const now = this.context.currentTime;
-    this.play(profileID, code, 'press', now);
-    this.play(profileID, code, 'release', now + 0.055);
+    const played = this.play(profileID, code, 'press', now);
+    if (played) this.play(profileID, code, 'release', now + 0.055);
+    return played;
   }
 
   setVolume(value: number) {
@@ -842,6 +880,7 @@ class TypingAudioEngine {
     this.resumePromise = null;
     this.rawAudio.clear();
     this.bankLoads.clear();
+    this.restoreAudioSession();
   }
 
   private rebuildContext() {
@@ -893,14 +932,57 @@ class TypingAudioEngine {
     }
   }
 
+  private configureAudioSession() {
+    const audioSession = (navigator as Navigator & {
+      audioSession?: { type: string };
+    }).audioSession;
+    if (!audioSession) return;
+    try {
+      audioSession.type = 'playback';
+    } catch {
+      // Older WebKit builds expose a partial Audio Session implementation.
+    }
+  }
+
+  private restoreAudioSession() {
+    const audioSession = (navigator as Navigator & {
+      audioSession?: { type: string };
+    }).audioSession;
+    if (!audioSession) return;
+    try {
+      audioSession.type = 'auto';
+    } catch {
+      // Leave platform-managed audio routing unchanged when unsupported.
+    }
+  }
+
+  private primeOutput() {
+    const context = this.context;
+    const masterGain = this.masterGain;
+    if (!context || !masterGain || context.state === 'closed') return;
+    const source = context.createBufferSource();
+    source.buffer = context.createBuffer(1, 1, context.sampleRate);
+    source.connect(masterGain);
+    source.onended = () => source.disconnect();
+    source.start();
+  }
+
   private requestPlaybackResume() {
     if (this.playbackResumeActive || this.destroyed) return;
     this.playbackResumeActive = true;
     void this.resume().then(() => {
       const pending = this.pendingResumePress;
       this.pendingResumePress = null;
-      if (pending && performance.now() - pending.requestedAt <= 120) {
-        this.play(pending.profileID, pending.code, 'press');
+      if (pending && performance.now() - pending.requestedAt <= (pending.maximumDelayMS ?? 120)) {
+        const played = this.play(pending.profileID, pending.code, 'press');
+        if (played && pending.releaseAfterSeconds && this.context) {
+          this.play(
+            pending.profileID,
+            pending.code,
+            'release',
+            this.context.currentTime + pending.releaseAfterSeconds,
+          );
+        }
       }
     }).catch(() => {
       this.pendingResumePress = null;
@@ -973,6 +1055,8 @@ export function BattutaTypingDemo() {
   const lastPhysicalEventRef = useRef(Number.NEGATIVE_INFINITY);
   const composingRef = useRef(false);
   const suppressComposedInputUntilRef = useRef(0);
+  const pendingPhysicalInputRef = useRef(false);
+  const skipNextInputRef = useRef(false);
   const focusAnimationFrameRef = useRef<number | null>(null);
 
   const selectedProfile = useMemo(
@@ -1115,7 +1199,14 @@ export function BattutaTypingDemo() {
     const code = event.code;
     if (!code || code === 'Unidentified') return;
     lastPhysicalEventRef.current = performance.now();
-    if (event.repeat || pressedCodesRef.current.has(code)) return;
+    const producesInput = !event.metaKey && !event.ctrlKey && !event.altKey && (
+      event.key.length === 1
+      || event.key === 'Backspace'
+      || event.key === 'Delete'
+      || event.key === 'Enter'
+    );
+    if (producesInput) pendingPhysicalInputRef.current = true;
+    if (event.repeat) return;
     pressedCodesRef.current.add(code);
     const schedulingStart = performance.now();
     let played = false;
@@ -1139,18 +1230,52 @@ export function BattutaTypingDemo() {
     syncPressedCodes();
   }, [audioState, syncPressedCodes]);
 
+  const recordSoftTap = useCallback((inputType: string, data: string | null, now: number) => {
+    const queuedOrPlayed = engineRef.current?.tap(
+      activeProfileIDRef.current,
+      softInputCode(inputType, data),
+    ) ?? false;
+    if (queuedOrPlayed) registerStrike();
+    telemetryStore.recordSoftInput(now);
+  }, [registerStrike, telemetryStore]);
+
+  const handleBeforeInput = useCallback((event: ReactFormEvent<HTMLTextAreaElement>) => {
+    const nativeEvent = event.nativeEvent as InputEvent;
+    const inputType = nativeEvent.inputType ?? '';
+    if (!isSoftTypingInput(inputType)) return;
+    skipNextInputRef.current = true;
+    if (composingRef.current) return;
+    const now = performance.now();
+    if (now < suppressComposedInputUntilRef.current) return;
+    if (pendingPhysicalInputRef.current) {
+      pendingPhysicalInputRef.current = false;
+      return;
+    }
+    if (audioState === 'ready') recordSoftTap(inputType, nativeEvent.data, now);
+  }, [audioState, recordSoftTap]);
+
   const handleInput = useCallback((event: ReactFormEvent<HTMLTextAreaElement>) => {
-    if (composingRef.current || pressedCodesRef.current.size > 0 || audioState !== 'ready') return;
-    const inputType = (event.nativeEvent as InputEvent).inputType ?? '';
-    if (inputType && !/^(insertText|insertCompositionText|deleteContentBackward|deleteContentForward)$/.test(inputType)) {
+    if (skipNextInputRef.current) {
+      skipNextInputRef.current = false;
+      return;
+    }
+    if (composingRef.current || audioState !== 'ready') return;
+    const nativeEvent = event.nativeEvent as InputEvent;
+    const inputType = nativeEvent.inputType ?? '';
+    if (inputType && !isSoftTypingInput(inputType)) return;
+    if (pendingPhysicalInputRef.current) {
+      pendingPhysicalInputRef.current = false;
       return;
     }
     const now = performance.now();
     if (now < suppressComposedInputUntilRef.current || now - lastPhysicalEventRef.current < 450) return;
-    engineRef.current?.tap(activeProfileIDRef.current);
-    registerStrike();
-    telemetryStore.recordSoftInput(now);
-  }, [audioState, registerStrike, telemetryStore]);
+    recordSoftTap(inputType, nativeEvent.data, now);
+  }, [audioState, recordSoftTap]);
+
+  const handleInputAudioGesture = useCallback(() => {
+    if (audioState !== 'ready') return;
+    void engineRef.current?.resumeFromGesture().catch(() => undefined);
+  }, [audioState]);
 
   const handleCompositionStart = useCallback(() => {
     composingRef.current = true;
@@ -1161,11 +1286,9 @@ export function BattutaTypingDemo() {
     const now = performance.now();
     suppressComposedInputUntilRef.current = now + 250;
     if (audioState === 'ready' && now - lastPhysicalEventRef.current >= 450) {
-      engineRef.current?.tap(activeProfileIDRef.current);
-      registerStrike();
-      telemetryStore.recordSoftInput(now);
+      recordSoftTap('insertCompositionText', null, now);
     }
-  }, [audioState, registerStrike, telemetryStore]);
+  }, [audioState, recordSoftTap]);
 
   const handleInputBlur = useCallback(() => {
     if (audioState === 'ready') {
@@ -1174,6 +1297,8 @@ export function BattutaTypingDemo() {
       });
     }
     pressedCodesRef.current.clear();
+    pendingPhysicalInputRef.current = false;
+    skipNextInputRef.current = false;
     syncPressedCodes();
   }, [audioState, syncPressedCodes]);
 
@@ -1288,6 +1413,8 @@ export function BattutaTypingDemo() {
                   placeholder="写一句今天想说的话，听听每一次按下与回弹……"
                   tabIndex={inputReady ? 0 : -1}
                   aria-describedby="battuta-demo-privacy battuta-demo-status"
+                  onClick={handleInputAudioGesture}
+                  onBeforeInput={handleBeforeInput}
                   onKeyDown={handleKeyDown}
                   onKeyUp={handleKeyUp}
                   onInput={handleInput}
@@ -1362,12 +1489,6 @@ export function BattutaTypingDemo() {
               仅在此输入框内统计匿名物理键位与敲击节奏；不读取文字内容、不上传、不保存，也不需要输入监控权限。
             </p>
             <div className="typing-demo-credits">
-              {selectedProfile?.attribution?.author ? (
-                <p className="typing-demo-attribution">
-                  {selectedProfile.displayName} 录音：{selectedProfile.attribution.author}
-                  {selectedProfile.attribution.licenseName ? ` · ${selectedProfile.attribution.licenseName}` : ''}
-                </p>
-              ) : null}
               <a
                 href="/battuta/demo-audio/AUDIO-THIRD-PARTY-NOTICES.md"
                 target="_blank"
