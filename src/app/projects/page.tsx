@@ -34,7 +34,7 @@ export default function ProjectsPage() {
         </header>
 
         <div className="mt-8 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-          {projects.map((project) => (
+          {projects.map((project, index) => (
             <article
               key={project.slug}
               className="card-surface reveal rounded-3xl p-4 transition hover:-translate-y-0.5 hover:border-[var(--color-text)] md:p-5"
@@ -45,6 +45,7 @@ export default function ProjectsPage() {
                   alt={project.coverImageAlt}
                   width={1600}
                   height={900}
+                  priority={index < 2}
                   className="aspect-[16/10] w-full object-cover"
                 />
               </div>

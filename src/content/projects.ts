@@ -17,6 +17,29 @@ export type ProjectProfile = {
 
 export const projects: ProjectProfile[] = [
   {
+    slug: "sustech-cli",
+    name: "sustech cli",
+    platform: "Node.js CLI",
+    status: "Preview",
+    tagline: "一条命令，连接你的南科大。",
+    shortDescription:
+      "为人、脚本与智能体设计的南科大命令行工具，覆盖教务、Blackboard、校园服务与结构化输出。",
+    fullDescription:
+      "sustech cli 将分散的校园服务统一成清晰的命令行界面，默认输出适合人类阅读的文本，也支持带版本的 JSON 与 JSONL。",
+    coverImage: "/sustech-cli/sustech-cli-og.png",
+    coverImageAlt: "白色背景上的 sustech cli 字标",
+    highlights: [
+      "一条 npm 命令全局安装，无需 Python 运行环境。",
+      "公开数据、教务、Blackboard 与校园服务统一入口。",
+      "为脚本与智能体提供带版本的结构化输出。",
+    ],
+    featureBlocks: [
+      { title: "查询", description: "课表、课程、校车、教师与更多校园信息。" },
+      { title: "集成", description: "Text、JSON 与 JSONL 三种稳定输出模式。" },
+      { title: "确认", description: "远程变更采用预览、显式确认与回读验证。" },
+    ],
+  },
+  {
     slug: "battuta",
     name: "Battuta",
     platform: "macOS & Windows",

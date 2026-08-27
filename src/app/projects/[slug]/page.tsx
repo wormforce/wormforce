@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BattutaProductPage } from "@/components/battuta-product-page";
+import { SustechCliProductPage } from "@/components/sustech-cli-product-page";
 import { getProjectBySlug, projects } from "@/content/projects";
 import { absoluteUrl } from "@/lib/utils";
 
@@ -30,6 +31,22 @@ export async function generateMetadata({
   }
 
   const projectUrl = absoluteUrl(`/projects/${project.slug}`);
+  const socialImage =
+    project.slug === "battuta"
+      ? {
+          url: absoluteUrl("/battuta/og-v1.2.0.png"),
+          width: 1672,
+          height: 941,
+          alt: "Battuta 1.2.0 keyboard sound app for macOS and Windows",
+        }
+      : project.slug === "sustech-cli"
+        ? {
+            url: absoluteUrl("/sustech-cli/sustech-cli-og.png"),
+            width: 1200,
+            height: 630,
+            alt: "sustech cli",
+          }
+        : undefined;
 
   return {
     title: `${project.name}`,
@@ -42,25 +59,15 @@ export async function generateMetadata({
       description: project.shortDescription,
       url: projectUrl,
       type: "website",
-      images:
-        project.slug === "battuta"
-          ? [
-              {
-                url: absoluteUrl("/battuta/og-v1.2.0.png"),
-                width: 1672,
-                height: 941,
-                alt: "Battuta 1.2.0 keyboard sound app for macOS and Windows",
-              },
-            ]
-          : undefined,
+      images: socialImage ? [socialImage] : undefined,
     },
     twitter:
-      project.slug === "battuta"
+      socialImage
         ? {
             card: "summary_large_image",
-            title: "Battuta | Wormforce",
+            title: `${project.name} | Wormforce`,
             description: project.shortDescription,
-            images: [absoluteUrl("/battuta/og-v1.2.0.png")],
+            images: [socialImage.url],
           }
         : undefined,
   };
@@ -76,6 +83,10 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
 
   if (project.slug === "battuta") {
     return <BattutaProductPage />;
+  }
+
+  if (project.slug === "sustech-cli") {
+    return <SustechCliProductPage />;
   }
 
   return (
