@@ -1,14 +1,15 @@
 'use client';
 
 import {
+  memo,
   useCallback,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
+  type FormEvent as ReactFormEvent,
   type KeyboardEvent as ReactKeyboardEvent,
-  type MouseEvent as ReactMouseEvent,
-  type PointerEvent as ReactPointerEvent,
 } from 'react';
 
 type AudioPhase = 'press' | 'release';
@@ -74,6 +75,25 @@ type PendingResumePress = {
 
 type AudioState = 'loading' | 'awaiting' | 'activating' | 'ready' | 'switching' | 'error';
 
+type HeatmapKey = {
+  code: string;
+  label: string;
+  span: number;
+};
+
+type TypingTelemetrySnapshot = {
+  generation: number;
+  total: number;
+  mappedTotal: number;
+  currentKPS: number;
+  peakKPS: number;
+  line: number[];
+  bars: Array<{ id: number; value: number }>;
+  secondBucketID: number;
+  keyCounts: number[];
+  topKeys: Array<{ label: string; count: number }>;
+};
+
 const manifestURL = '/battuta/demo-audio/manifest.json';
 const defaultProfileID = 'bcp-suit80';
 const quickProfileIDs = [
@@ -135,14 +155,448 @@ const legacyCodeNames: Record<string, string> = {
   Delete: 'forwardDelete',
 };
 
-const virtualKeys = [
-  { code: 'KeyA', label: 'A' },
-  { code: 'KeyS', label: 'S' },
-  { code: 'KeyD', label: 'D' },
-  { code: 'KeyF', label: 'F' },
-  { code: 'Space', label: 'space', wide: true },
-  { code: 'Enter', label: 'return', wide: true },
+const telemetrySampleMS = 100;
+const telemetrySampleCount = 120;
+const telemetryBucketCount = telemetrySampleCount + 10;
+const telemetryWindowSeconds = 12;
+const telemetryBarCount = telemetryWindowSeconds + 1;
+
+const heatmapRows: HeatmapKey[][] = [
+  [
+    { code: 'Backquote', label: '`', span: 4 },
+    ...Array.from({ length: 10 }, (_, index) => ({
+      code: `Digit${(index + 1) % 10}`,
+      label: String((index + 1) % 10),
+      span: 4,
+    })),
+    { code: 'Minus', label: '−', span: 4 },
+    { code: 'Equal', label: '=', span: 4 },
+    { code: 'Backspace', label: 'delete', span: 8 },
+  ],
+  [
+    { code: 'Tab', label: 'tab', span: 6 },
+    ...'QWERTYUIOP'.split('').map((letter) => ({ code: `Key${letter}`, label: letter, span: 4 })),
+    { code: 'BracketLeft', label: '[', span: 4 },
+    { code: 'BracketRight', label: ']', span: 4 },
+    { code: 'Backslash', label: '\\', span: 6 },
+  ],
+  [
+    { code: 'CapsLock', label: 'caps', span: 7 },
+    ...'ASDFGHJKL'.split('').map((letter) => ({ code: `Key${letter}`, label: letter, span: 4 })),
+    { code: 'Semicolon', label: ';', span: 4 },
+    { code: 'Quote', label: "'", span: 4 },
+    { code: 'Enter', label: 'return', span: 9 },
+  ],
+  [
+    { code: 'ShiftLeft', label: 'shift', span: 9 },
+    ...'ZXCVBNM'.split('').map((letter) => ({ code: `Key${letter}`, label: letter, span: 4 })),
+    { code: 'Comma', label: ',', span: 4 },
+    { code: 'Period', label: '.', span: 4 },
+    { code: 'Slash', label: '/', span: 4 },
+    { code: 'ShiftRight', label: 'shift', span: 11 },
+  ],
+  [
+    { code: 'ControlLeft', label: 'ctrl', span: 5 },
+    { code: 'MetaLeft', label: '⌘ / Win', span: 6 },
+    { code: 'AltLeft', label: 'alt', span: 5 },
+    { code: 'Space', label: 'space', span: 28 },
+    { code: 'AltRight', label: 'alt', span: 5 },
+    { code: 'MetaRight', label: '⌘ / Win', span: 6 },
+    { code: 'ControlRight', label: 'ctrl', span: 5 },
+  ],
 ];
+
+const heatmapKeys = heatmapRows.flat();
+const heatmapKeyIndexes = new Map(heatmapKeys.map((key, index) => [key.code, index]));
+
+function emptyTelemetrySnapshot(generation = 0): TypingTelemetrySnapshot {
+  return {
+    generation,
+    total: 0,
+    mappedTotal: 0,
+    currentKPS: 0,
+    peakKPS: 0,
+    line: Array(telemetryBarCount).fill(0),
+    bars: Array.from({ length: telemetryBarCount }, (_, index) => ({ id: index, value: 0 })),
+    secondBucketID: 0,
+    keyCounts: Array(heatmapKeys.length).fill(0),
+    topKeys: [],
+  };
+}
+
+class TypingTelemetryStore {
+  private readonly bucketIDs = new Float64Array(telemetryBucketCount);
+  private readonly bucketCounts = new Uint16Array(telemetryBucketCount);
+  private readonly keyCounts = new Uint32Array(heatmapKeys.length);
+  private total = 0;
+  private mappedTotal = 0;
+  private peakKPS = 0;
+  private lastEventAt: number | null = null;
+  private generation = 0;
+  private readonly listeners = new Set<() => void>();
+
+  constructor() {
+    this.bucketIDs.fill(-1);
+  }
+
+  recordPhysical(code: string, at = performance.now()) {
+    this.recordRhythm(at);
+    const keyIndex = heatmapKeyIndexes.get(code);
+    if (keyIndex !== undefined) {
+      this.keyCounts[keyIndex] += 1;
+      this.mappedTotal += 1;
+    }
+    this.notify();
+  }
+
+  recordSoftInput(at = performance.now()) {
+    this.recordRhythm(at);
+    this.notify();
+  }
+
+  reset() {
+    this.bucketIDs.fill(-1);
+    this.bucketCounts.fill(0);
+    this.keyCounts.fill(0);
+    this.total = 0;
+    this.mappedTotal = 0;
+    this.peakKPS = 0;
+    this.lastEventAt = null;
+    this.generation += 1;
+    this.notify();
+  }
+
+  subscribe(listener: () => void) {
+    this.listeners.add(listener);
+    return () => this.listeners.delete(listener);
+  }
+
+  shouldPublish(at: number, renderedGeneration: number) {
+    return this.generation !== renderedGeneration
+      || (this.lastEventAt !== null && at - this.lastEventAt <= telemetryWindowSeconds * 1000 + 200);
+  }
+
+  isActive(at: number) {
+    return this.lastEventAt !== null && at - this.lastEventAt <= telemetryWindowSeconds * 1000 + 200;
+  }
+
+  snapshot(at: number): TypingTelemetrySnapshot {
+    const currentBucketID = Math.floor(at / telemetrySampleMS);
+    const rawCounts = Array.from({ length: telemetrySampleCount }, (_, index) => (
+      this.countForBucket(currentBucketID - telemetrySampleCount + 1 + index)
+    ));
+    const currentKPS = rawCounts.slice(-10).reduce((sum, count) => sum + count, 0);
+    this.peakKPS = Math.max(this.peakKPS, currentKPS);
+
+    const currentSecondID = Math.floor(currentBucketID / 10);
+    const bars = Array.from({ length: telemetryBarCount }, (_, secondIndex) => {
+      const secondID = currentSecondID - telemetryWindowSeconds + secondIndex;
+      let total = 0;
+      for (let tenth = 0; tenth < 10; tenth += 1) {
+        total += this.countForBucket(secondID * 10 + tenth);
+      }
+      return { id: secondID, value: total };
+    });
+    const line = bars.map((bar) => bar.value);
+
+    const topKeys = Array.from(this.keyCounts)
+      .map((count, index) => ({ label: heatmapKeys[index].label, count }))
+      .filter((key) => key.count > 0)
+      .sort((left, right) => right.count - left.count)
+      .slice(0, 3);
+
+    return {
+      generation: this.generation,
+      total: this.total,
+      mappedTotal: this.mappedTotal,
+      currentKPS,
+      peakKPS: this.peakKPS,
+      line,
+      bars,
+      secondBucketID: currentSecondID,
+      keyCounts: Array.from(this.keyCounts),
+      topKeys,
+    };
+  }
+
+  private recordRhythm(at: number) {
+    const bucketID = Math.floor(at / telemetrySampleMS);
+    const slot = ((bucketID % telemetryBucketCount) + telemetryBucketCount) % telemetryBucketCount;
+    if (this.bucketIDs[slot] !== bucketID) {
+      this.bucketIDs[slot] = bucketID;
+      this.bucketCounts[slot] = 0;
+    }
+    this.bucketCounts[slot] = Math.min(65535, this.bucketCounts[slot] + 1);
+    this.total += 1;
+    this.lastEventAt = at;
+  }
+
+  private countForBucket(bucketID: number) {
+    const slot = ((bucketID % telemetryBucketCount) + telemetryBucketCount) % telemetryBucketCount;
+    return this.bucketIDs[slot] === bucketID ? this.bucketCounts[slot] : 0;
+  }
+
+  private notify() {
+    this.listeners.forEach((listener) => listener());
+  }
+}
+
+function buildSmoothChartPath(
+  values: number[],
+  maximum: number,
+  width: number,
+  height: number,
+  xStep = width / Math.max(1, values.length),
+) {
+  const top = 10;
+  const bottom = height - 10;
+  const points = values.map((value, index) => ({
+    x: (index + 0.5) * xStep,
+    y: bottom - (Math.min(maximum, value) / maximum) * (bottom - top),
+  }));
+  if (points.length === 0) return '';
+  let path = `M 0 ${points[0].y.toFixed(2)} L ${points[0].x.toFixed(2)} ${points[0].y.toFixed(2)}`;
+  const tension = 0.72;
+  for (let index = 0; index < points.length - 1; index += 1) {
+    const before = points[Math.max(0, index - 1)];
+    const current = points[index];
+    const next = points[index + 1];
+    const after = points[Math.min(points.length - 1, index + 2)];
+    const minimumY = Math.min(current.y, next.y);
+    const maximumY = Math.max(current.y, next.y);
+    const controlOneY = Math.min(maximumY, Math.max(
+      minimumY,
+      current.y + ((next.y - before.y) / 6) * tension,
+    ));
+    const controlTwoY = Math.min(maximumY, Math.max(
+      minimumY,
+      next.y - ((after.y - current.y) / 6) * tension,
+    ));
+    const controlOneX = current.x + ((next.x - before.x) / 6) * tension;
+    const controlTwoX = next.x - ((after.x - current.x) / 6) * tension;
+    path += ` C ${controlOneX.toFixed(3)} ${controlOneY.toFixed(3)}, ${controlTwoX.toFixed(3)} ${controlTwoY.toFixed(3)}, ${next.x.toFixed(3)} ${next.y.toFixed(3)}`;
+  }
+  return `${path} L ${(values.length * xStep).toFixed(2)} ${points[points.length - 1].y.toFixed(2)}`;
+}
+
+const TypingTelemetryPanel = memo(function TypingTelemetryPanel({
+  store,
+}: {
+  store: TypingTelemetryStore;
+}) {
+  const [snapshot, setSnapshot] = useState<TypingTelemetrySnapshot>(() => emptyTelemetrySnapshot());
+  const snapshotRef = useRef(snapshot);
+  const barTrackRef = useRef<SVGGElement | null>(null);
+  const lineTrackRef = useRef<SVGGElement | null>(null);
+  const renderedSecondBucketIDRef = useRef(0);
+
+  useEffect(() => {
+    let cancelled = false;
+    let timerID: number | null = null;
+    let forceNextPublish = false;
+    const schedule = (delay: number) => {
+      if (cancelled || timerID !== null || document.hidden) return;
+      timerID = window.setTimeout(publish, delay);
+    };
+    const publish = () => {
+      timerID = null;
+      if (cancelled) return;
+      const now = performance.now();
+      const shouldPublish = forceNextPublish || store.shouldPublish(now, snapshotRef.current.generation);
+      forceNextPublish = false;
+      if (!document.hidden && shouldPublish) {
+        const nextSnapshot = store.snapshot(now);
+        snapshotRef.current = nextSnapshot;
+        setSnapshot(nextSnapshot);
+      }
+      if (shouldPublish) {
+        const delay = telemetrySampleMS - (performance.now() % telemetrySampleMS);
+        schedule(Math.max(16, delay));
+      }
+    };
+    const wake = (force = false) => {
+      forceNextPublish ||= force;
+      schedule(0);
+    };
+    const handleVisibility = () => {
+      if (document.hidden && timerID !== null) {
+        window.clearTimeout(timerID);
+        timerID = null;
+      } else if (!document.hidden) {
+        wake(true);
+      }
+    };
+    const unsubscribe = store.subscribe(wake);
+    document.addEventListener('visibilitychange', handleVisibility);
+    wake(true);
+    return () => {
+      cancelled = true;
+      if (timerID !== null) window.clearTimeout(timerID);
+      document.removeEventListener('visibilitychange', handleVisibility);
+      unsubscribe();
+    };
+  }, [store]);
+
+  const observedMaximum = Math.max(4, ...snapshot.bars.map((bar) => bar.value), ...snapshot.line);
+  const axisMaximum = Math.ceil(observedMaximum / 2) * 2;
+  const chartWidth = 520;
+  const chartHeight = 176;
+  const plotHeight = chartHeight - 20;
+  const barStep = chartWidth / telemetryWindowSeconds;
+  const linePath = buildSmoothChartPath(snapshot.line, axisMaximum, chartWidth, chartHeight, barStep);
+  const maximumKeyCount = Math.max(0, ...snapshot.keyCounts);
+  const topKeySummary = snapshot.topKeys.length > 0
+    ? snapshot.topKeys.map((key) => `${key.label} ${key.count} 次`).join('、')
+    : '还没有键位记录';
+
+  useLayoutEffect(() => {
+    renderedSecondBucketIDRef.current = snapshot.secondBucketID;
+  }, [snapshot.secondBucketID]);
+
+  useEffect(() => {
+    let frameID: number | null = null;
+    const resetTracks = () => {
+      lineTrackRef.current?.setAttribute('transform', 'translate(0 0)');
+      barTrackRef.current?.setAttribute('transform', 'translate(0 0)');
+    };
+    const animate = () => {
+      frameID = null;
+      if (document.hidden) return;
+      const now = performance.now();
+      if (!store.isActive(now)) {
+        resetTracks();
+        return;
+      }
+      const barProgress = Math.min(1, Math.max(0, now / 1000 - renderedSecondBucketIDRef.current));
+      const barOffset = -barProgress * barStep;
+      lineTrackRef.current?.setAttribute('transform', `translate(${barOffset.toFixed(3)} 0)`);
+      barTrackRef.current?.setAttribute('transform', `translate(${barOffset.toFixed(3)} 0)`);
+      frameID = window.requestAnimationFrame(animate);
+    };
+    const wake = () => {
+      if (frameID === null && !document.hidden) frameID = window.requestAnimationFrame(animate);
+    };
+    const handleVisibility = () => {
+      if (document.hidden && frameID !== null) {
+        window.cancelAnimationFrame(frameID);
+        frameID = null;
+      } else if (!document.hidden) {
+        wake();
+      }
+    };
+    const unsubscribe = store.subscribe(wake);
+    document.addEventListener('visibilitychange', handleVisibility);
+    wake();
+    return () => {
+      if (frameID !== null) window.cancelAnimationFrame(frameID);
+      document.removeEventListener('visibilitychange', handleVisibility);
+      unsubscribe();
+    };
+  }, [barStep, store]);
+
+  return (
+    <aside className="typing-demo-insights" aria-label="本次输入统计">
+      <section className="typing-demo-stat-card typing-demo-rhythm-card" aria-labelledby="typing-rhythm-title">
+        <div className="typing-demo-stat-heading">
+          <div>
+            <span>Live rhythm</span>
+            <h3 id="typing-rhythm-title">实时键速</h3>
+          </div>
+          <div className="typing-demo-chart-legend" aria-hidden="true">
+            <span><i className="is-bar" />1 秒柱</span>
+            <span><i className="is-line" />平滑趋势</span>
+          </div>
+        </div>
+
+        <dl className="typing-demo-metrics">
+          <div><dt>当前</dt><dd>{snapshot.currentKPS}<small>次/秒</small></dd></div>
+          <div><dt>峰值</dt><dd>{snapshot.peakKPS}<small>次/秒</small></dd></div>
+          <div><dt>本轮</dt><dd>{snapshot.total}<small>次</small></dd></div>
+        </dl>
+
+        <figure className="typing-demo-chart">
+          <svg viewBox={`0 0 ${chartWidth} ${chartHeight}`} preserveAspectRatio="none" aria-hidden="true">
+            {[0.25, 0.5, 0.75, 1].map((ratio) => (
+              <line
+                key={ratio}
+                x1="0"
+                x2={chartWidth}
+                y1={10 + plotHeight * (1 - ratio)}
+                y2={10 + plotHeight * (1 - ratio)}
+                className="typing-demo-chart-grid"
+              />
+            ))}
+            <g ref={barTrackRef}>
+              {snapshot.bars.map((bar, index) => {
+                const height = (bar.value / axisMaximum) * plotHeight;
+                return (
+                  <rect
+                    key={bar.id}
+                    x={index * barStep + 3}
+                    y={chartHeight - 10 - height}
+                    width={Math.max(2, barStep - 6)}
+                    height={Math.max(bar.value > 0 ? 2 : 0, height)}
+                    rx="3"
+                    className="typing-demo-chart-bar"
+                  />
+                );
+              })}
+            </g>
+            <g ref={lineTrackRef}>
+              <path d={linePath} className="typing-demo-chart-line-shadow" />
+              <path d={linePath} className="typing-demo-chart-line" />
+            </g>
+          </svg>
+          <figcaption>
+            <span>最近 12 秒</span>
+            <span>动态上限 {axisMaximum} 次/秒</span>
+            <span>现在</span>
+          </figcaption>
+        </figure>
+      </section>
+
+      <section className="typing-demo-stat-card typing-demo-heatmap-card" aria-labelledby="typing-heatmap-title">
+        <div className="typing-demo-stat-heading">
+          <div>
+            <span>Session heatmap</span>
+            <h3 id="typing-heatmap-title">本次键位热力图</h3>
+          </div>
+          <p>{snapshot.mappedTotal} 次已映射</p>
+        </div>
+        <p className="typing-demo-visually-hidden">最常用键位：{topKeySummary}</p>
+        <div className="typing-demo-keyboard-scroll">
+          <div className="typing-demo-keyboard" aria-hidden="true">
+            {heatmapRows.map((row, rowIndex) => (
+              <div className="typing-demo-keyboard-row" key={rowIndex}>
+                {row.map((key) => {
+                  const keyIndex = heatmapKeyIndexes.get(key.code) ?? 0;
+                  const count = snapshot.keyCounts[keyIndex] ?? 0;
+                  const tier = count === 0 || maximumKeyCount === 0
+                    ? 0
+                    : Math.max(1, Math.ceil((Math.log1p(count) / Math.log1p(maximumKeyCount)) * 5));
+                  return (
+                    <span
+                      key={key.code}
+                      className={`typing-demo-heat-key heat-${tier}`}
+                      style={{ gridColumn: `span ${key.span}` }}
+                    >
+                      <b>{key.label}</b>
+                      {count > 0 ? <small>{count}</small> : null}
+                    </span>
+                  );
+                })}
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="typing-demo-heatmap-caption">
+          <span>低</span><i /><i /><i /><i /><i /><span>高</span>
+          <p>{topKeySummary}</p>
+        </div>
+      </section>
+    </aside>
+  );
+});
 
 function rowForCode(code: string): KeyboardRow {
   if (row0Codes.has(code)) return 'R0';
@@ -506,14 +960,15 @@ export function BattutaTypingDemo() {
   const [audioState, setAudioState] = useState<AudioState>('loading');
   const [volume, setVolume] = useState(66);
   const [muted, setMuted] = useState(false);
-  const [pressedCodes, setPressedCodes] = useState<Set<string>>(() => new Set());
-  const [strikeCount, setStrikeCount] = useState(0);
+  const [conversionVisible, setConversionVisible] = useState(false);
   const [loadAttempt, setLoadAttempt] = useState(0);
+  const [telemetryStore] = useState(() => new TypingTelemetryStore());
   const engineRef = useRef<TypingAudioEngine | null>(null);
   const activeProfileIDRef = useRef(defaultProfileID);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const pulseRef = useRef<HTMLDivElement | null>(null);
   const pressedCodesRef = useRef(new Set<string>());
-  const virtualPressedCodesRef = useRef(new Set<string>());
+  const successfulStrikeCountRef = useRef(0);
   const switchGenerationRef = useRef(0);
   const lastPhysicalEventRef = useRef(Number.NEGATIVE_INFINITY);
   const composingRef = useRef(false);
@@ -530,7 +985,7 @@ export function BattutaTypingDemo() {
   );
 
   const syncPressedCodes = useCallback(() => {
-    setPressedCodes(new Set([...pressedCodesRef.current, ...virtualPressedCodesRef.current]));
+    pulseRef.current?.setAttribute('data-active', pressedCodesRef.current.size > 0 ? 'true' : 'false');
   }, []);
 
   useEffect(() => {
@@ -590,8 +1045,7 @@ export function BattutaTypingDemo() {
   useEffect(() => {
     const clearPressed = () => {
       pressedCodesRef.current.clear();
-      virtualPressedCodesRef.current.clear();
-      setPressedCodes(new Set());
+      syncPressedCodes();
     };
     const handleVisibility = () => {
       if (document.hidden) clearPressed();
@@ -602,10 +1056,11 @@ export function BattutaTypingDemo() {
       window.removeEventListener('blur', clearPressed);
       document.removeEventListener('visibilitychange', handleVisibility);
     };
-  }, []);
+  }, [syncPressedCodes]);
 
   const registerStrike = useCallback(() => {
-    setStrikeCount((count) => Math.min(20, count + 1));
+    successfulStrikeCountRef.current += 1;
+    if (successfulStrikeCountRef.current === 8) setConversionVisible(true);
   }, []);
 
   const activateAudio = useCallback(async () => {
@@ -656,17 +1111,6 @@ export function BattutaTypingDemo() {
     }
   }, [audioState, selectedProfileID]);
 
-  const playPress = useCallback((code: string) => {
-    const engine = engineRef.current;
-    if (!engine || audioState !== 'ready') return;
-    if (engine.play(activeProfileIDRef.current, code, 'press')) registerStrike();
-  }, [audioState, registerStrike]);
-
-  const playRelease = useCallback((code: string) => {
-    if (audioState !== 'ready') return;
-    engineRef.current?.play(activeProfileIDRef.current, code, 'release');
-  }, [audioState]);
-
   const handleKeyDown = useCallback((event: ReactKeyboardEvent<HTMLTextAreaElement>) => {
     const code = event.code;
     if (!code || code === 'Unidentified') return;
@@ -674,14 +1118,18 @@ export function BattutaTypingDemo() {
     if (event.repeat || pressedCodesRef.current.has(code)) return;
     pressedCodesRef.current.add(code);
     const schedulingStart = performance.now();
+    let played = false;
+    const shouldRecord = audioState === 'ready';
     if (audioState === 'ready') {
-      if (engineRef.current?.play(activeProfileIDRef.current, code, 'press')) registerStrike();
+      played = engineRef.current?.play(activeProfileIDRef.current, code, 'press') ?? false;
+      if (played) registerStrike();
     } else if (audioState === 'awaiting' || audioState === 'error') {
       void activateAudio();
     }
     textareaRef.current?.setAttribute('data-last-schedule-ms', (performance.now() - schedulingStart).toFixed(3));
+    if (shouldRecord) telemetryStore.recordPhysical(code, performance.now());
     syncPressedCodes();
-  }, [activateAudio, audioState, registerStrike, syncPressedCodes]);
+  }, [activateAudio, audioState, registerStrike, syncPressedCodes, telemetryStore]);
 
   const handleKeyUp = useCallback((event: ReactKeyboardEvent<HTMLTextAreaElement>) => {
     const code = event.code;
@@ -691,13 +1139,18 @@ export function BattutaTypingDemo() {
     syncPressedCodes();
   }, [audioState, syncPressedCodes]);
 
-  const handleInput = useCallback(() => {
+  const handleInput = useCallback((event: ReactFormEvent<HTMLTextAreaElement>) => {
     if (composingRef.current || pressedCodesRef.current.size > 0 || audioState !== 'ready') return;
+    const inputType = (event.nativeEvent as InputEvent).inputType ?? '';
+    if (inputType && !/^(insertText|insertCompositionText|deleteContentBackward|deleteContentForward)$/.test(inputType)) {
+      return;
+    }
     const now = performance.now();
     if (now < suppressComposedInputUntilRef.current || now - lastPhysicalEventRef.current < 450) return;
     engineRef.current?.tap(activeProfileIDRef.current);
     registerStrike();
-  }, [audioState, registerStrike]);
+    telemetryStore.recordSoftInput(now);
+  }, [audioState, registerStrike, telemetryStore]);
 
   const handleCompositionStart = useCallback(() => {
     composingRef.current = true;
@@ -710,8 +1163,9 @@ export function BattutaTypingDemo() {
     if (audioState === 'ready' && now - lastPhysicalEventRef.current >= 450) {
       engineRef.current?.tap(activeProfileIDRef.current);
       registerStrike();
+      telemetryStore.recordSoftInput(now);
     }
-  }, [audioState, registerStrike]);
+  }, [audioState, registerStrike, telemetryStore]);
 
   const handleInputBlur = useCallback(() => {
     if (audioState === 'ready') {
@@ -722,26 +1176,6 @@ export function BattutaTypingDemo() {
     pressedCodesRef.current.clear();
     syncPressedCodes();
   }, [audioState, syncPressedCodes]);
-
-  const handleVirtualDown = useCallback((event: ReactPointerEvent<HTMLButtonElement>, code: string) => {
-    if (audioState !== 'ready') return;
-    if (event.pointerType !== 'touch') event.currentTarget.setPointerCapture(event.pointerId);
-    virtualPressedCodesRef.current.add(code);
-    syncPressedCodes();
-    playPress(code);
-  }, [audioState, playPress, syncPressedCodes]);
-
-  const handleVirtualUp = useCallback((code: string) => {
-    if (!virtualPressedCodesRef.current.delete(code)) return;
-    syncPressedCodes();
-    playRelease(code);
-  }, [playRelease, syncPressedCodes]);
-
-  const handleAccessibleVirtualClick = useCallback((event: ReactMouseEvent<HTMLButtonElement>, code: string) => {
-    if (event.detail !== 0 || audioState !== 'ready') return;
-    engineRef.current?.tap(activeProfileIDRef.current, code);
-    registerStrike();
-  }, [audioState, registerStrike]);
 
   const updateVolume = useCallback((nextVolume: number) => {
     setVolume(nextVolume);
@@ -760,7 +1194,10 @@ export function BattutaTypingDemo() {
       textareaRef.current.value = '';
       textareaRef.current.focus({ preventScroll: true });
     }
-  }, []);
+    telemetryStore.reset();
+    successfulStrikeCountRef.current = 0;
+    setConversionVisible(false);
+  }, [telemetryStore]);
 
   const handleUnlock = useCallback(() => {
     if (!engineRef.current) {
@@ -835,100 +1272,94 @@ export function BattutaTypingDemo() {
             </div>
           </fieldset>
 
-          <div className={`typing-demo-input-shell${inputReady ? ' is-ready' : ''}`}>
-            <label htmlFor="battuta-demo-input">在这里输入</label>
-            <textarea
-              ref={textareaRef}
-              id="battuta-demo-input"
-              rows={4}
-              readOnly={!inputReady}
-              autoComplete="off"
-              autoCorrect="off"
-              autoCapitalize="off"
-              spellCheck={false}
-              placeholder="写一句今天想说的话，听听每一次按下与回弹……"
-              tabIndex={inputReady ? 0 : -1}
-              aria-describedby="battuta-demo-privacy battuta-demo-status"
-              onKeyDown={handleKeyDown}
-              onKeyUp={handleKeyUp}
-              onInput={handleInput}
-              onCompositionStart={handleCompositionStart}
-              onCompositionEnd={handleCompositionEnd}
-              onBlur={handleInputBlur}
-            />
-            {!inputReady ? (
-              <button
-                type="button"
-                className="typing-demo-unlock"
-                onClick={handleUnlock}
-                disabled={audioState === 'loading' || audioState === 'activating' || audioState === 'switching'}
-              >
-                <span aria-hidden="true">▶</span>
-                {audioState === 'loading'
-                  ? '正在准备音频'
-                  : audioState === 'activating'
-                    ? '正在解码音色'
-                    : profiles.length === 0
-                      ? '重新载入音频'
-                      : '开启声音并试打'}
-              </button>
-            ) : null}
-            <div className="typing-demo-pulse" aria-hidden="true" data-active={pressedCodes.size > 0} />
-          </div>
+          <div className="typing-demo-workbench">
+            <div className="typing-demo-compose">
+              <div className={`typing-demo-input-shell${inputReady ? ' is-ready' : ''}`}>
+                <label htmlFor="battuta-demo-input">在这里输入 · 仅统计此输入框</label>
+                <textarea
+                  ref={textareaRef}
+                  id="battuta-demo-input"
+                  rows={8}
+                  readOnly={!inputReady}
+                  autoComplete="off"
+                  autoCorrect="off"
+                  autoCapitalize="off"
+                  spellCheck={false}
+                  placeholder="写一句今天想说的话，听听每一次按下与回弹……"
+                  tabIndex={inputReady ? 0 : -1}
+                  aria-describedby="battuta-demo-privacy battuta-demo-status"
+                  onKeyDown={handleKeyDown}
+                  onKeyUp={handleKeyUp}
+                  onInput={handleInput}
+                  onCompositionStart={handleCompositionStart}
+                  onCompositionEnd={handleCompositionEnd}
+                  onBlur={handleInputBlur}
+                />
+                {!inputReady ? (
+                  <button
+                    type="button"
+                    className="typing-demo-unlock"
+                    onClick={handleUnlock}
+                    disabled={audioState === 'loading' || audioState === 'activating' || audioState === 'switching'}
+                  >
+                    <span aria-hidden="true">▶</span>
+                    {audioState === 'loading'
+                      ? '正在准备音频'
+                      : audioState === 'activating'
+                        ? '正在解码音色'
+                        : profiles.length === 0
+                          ? '重新载入音频'
+                          : '开启声音并试打'}
+                  </button>
+                ) : null}
+                <div ref={pulseRef} className="typing-demo-pulse" aria-hidden="true" data-active="false" />
+              </div>
 
-          <div className="typing-demo-virtual-keys" role="group" aria-label="可点击的试听键帽">
-            {virtualKeys.map((key) => (
-              <button
-                key={key.code}
-                type="button"
-                className={`${key.wide ? 'is-wide ' : ''}${pressedCodes.has(key.code) ? 'is-pressed' : ''}`.trim()}
-                disabled={!inputReady}
-                onPointerDown={(event) => handleVirtualDown(event, key.code)}
-                onPointerUp={() => handleVirtualUp(key.code)}
-                onPointerCancel={() => handleVirtualUp(key.code)}
-                onClick={(event) => handleAccessibleVirtualClick(event, key.code)}
-              >
-                {key.label}
-              </button>
-            ))}
-          </div>
+              <div className="typing-demo-controls">
+                <button
+                  type="button"
+                  className="typing-demo-mute"
+                  aria-pressed={muted}
+                  onClick={toggleMuted}
+                  disabled={!inputReady}
+                >
+                  <span aria-hidden="true">{muted ? '🔇' : '🔊'}</span>
+                  {muted ? '恢复声音' : '静音'}
+                </button>
+                <label className="typing-demo-volume">
+                  <span>试听音量</span>
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    value={volume}
+                    onChange={(event) => updateVolume(Number(event.target.value))}
+                    disabled={!inputReady || muted}
+                    aria-valuetext={`${volume}%`}
+                  />
+                  <output>{volume}%</output>
+                </label>
+                <button type="button" className="typing-demo-clear" onClick={clearInput} disabled={!inputReady}>
+                  清空本次
+                </button>
+                <p id="battuta-demo-status" className="typing-demo-status" aria-live="polite">
+                  <i data-state={audioState} />{statusText}
+                </p>
+              </div>
 
-          <div className="typing-demo-controls">
-            <button
-              type="button"
-              className="typing-demo-mute"
-              aria-pressed={muted}
-              onClick={toggleMuted}
-              disabled={!inputReady}
-            >
-              <span aria-hidden="true">{muted ? '🔇' : '🔊'}</span>
-              {muted ? '恢复声音' : '静音'}
-            </button>
-            <label className="typing-demo-volume">
-              <span>试听音量</span>
-              <input
-                type="range"
-                min="0"
-                max="100"
-                value={volume}
-                onChange={(event) => updateVolume(Number(event.target.value))}
-                disabled={!inputReady || muted}
-                aria-valuetext={`${volume}%`}
-              />
-              <output>{volume}%</output>
-            </label>
-            <button type="button" className="typing-demo-clear" onClick={clearInput} disabled={!inputReady}>
-              清空
-            </button>
-            <p id="battuta-demo-status" className="typing-demo-status" aria-live="polite">
-              <i data-state={audioState} />{statusText}
-            </p>
+              <p className="typing-demo-local-note">
+                <span aria-hidden="true">●</span>
+                100 ms 记录敲击，1 秒汇总为柱状与趋势；清空或刷新页面即重置。
+              </p>
+            </div>
+
+            <TypingTelemetryPanel store={telemetryStore} />
           </div>
 
           <div className="typing-demo-footer">
             <p id="battuta-demo-privacy">
               <span aria-hidden="true">⌁</span>
-              文字只显示在当前输入框中；网页不读取、不上传、不保存输入内容，也不需要输入监控权限。
+              仅在此输入框内统计匿名物理键位与敲击节奏；不读取文字内容、不上传、不保存，也不需要输入监控权限。
             </p>
             <div className="typing-demo-credits">
               {selectedProfile?.attribution?.author ? (
@@ -947,17 +1378,20 @@ export function BattutaTypingDemo() {
             </div>
           </div>
 
-          <div className={`typing-demo-conversion${strikeCount >= 8 ? ' is-visible' : ''}`} aria-hidden={strikeCount < 8}>
+          <div
+            className={`typing-demo-conversion${conversionVisible ? ' is-visible' : ''}`}
+            aria-hidden={!conversionVisible}
+          >
             <div>
               <span>喜欢这个声音？</span>
               <strong>让所有应用都这样响。</strong>
             </div>
-            <a href="#install" tabIndex={strikeCount >= 8 ? 0 : -1}>查看安装方式</a>
+            <a href="#install" tabIndex={conversionVisible ? 0 : -1}>查看安装方式</a>
           </div>
         </div>
 
         <p className="typing-demo-mobile-note">
-          手机软键盘无法稳定提供物理键位和抬起事件，因此手机端为音色试听；电脑端可体验完整分行与回弹映射。
+          手机软键盘会记录敲击节奏，但无法稳定提供物理键位和抬起事件；电脑端可体验完整键位热力图与回弹映射。
         </p>
       </div>
     </section>
