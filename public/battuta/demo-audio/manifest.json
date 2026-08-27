@@ -1,0 +1,1779 @@
+{
+  "version": 1,
+  "sampleRate": 48000,
+  "generatedFrom": "wormforce/battuta shared audio assets",
+  "profiles": [
+    {
+      "id": "bcp-suit80",
+      "displayName": "BCP (Suit80)",
+      "family": "线性",
+      "tone": "厚实、木感",
+      "recommended": true,
+      "baseProfileID": "holypanda",
+      "attribution": {
+        "author": "J_Eason001",
+        "licenseName": "Used with permission",
+        "notice": "Redistribution authorized; the permission record is retained by the Battuta maintainer.",
+        "sourceURL": null,
+        "title": "【打字声音】Suit80｜BCP轴｜GMK Ursa 大熊 - Original.mp4"
+      },
+      "sprite": "/battuta/demo-audio/bcp-suit80.ed670af3d7d4.wav",
+      "samples": {
+        "0ff361f96177a1aafbcf1bb72a257bb1014436fe5a3f1cff246d1c12141fed33": {
+          "offsetFrames": 0,
+          "frameCount": 4320
+        },
+        "125576a176c7a8540e8985fbf6602aa3ae7113bea23bbc24025383f7b2afdf6a": {
+          "offsetFrames": 4416,
+          "frameCount": 3120
+        },
+        "18312a75f30af7df1d2ab273bfd8cd9d2fffe17a13166f48a0555a6fcf589d7c": {
+          "offsetFrames": 7632,
+          "frameCount": 3024
+        },
+        "249a77a877872894afdb325d2212e34554d0bdf5aaff5c72c37e46426f83201d": {
+          "offsetFrames": 10752,
+          "frameCount": 2736
+        },
+        "2c338383ed3a4f7a05e3f430124e93ad7feb27e624e629c332f14e8579fed5f9": {
+          "offsetFrames": 13584,
+          "frameCount": 3168
+        },
+        "32e6b6fee39795472a8553a2dd65e3745d5a5a6592f4c6bbfa92814116f7ab3e": {
+          "offsetFrames": 16848,
+          "frameCount": 4512
+        },
+        "336715af18229f8c7704cb30c8e280b8b05c10f789a6b4be9fc03d687aa829c1": {
+          "offsetFrames": 21456,
+          "frameCount": 2208
+        },
+        "454e7fc94fb6408f137d6b144c9dbe2115cdd70f48c7d4845b87ca43a2d8b45e": {
+          "offsetFrames": 23760,
+          "frameCount": 4992
+        },
+        "5197be7c04c98f5657d2dff9612ab0db4a4af6f423ccd452dd40e5eddd8b1c59": {
+          "offsetFrames": 28848,
+          "frameCount": 2592
+        },
+        "5297cf8a91a87f0e4db9025007212f38b618eb7d65d6249cd3d0ac11dd1d6f5e": {
+          "offsetFrames": 31536,
+          "frameCount": 5904
+        },
+        "60c12f623aca8b5d9f6582cc58492d1c4741c28c38c3513bd0ab72112733f58c": {
+          "offsetFrames": 37536,
+          "frameCount": 3120
+        },
+        "69d410939ddb4607a14af0e1152a9ec88c757c1530fcde3db0ff6e6b4f4ebeca": {
+          "offsetFrames": 40752,
+          "frameCount": 1824
+        },
+        "8066a41f6e940e6cdd0c6745f172760d906b2c5b29618a2b14b5b7a3c72ba0bb": {
+          "offsetFrames": 42672,
+          "frameCount": 1824
+        },
+        "8a12500df036acf1b6e62efd8d9e84398fee58e2f0880a3568ed90d11d32a1ca": {
+          "offsetFrames": 44592,
+          "frameCount": 5760
+        },
+        "972fd538056ff394eb789ac912be6d55fb0189d893cd91e4232afbd167e1eb23": {
+          "offsetFrames": 50448,
+          "frameCount": 2400
+        },
+        "9f79d731f83c6b9c23df5656d546c2dd91734c0691753cb9f5f61b4d58c4e2ff": {
+          "offsetFrames": 52944,
+          "frameCount": 4464
+        },
+        "b896dd623e5f05a27403da35c2b499378bd16d2cef2e430edbcb827505042990": {
+          "offsetFrames": 57504,
+          "frameCount": 2592
+        },
+        "c2a3a71ba26b3f5d8df0542b70b1fa56fa563a58e6f7798811c2b3f0ff2efa3a": {
+          "offsetFrames": 60192,
+          "frameCount": 3696
+        },
+        "c3d202f0f6a6145108b0b4926394c5d791f5671c246195370e4430631cb908f1": {
+          "offsetFrames": 63984,
+          "frameCount": 2208
+        },
+        "c4144f31f2fd684e53868a67a6e8af0c9b83908f145b6bb53a0844f2e20e21af": {
+          "offsetFrames": 66288,
+          "frameCount": 1152
+        },
+        "c999beffec4d34692191e371ac4095fe7a7f2c8af0e0abaaa549a36670954bfb": {
+          "offsetFrames": 67536,
+          "frameCount": 3696
+        },
+        "d4d83fd9d61825440214f092a13c0b558b4386285b40548a7d8ddae2941d0f77": {
+          "offsetFrames": 71328,
+          "frameCount": 2208
+        },
+        "da6987c41bf06b7392c9be7317cd00121c975bfa6ac8ff01fb8beaf50001c537": {
+          "offsetFrames": 73632,
+          "frameCount": 2832
+        },
+        "dd16f9708c900831a46a2bd7cb302503e8516c7be8b8bafe397996c8b072dc17": {
+          "offsetFrames": 76560,
+          "frameCount": 4608
+        },
+        "f33d6484b8942c0f4dad2277ce12eb63daae4651fc4720df4963c4b8ed3fcb90": {
+          "offsetFrames": 81264,
+          "frameCount": 1584
+        },
+        "f4129e5a5390e1b2bf697a603c4d6a9698e2568c2554c1f42e29695ccc0b726b": {
+          "offsetFrames": 82944,
+          "frameCount": 3168
+        },
+        "f4ce0b59d0c96aa81ace31dcd7c43eef1039c5b56eadf976a7b26710a49c6a28": {
+          "offsetFrames": 86208,
+          "frameCount": 5664
+        },
+        "fd3a6968ab57598cddaf0cee4e14b73d2b7690c08b7af8c1cad1f507cd45c940": {
+          "offsetFrames": 91968,
+          "frameCount": 4032
+        }
+      },
+      "press": {
+        "rows": {
+          "R0": "da6987c41bf06b7392c9be7317cd00121c975bfa6ac8ff01fb8beaf50001c537",
+          "R1": "b896dd623e5f05a27403da35c2b499378bd16d2cef2e430edbcb827505042990",
+          "R2": "dd16f9708c900831a46a2bd7cb302503e8516c7be8b8bafe397996c8b072dc17",
+          "R3": "249a77a877872894afdb325d2212e34554d0bdf5aaff5c72c37e46426f83201d",
+          "R4": "f33d6484b8942c0f4dad2277ce12eb63daae4651fc4720df4963c4b8ed3fcb90"
+        },
+        "specials": {
+          "backspace": "f4129e5a5390e1b2bf697a603c4d6a9698e2568c2554c1f42e29695ccc0b726b",
+          "enter": "972fd538056ff394eb789ac912be6d55fb0189d893cd91e4232afbd167e1eb23",
+          "space": "5197be7c04c98f5657d2dff9612ab0db4a4af6f423ccd452dd40e5eddd8b1c59"
+        },
+        "keyOverrides": {
+          "comma": "0ff361f96177a1aafbcf1bb72a257bb1014436fe5a3f1cff246d1c12141fed33",
+          "digit0": "c2a3a71ba26b3f5d8df0542b70b1fa56fa563a58e6f7798811c2b3f0ff2efa3a",
+          "digit2": "c2a3a71ba26b3f5d8df0542b70b1fa56fa563a58e6f7798811c2b3f0ff2efa3a",
+          "digit4": "c2a3a71ba26b3f5d8df0542b70b1fa56fa563a58e6f7798811c2b3f0ff2efa3a",
+          "digit6": "c2a3a71ba26b3f5d8df0542b70b1fa56fa563a58e6f7798811c2b3f0ff2efa3a",
+          "digit8": "c2a3a71ba26b3f5d8df0542b70b1fa56fa563a58e6f7798811c2b3f0ff2efa3a",
+          "equal": "c2a3a71ba26b3f5d8df0542b70b1fa56fa563a58e6f7798811c2b3f0ff2efa3a",
+          "f": "c999beffec4d34692191e371ac4095fe7a7f2c8af0e0abaaa549a36670954bfb",
+          "f10": "9f79d731f83c6b9c23df5656d546c2dd91734c0691753cb9f5f61b4d58c4e2ff",
+          "f12": "9f79d731f83c6b9c23df5656d546c2dd91734c0691753cb9f5f61b4d58c4e2ff",
+          "f2": "9f79d731f83c6b9c23df5656d546c2dd91734c0691753cb9f5f61b4d58c4e2ff",
+          "f4": "9f79d731f83c6b9c23df5656d546c2dd91734c0691753cb9f5f61b4d58c4e2ff",
+          "f6": "9f79d731f83c6b9c23df5656d546c2dd91734c0691753cb9f5f61b4d58c4e2ff",
+          "f8": "9f79d731f83c6b9c23df5656d546c2dd91734c0691753cb9f5f61b4d58c4e2ff",
+          "h": "c999beffec4d34692191e371ac4095fe7a7f2c8af0e0abaaa549a36670954bfb",
+          "i": "2c338383ed3a4f7a05e3f430124e93ad7feb27e624e629c332f14e8579fed5f9",
+          "k": "c999beffec4d34692191e371ac4095fe7a7f2c8af0e0abaaa549a36670954bfb",
+          "leftShift": "fd3a6968ab57598cddaf0cee4e14b73d2b7690c08b7af8c1cad1f507cd45c940",
+          "n": "0ff361f96177a1aafbcf1bb72a257bb1014436fe5a3f1cff246d1c12141fed33",
+          "p": "2c338383ed3a4f7a05e3f430124e93ad7feb27e624e629c332f14e8579fed5f9",
+          "r": "2c338383ed3a4f7a05e3f430124e93ad7feb27e624e629c332f14e8579fed5f9",
+          "rightArrow": "9f79d731f83c6b9c23df5656d546c2dd91734c0691753cb9f5f61b4d58c4e2ff",
+          "rightBracket": "2c338383ed3a4f7a05e3f430124e93ad7feb27e624e629c332f14e8579fed5f9",
+          "rightShift": "fd3a6968ab57598cddaf0cee4e14b73d2b7690c08b7af8c1cad1f507cd45c940",
+          "s": "c999beffec4d34692191e371ac4095fe7a7f2c8af0e0abaaa549a36670954bfb",
+          "semicolon": "c999beffec4d34692191e371ac4095fe7a7f2c8af0e0abaaa549a36670954bfb",
+          "slash": "0ff361f96177a1aafbcf1bb72a257bb1014436fe5a3f1cff246d1c12141fed33",
+          "upArrow": "9f79d731f83c6b9c23df5656d546c2dd91734c0691753cb9f5f61b4d58c4e2ff",
+          "v": "0ff361f96177a1aafbcf1bb72a257bb1014436fe5a3f1cff246d1c12141fed33",
+          "w": "2c338383ed3a4f7a05e3f430124e93ad7feb27e624e629c332f14e8579fed5f9",
+          "x": "0ff361f96177a1aafbcf1bb72a257bb1014436fe5a3f1cff246d1c12141fed33",
+          "y": "2c338383ed3a4f7a05e3f430124e93ad7feb27e624e629c332f14e8579fed5f9"
+        }
+      },
+      "release": {
+        "rows": {
+          "R0": "32e6b6fee39795472a8553a2dd65e3745d5a5a6592f4c6bbfa92814116f7ab3e",
+          "R1": "18312a75f30af7df1d2ab273bfd8cd9d2fffe17a13166f48a0555a6fcf589d7c",
+          "R2": "125576a176c7a8540e8985fbf6602aa3ae7113bea23bbc24025383f7b2afdf6a",
+          "R3": "336715af18229f8c7704cb30c8e280b8b05c10f789a6b4be9fc03d687aa829c1",
+          "R4": "60c12f623aca8b5d9f6582cc58492d1c4741c28c38c3513bd0ab72112733f58c"
+        },
+        "specials": {
+          "backspace": "f4ce0b59d0c96aa81ace31dcd7c43eef1039c5b56eadf976a7b26710a49c6a28",
+          "enter": "8a12500df036acf1b6e62efd8d9e84398fee58e2f0880a3568ed90d11d32a1ca",
+          "space": "454e7fc94fb6408f137d6b144c9dbe2115cdd70f48c7d4845b87ca43a2d8b45e"
+        },
+        "keyOverrides": {
+          "comma": "c4144f31f2fd684e53868a67a6e8af0c9b83908f145b6bb53a0844f2e20e21af",
+          "digit0": "8066a41f6e940e6cdd0c6745f172760d906b2c5b29618a2b14b5b7a3c72ba0bb",
+          "digit2": "8066a41f6e940e6cdd0c6745f172760d906b2c5b29618a2b14b5b7a3c72ba0bb",
+          "digit4": "8066a41f6e940e6cdd0c6745f172760d906b2c5b29618a2b14b5b7a3c72ba0bb",
+          "digit6": "8066a41f6e940e6cdd0c6745f172760d906b2c5b29618a2b14b5b7a3c72ba0bb",
+          "digit8": "8066a41f6e940e6cdd0c6745f172760d906b2c5b29618a2b14b5b7a3c72ba0bb",
+          "equal": "8066a41f6e940e6cdd0c6745f172760d906b2c5b29618a2b14b5b7a3c72ba0bb",
+          "f": "d4d83fd9d61825440214f092a13c0b558b4386285b40548a7d8ddae2941d0f77",
+          "f10": "c3d202f0f6a6145108b0b4926394c5d791f5671c246195370e4430631cb908f1",
+          "f12": "c3d202f0f6a6145108b0b4926394c5d791f5671c246195370e4430631cb908f1",
+          "f2": "c3d202f0f6a6145108b0b4926394c5d791f5671c246195370e4430631cb908f1",
+          "f4": "c3d202f0f6a6145108b0b4926394c5d791f5671c246195370e4430631cb908f1",
+          "f6": "c3d202f0f6a6145108b0b4926394c5d791f5671c246195370e4430631cb908f1",
+          "f8": "c3d202f0f6a6145108b0b4926394c5d791f5671c246195370e4430631cb908f1",
+          "h": "d4d83fd9d61825440214f092a13c0b558b4386285b40548a7d8ddae2941d0f77",
+          "i": "69d410939ddb4607a14af0e1152a9ec88c757c1530fcde3db0ff6e6b4f4ebeca",
+          "k": "d4d83fd9d61825440214f092a13c0b558b4386285b40548a7d8ddae2941d0f77",
+          "leftShift": "5297cf8a91a87f0e4db9025007212f38b618eb7d65d6249cd3d0ac11dd1d6f5e",
+          "n": "c4144f31f2fd684e53868a67a6e8af0c9b83908f145b6bb53a0844f2e20e21af",
+          "p": "69d410939ddb4607a14af0e1152a9ec88c757c1530fcde3db0ff6e6b4f4ebeca",
+          "r": "69d410939ddb4607a14af0e1152a9ec88c757c1530fcde3db0ff6e6b4f4ebeca",
+          "rightArrow": "c3d202f0f6a6145108b0b4926394c5d791f5671c246195370e4430631cb908f1",
+          "rightBracket": "69d410939ddb4607a14af0e1152a9ec88c757c1530fcde3db0ff6e6b4f4ebeca",
+          "rightShift": "5297cf8a91a87f0e4db9025007212f38b618eb7d65d6249cd3d0ac11dd1d6f5e",
+          "s": "d4d83fd9d61825440214f092a13c0b558b4386285b40548a7d8ddae2941d0f77",
+          "semicolon": "d4d83fd9d61825440214f092a13c0b558b4386285b40548a7d8ddae2941d0f77",
+          "slash": "c4144f31f2fd684e53868a67a6e8af0c9b83908f145b6bb53a0844f2e20e21af",
+          "upArrow": "c3d202f0f6a6145108b0b4926394c5d791f5671c246195370e4430631cb908f1",
+          "v": "c4144f31f2fd684e53868a67a6e8af0c9b83908f145b6bb53a0844f2e20e21af",
+          "w": "69d410939ddb4607a14af0e1152a9ec88c757c1530fcde3db0ff6e6b4f4ebeca",
+          "x": "c4144f31f2fd684e53868a67a6e8af0c9b83908f145b6bb53a0844f2e20e21af",
+          "y": "69d410939ddb4607a14af0e1152a9ec88c757c1530fcde3db0ff6e6b4f4ebeca"
+        }
+      }
+    },
+    {
+      "id": "holypanda",
+      "displayName": "Holy Panda",
+      "family": "段落",
+      "tone": "饱满、集中",
+      "attribution": null,
+      "sprite": "/battuta/demo-audio/holypanda.c03b86f01e20.wav",
+      "samples": {
+        "press:GENERIC_R0": {
+          "offsetFrames": 0,
+          "frameCount": 3280
+        },
+        "press:GENERIC_R1": {
+          "offsetFrames": 3376,
+          "frameCount": 3280
+        },
+        "press:GENERIC_R2": {
+          "offsetFrames": 6752,
+          "frameCount": 3280
+        },
+        "press:GENERIC_R3": {
+          "offsetFrames": 10128,
+          "frameCount": 3280
+        },
+        "press:GENERIC_R4": {
+          "offsetFrames": 13504,
+          "frameCount": 3280
+        },
+        "press:SPACE": {
+          "offsetFrames": 16880,
+          "frameCount": 14080
+        },
+        "press:ENTER": {
+          "offsetFrames": 31056,
+          "frameCount": 3173
+        },
+        "press:BACKSPACE": {
+          "offsetFrames": 34325,
+          "frameCount": 3277
+        },
+        "release:GENERIC": {
+          "offsetFrames": 37698,
+          "frameCount": 2527
+        },
+        "release:SPACE": {
+          "offsetFrames": 40321,
+          "frameCount": 682
+        },
+        "release:ENTER": {
+          "offsetFrames": 41099,
+          "frameCount": 944
+        },
+        "release:BACKSPACE": {
+          "offsetFrames": 42139,
+          "frameCount": 2363
+        }
+      },
+      "press": {
+        "rows": {
+          "R0": "press:GENERIC_R0",
+          "R1": "press:GENERIC_R1",
+          "R2": "press:GENERIC_R2",
+          "R3": "press:GENERIC_R3",
+          "R4": "press:GENERIC_R4"
+        },
+        "specials": {
+          "space": "press:SPACE",
+          "enter": "press:ENTER",
+          "backspace": "press:BACKSPACE"
+        }
+      },
+      "release": {
+        "rows": {},
+        "specials": {
+          "space": "release:SPACE",
+          "enter": "release:ENTER",
+          "backspace": "release:BACKSPACE"
+        },
+        "generic": "release:GENERIC"
+      }
+    },
+    {
+      "id": "mxbrown",
+      "displayName": "Cherry MX Brown",
+      "family": "段落",
+      "tone": "温和、均衡",
+      "attribution": null,
+      "sprite": "/battuta/demo-audio/mxbrown.23e33a12e4ef.wav",
+      "samples": {
+        "press:GENERIC_R0": {
+          "offsetFrames": 0,
+          "frameCount": 4538
+        },
+        "press:GENERIC_R1": {
+          "offsetFrames": 4634,
+          "frameCount": 4538
+        },
+        "press:GENERIC_R2": {
+          "offsetFrames": 9268,
+          "frameCount": 4538
+        },
+        "press:GENERIC_R3": {
+          "offsetFrames": 13902,
+          "frameCount": 4538
+        },
+        "press:GENERIC_R4": {
+          "offsetFrames": 18536,
+          "frameCount": 4538
+        },
+        "press:SPACE": {
+          "offsetFrames": 23170,
+          "frameCount": 1722
+        },
+        "press:ENTER": {
+          "offsetFrames": 24988,
+          "frameCount": 4289
+        },
+        "press:BACKSPACE": {
+          "offsetFrames": 29373,
+          "frameCount": 4706
+        },
+        "release:GENERIC": {
+          "offsetFrames": 34175,
+          "frameCount": 3537
+        },
+        "release:SPACE": {
+          "offsetFrames": 37808,
+          "frameCount": 1560
+        },
+        "release:ENTER": {
+          "offsetFrames": 39464,
+          "frameCount": 10665
+        },
+        "release:BACKSPACE": {
+          "offsetFrames": 50225,
+          "frameCount": 3374
+        }
+      },
+      "press": {
+        "rows": {
+          "R0": "press:GENERIC_R0",
+          "R1": "press:GENERIC_R1",
+          "R2": "press:GENERIC_R2",
+          "R3": "press:GENERIC_R3",
+          "R4": "press:GENERIC_R4"
+        },
+        "specials": {
+          "space": "press:SPACE",
+          "enter": "press:ENTER",
+          "backspace": "press:BACKSPACE"
+        }
+      },
+      "release": {
+        "rows": {},
+        "specials": {
+          "space": "release:SPACE",
+          "enter": "release:ENTER",
+          "backspace": "release:BACKSPACE"
+        },
+        "generic": "release:GENERIC"
+      }
+    },
+    {
+      "id": "mxclear",
+      "displayName": "Cherry MX Clear",
+      "family": "段落",
+      "tone": "扎实、段落明显",
+      "attribution": null,
+      "sprite": "/battuta/demo-audio/mxclear.408b840cfbf7.wav",
+      "samples": {
+        "press:GENERIC_R0": {
+          "offsetFrames": 0,
+          "frameCount": 3744
+        },
+        "press:GENERIC_R1": {
+          "offsetFrames": 3840,
+          "frameCount": 8400
+        },
+        "press:GENERIC_R2": {
+          "offsetFrames": 12336,
+          "frameCount": 8064
+        },
+        "press:GENERIC_R3": {
+          "offsetFrames": 20496,
+          "frameCount": 7440
+        },
+        "press:GENERIC_R4": {
+          "offsetFrames": 28032,
+          "frameCount": 7440
+        },
+        "release:GENERIC_R0": {
+          "offsetFrames": 35568,
+          "frameCount": 3216
+        },
+        "release:GENERIC_R1": {
+          "offsetFrames": 38880,
+          "frameCount": 2160
+        },
+        "release:GENERIC_R2": {
+          "offsetFrames": 41136,
+          "frameCount": 2496
+        },
+        "release:GENERIC_R3": {
+          "offsetFrames": 43728,
+          "frameCount": 3120
+        },
+        "release:GENERIC_R4": {
+          "offsetFrames": 46944,
+          "frameCount": 3120
+        }
+      },
+      "press": {
+        "rows": {
+          "R0": "press:GENERIC_R0",
+          "R1": "press:GENERIC_R1",
+          "R2": "press:GENERIC_R2",
+          "R3": "press:GENERIC_R3",
+          "R4": "press:GENERIC_R4"
+        },
+        "specials": {}
+      },
+      "release": {
+        "rows": {
+          "R0": "release:GENERIC_R0",
+          "R1": "release:GENERIC_R1",
+          "R2": "release:GENERIC_R2",
+          "R3": "release:GENERIC_R3",
+          "R4": "release:GENERIC_R4"
+        },
+        "specials": {}
+      }
+    },
+    {
+      "id": "g915brown",
+      "displayName": "Logitech G915 TKL Brown",
+      "family": "段落",
+      "tone": "轻薄、利落",
+      "attribution": null,
+      "sprite": "/battuta/demo-audio/g915brown.8016c9644621.wav",
+      "samples": {
+        "press:GENERIC_R0": {
+          "offsetFrames": 0,
+          "frameCount": 2374
+        },
+        "press:GENERIC_R1": {
+          "offsetFrames": 2470,
+          "frameCount": 2670
+        },
+        "press:GENERIC_R2": {
+          "offsetFrames": 5236,
+          "frameCount": 2899
+        },
+        "press:GENERIC_R3": {
+          "offsetFrames": 8231,
+          "frameCount": 3240
+        },
+        "press:GENERIC_R4": {
+          "offsetFrames": 11567,
+          "frameCount": 2860
+        },
+        "press:SPACE": {
+          "offsetFrames": 14523,
+          "frameCount": 1913
+        },
+        "press:ENTER": {
+          "offsetFrames": 16532,
+          "frameCount": 2806
+        },
+        "press:BACKSPACE": {
+          "offsetFrames": 19434,
+          "frameCount": 2354
+        },
+        "release:GENERIC_R0": {
+          "offsetFrames": 21884,
+          "frameCount": 2519
+        },
+        "release:GENERIC_R1": {
+          "offsetFrames": 24499,
+          "frameCount": 2949
+        },
+        "release:GENERIC_R2": {
+          "offsetFrames": 27544,
+          "frameCount": 2202
+        },
+        "release:GENERIC_R3": {
+          "offsetFrames": 29842,
+          "frameCount": 1805
+        },
+        "release:GENERIC_R4": {
+          "offsetFrames": 31743,
+          "frameCount": 1986
+        },
+        "release:SPACE": {
+          "offsetFrames": 33825,
+          "frameCount": 3760
+        },
+        "release:ENTER": {
+          "offsetFrames": 37681,
+          "frameCount": 2702
+        },
+        "release:BACKSPACE": {
+          "offsetFrames": 40479,
+          "frameCount": 2768
+        }
+      },
+      "press": {
+        "rows": {
+          "R0": "press:GENERIC_R0",
+          "R1": "press:GENERIC_R1",
+          "R2": "press:GENERIC_R2",
+          "R3": "press:GENERIC_R3",
+          "R4": "press:GENERIC_R4"
+        },
+        "specials": {
+          "space": "press:SPACE",
+          "enter": "press:ENTER",
+          "backspace": "press:BACKSPACE"
+        }
+      },
+      "release": {
+        "rows": {
+          "R0": "release:GENERIC_R0",
+          "R1": "release:GENERIC_R1",
+          "R2": "release:GENERIC_R2",
+          "R3": "release:GENERIC_R3",
+          "R4": "release:GENERIC_R4"
+        },
+        "specials": {
+          "space": "release:SPACE",
+          "enter": "release:ENTER",
+          "backspace": "release:BACKSPACE"
+        }
+      }
+    },
+    {
+      "id": "studiotactile",
+      "displayName": "Studio Tactile",
+      "family": "段落",
+      "tone": "近场、细腻",
+      "attribution": null,
+      "sprite": "/battuta/demo-audio/studiotactile.a4f335b2c0f4.wav",
+      "samples": {
+        "press:GENERIC_R0": {
+          "offsetFrames": 0,
+          "frameCount": 5952
+        },
+        "press:GENERIC_R1": {
+          "offsetFrames": 6048,
+          "frameCount": 5664
+        },
+        "press:GENERIC_R2": {
+          "offsetFrames": 11808,
+          "frameCount": 6000
+        },
+        "press:GENERIC_R3": {
+          "offsetFrames": 17904,
+          "frameCount": 5232
+        },
+        "press:GENERIC_R4": {
+          "offsetFrames": 23232,
+          "frameCount": 6720
+        },
+        "release:GENERIC_R0": {
+          "offsetFrames": 30048,
+          "frameCount": 2448
+        },
+        "release:GENERIC_R1": {
+          "offsetFrames": 32592,
+          "frameCount": 1920
+        },
+        "release:GENERIC_R2": {
+          "offsetFrames": 34608,
+          "frameCount": 3360
+        },
+        "release:GENERIC_R3": {
+          "offsetFrames": 38064,
+          "frameCount": 2208
+        },
+        "release:GENERIC_R4": {
+          "offsetFrames": 40368,
+          "frameCount": 5040
+        }
+      },
+      "press": {
+        "rows": {
+          "R0": "press:GENERIC_R0",
+          "R1": "press:GENERIC_R1",
+          "R2": "press:GENERIC_R2",
+          "R3": "press:GENERIC_R3",
+          "R4": "press:GENERIC_R4"
+        },
+        "specials": {}
+      },
+      "release": {
+        "rows": {
+          "R0": "release:GENERIC_R0",
+          "R1": "release:GENERIC_R1",
+          "R2": "release:GENERIC_R2",
+          "R3": "release:GENERIC_R3",
+          "R4": "release:GENERIC_R4"
+        },
+        "specials": {}
+      }
+    },
+    {
+      "id": "mxblue",
+      "displayName": "Cherry MX Blue",
+      "family": "点击",
+      "tone": "清脆、经典",
+      "attribution": null,
+      "sprite": "/battuta/demo-audio/mxblue.193fd49a15b7.wav",
+      "samples": {
+        "press:GENERIC_R0": {
+          "offsetFrames": 0,
+          "frameCount": 3486
+        },
+        "press:GENERIC_R1": {
+          "offsetFrames": 3582,
+          "frameCount": 3486
+        },
+        "press:GENERIC_R2": {
+          "offsetFrames": 7164,
+          "frameCount": 3486
+        },
+        "press:GENERIC_R3": {
+          "offsetFrames": 10746,
+          "frameCount": 3486
+        },
+        "press:GENERIC_R4": {
+          "offsetFrames": 14328,
+          "frameCount": 3486
+        },
+        "release:GENERIC": {
+          "offsetFrames": 17910,
+          "frameCount": 1475
+        }
+      },
+      "press": {
+        "rows": {
+          "R0": "press:GENERIC_R0",
+          "R1": "press:GENERIC_R1",
+          "R2": "press:GENERIC_R2",
+          "R3": "press:GENERIC_R3",
+          "R4": "press:GENERIC_R4"
+        },
+        "specials": {}
+      },
+      "release": {
+        "rows": {},
+        "specials": {},
+        "generic": "release:GENERIC"
+      }
+    },
+    {
+      "id": "boxnavy",
+      "displayName": "Kailh BOX Navy",
+      "family": "点击",
+      "tone": "厚重、响亮",
+      "attribution": null,
+      "sprite": "/battuta/demo-audio/boxnavy.21287ae78d60.wav",
+      "samples": {
+        "press:GENERIC_R0": {
+          "offsetFrames": 0,
+          "frameCount": 3516
+        },
+        "press:GENERIC_R1": {
+          "offsetFrames": 3612,
+          "frameCount": 3516
+        },
+        "press:GENERIC_R2": {
+          "offsetFrames": 7224,
+          "frameCount": 3516
+        },
+        "press:GENERIC_R3": {
+          "offsetFrames": 10836,
+          "frameCount": 3516
+        },
+        "press:GENERIC_R4": {
+          "offsetFrames": 14448,
+          "frameCount": 3516
+        },
+        "press:SPACE": {
+          "offsetFrames": 18060,
+          "frameCount": 5124
+        },
+        "press:ENTER": {
+          "offsetFrames": 23280,
+          "frameCount": 3460
+        },
+        "press:BACKSPACE": {
+          "offsetFrames": 26836,
+          "frameCount": 5259
+        },
+        "release:GENERIC": {
+          "offsetFrames": 32191,
+          "frameCount": 3259
+        },
+        "release:SPACE": {
+          "offsetFrames": 35546,
+          "frameCount": 4540
+        },
+        "release:ENTER": {
+          "offsetFrames": 40182,
+          "frameCount": 3135
+        },
+        "release:BACKSPACE": {
+          "offsetFrames": 43413,
+          "frameCount": 8782
+        }
+      },
+      "press": {
+        "rows": {
+          "R0": "press:GENERIC_R0",
+          "R1": "press:GENERIC_R1",
+          "R2": "press:GENERIC_R2",
+          "R3": "press:GENERIC_R3",
+          "R4": "press:GENERIC_R4"
+        },
+        "specials": {
+          "space": "press:SPACE",
+          "enter": "press:ENTER",
+          "backspace": "press:BACKSPACE"
+        }
+      },
+      "release": {
+        "rows": {},
+        "specials": {
+          "space": "release:SPACE",
+          "enter": "release:ENTER",
+          "backspace": "release:BACKSPACE"
+        },
+        "generic": "release:GENERIC"
+      }
+    },
+    {
+      "id": "boxwhite",
+      "displayName": "Kailh BOX White",
+      "family": "点击",
+      "tone": "短促、清亮",
+      "attribution": null,
+      "sprite": "/battuta/demo-audio/boxwhite.a71e770146f9.wav",
+      "samples": {
+        "press:GENERIC_R0": {
+          "offsetFrames": 0,
+          "frameCount": 1777
+        },
+        "press:GENERIC_R1": {
+          "offsetFrames": 1873,
+          "frameCount": 976
+        },
+        "press:GENERIC_R2": {
+          "offsetFrames": 2945,
+          "frameCount": 1080
+        },
+        "press:GENERIC_R3": {
+          "offsetFrames": 4121,
+          "frameCount": 1115
+        },
+        "press:GENERIC_R4": {
+          "offsetFrames": 5332,
+          "frameCount": 1220
+        },
+        "release:GENERIC_R0": {
+          "offsetFrames": 6648,
+          "frameCount": 1359
+        },
+        "release:GENERIC_R1": {
+          "offsetFrames": 8103,
+          "frameCount": 1011
+        },
+        "release:GENERIC_R2": {
+          "offsetFrames": 9210,
+          "frameCount": 1185
+        },
+        "release:GENERIC_R3": {
+          "offsetFrames": 10491,
+          "frameCount": 1220
+        },
+        "release:GENERIC_R4": {
+          "offsetFrames": 11807,
+          "frameCount": 1672
+        }
+      },
+      "press": {
+        "rows": {
+          "R0": "press:GENERIC_R0",
+          "R1": "press:GENERIC_R1",
+          "R2": "press:GENERIC_R2",
+          "R3": "press:GENERIC_R3",
+          "R4": "press:GENERIC_R4"
+        },
+        "specials": {}
+      },
+      "release": {
+        "rows": {
+          "R0": "release:GENERIC_R0",
+          "R1": "release:GENERIC_R1",
+          "R2": "release:GENERIC_R2",
+          "R3": "release:GENERIC_R3",
+          "R4": "release:GENERIC_R4"
+        },
+        "specials": {}
+      }
+    },
+    {
+      "id": "lowprofileblue",
+      "displayName": "Kailh Low-profile Blue",
+      "family": "点击",
+      "tone": "薄脆、双向点击",
+      "attribution": null,
+      "sprite": "/battuta/demo-audio/lowprofileblue.dbda384c30d1.wav",
+      "samples": {
+        "press:GENERIC_R0": {
+          "offsetFrames": 0,
+          "frameCount": 3840
+        },
+        "press:GENERIC_R1": {
+          "offsetFrames": 3936,
+          "frameCount": 3312
+        },
+        "press:GENERIC_R2": {
+          "offsetFrames": 7344,
+          "frameCount": 3936
+        },
+        "press:GENERIC_R3": {
+          "offsetFrames": 11376,
+          "frameCount": 3360
+        },
+        "press:GENERIC_R4": {
+          "offsetFrames": 14832,
+          "frameCount": 4512
+        },
+        "release:GENERIC_R0": {
+          "offsetFrames": 19440,
+          "frameCount": 3360
+        },
+        "release:GENERIC_R1": {
+          "offsetFrames": 22896,
+          "frameCount": 2688
+        },
+        "release:GENERIC_R2": {
+          "offsetFrames": 25680,
+          "frameCount": 2304
+        },
+        "release:GENERIC_R3": {
+          "offsetFrames": 28080,
+          "frameCount": 1680
+        },
+        "release:GENERIC_R4": {
+          "offsetFrames": 29856,
+          "frameCount": 1632
+        }
+      },
+      "press": {
+        "rows": {
+          "R0": "press:GENERIC_R0",
+          "R1": "press:GENERIC_R1",
+          "R2": "press:GENERIC_R2",
+          "R3": "press:GENERIC_R3",
+          "R4": "press:GENERIC_R4"
+        },
+        "specials": {}
+      },
+      "release": {
+        "rows": {
+          "R0": "release:GENERIC_R0",
+          "R1": "release:GENERIC_R1",
+          "R2": "release:GENERIC_R2",
+          "R3": "release:GENERIC_R3",
+          "R4": "release:GENERIC_R4"
+        },
+        "specials": {}
+      }
+    },
+    {
+      "id": "bluealps",
+      "displayName": "SKCM Blue Alps",
+      "family": "点击",
+      "tone": "复古、锐利",
+      "attribution": null,
+      "sprite": "/battuta/demo-audio/bluealps.1ff0c47191ef.wav",
+      "samples": {
+        "press:GENERIC_R0": {
+          "offsetFrames": 0,
+          "frameCount": 3726
+        },
+        "press:GENERIC_R1": {
+          "offsetFrames": 3822,
+          "frameCount": 3726
+        },
+        "press:GENERIC_R2": {
+          "offsetFrames": 7644,
+          "frameCount": 3726
+        },
+        "press:GENERIC_R3": {
+          "offsetFrames": 11466,
+          "frameCount": 3726
+        },
+        "press:GENERIC_R4": {
+          "offsetFrames": 15288,
+          "frameCount": 3726
+        },
+        "press:SPACE": {
+          "offsetFrames": 19110,
+          "frameCount": 4793
+        },
+        "press:ENTER": {
+          "offsetFrames": 23999,
+          "frameCount": 6935
+        },
+        "press:BACKSPACE": {
+          "offsetFrames": 31030,
+          "frameCount": 6566
+        },
+        "release:GENERIC": {
+          "offsetFrames": 37692,
+          "frameCount": 3198
+        },
+        "release:SPACE": {
+          "offsetFrames": 40986,
+          "frameCount": 3153
+        },
+        "release:ENTER": {
+          "offsetFrames": 44235,
+          "frameCount": 4888
+        },
+        "release:BACKSPACE": {
+          "offsetFrames": 49219,
+          "frameCount": 6207
+        }
+      },
+      "press": {
+        "rows": {
+          "R0": "press:GENERIC_R0",
+          "R1": "press:GENERIC_R1",
+          "R2": "press:GENERIC_R2",
+          "R3": "press:GENERIC_R3",
+          "R4": "press:GENERIC_R4"
+        },
+        "specials": {
+          "space": "press:SPACE",
+          "enter": "press:ENTER",
+          "backspace": "press:BACKSPACE"
+        }
+      },
+      "release": {
+        "rows": {},
+        "specials": {
+          "space": "release:SPACE",
+          "enter": "release:ENTER",
+          "backspace": "release:BACKSPACE"
+        },
+        "generic": "release:GENERIC"
+      }
+    },
+    {
+      "id": "studioclicky",
+      "displayName": "Studio Clicky",
+      "family": "点击",
+      "tone": "明快、颗粒感",
+      "attribution": null,
+      "sprite": "/battuta/demo-audio/studioclicky.5438078767f2.wav",
+      "samples": {
+        "press:GENERIC_R0": {
+          "offsetFrames": 0,
+          "frameCount": 5952
+        },
+        "press:GENERIC_R1": {
+          "offsetFrames": 6048,
+          "frameCount": 3360
+        },
+        "press:GENERIC_R2": {
+          "offsetFrames": 9504,
+          "frameCount": 3792
+        },
+        "press:GENERIC_R3": {
+          "offsetFrames": 13392,
+          "frameCount": 3360
+        },
+        "press:GENERIC_R4": {
+          "offsetFrames": 16848,
+          "frameCount": 3120
+        },
+        "release:GENERIC_R0": {
+          "offsetFrames": 20064,
+          "frameCount": 4368
+        },
+        "release:GENERIC_R1": {
+          "offsetFrames": 24528,
+          "frameCount": 5520
+        },
+        "release:GENERIC_R2": {
+          "offsetFrames": 30144,
+          "frameCount": 3888
+        },
+        "release:GENERIC_R3": {
+          "offsetFrames": 34128,
+          "frameCount": 3600
+        },
+        "release:GENERIC_R4": {
+          "offsetFrames": 37824,
+          "frameCount": 4080
+        }
+      },
+      "press": {
+        "rows": {
+          "R0": "press:GENERIC_R0",
+          "R1": "press:GENERIC_R1",
+          "R2": "press:GENERIC_R2",
+          "R3": "press:GENERIC_R3",
+          "R4": "press:GENERIC_R4"
+        },
+        "specials": {}
+      },
+      "release": {
+        "rows": {
+          "R0": "release:GENERIC_R0",
+          "R1": "release:GENERIC_R1",
+          "R2": "release:GENERIC_R2",
+          "R3": "release:GENERIC_R3",
+          "R4": "release:GENERIC_R4"
+        },
+        "specials": {}
+      }
+    },
+    {
+      "id": "cream",
+      "displayName": "NovelKeys Cream",
+      "family": "线性",
+      "tone": "顺滑、奶油",
+      "attribution": null,
+      "sprite": "/battuta/demo-audio/cream.0ca20fdc8f75.wav",
+      "samples": {
+        "press:GENERIC_R0": {
+          "offsetFrames": 0,
+          "frameCount": 3432
+        },
+        "press:GENERIC_R1": {
+          "offsetFrames": 3528,
+          "frameCount": 3432
+        },
+        "press:GENERIC_R2": {
+          "offsetFrames": 7056,
+          "frameCount": 3432
+        },
+        "press:GENERIC_R3": {
+          "offsetFrames": 10584,
+          "frameCount": 3432
+        },
+        "press:GENERIC_R4": {
+          "offsetFrames": 14112,
+          "frameCount": 3432
+        },
+        "press:SPACE": {
+          "offsetFrames": 17640,
+          "frameCount": 3297
+        },
+        "press:ENTER": {
+          "offsetFrames": 21033,
+          "frameCount": 3694
+        },
+        "press:BACKSPACE": {
+          "offsetFrames": 24823,
+          "frameCount": 4882
+        },
+        "release:GENERIC": {
+          "offsetFrames": 29801,
+          "frameCount": 3135
+        },
+        "release:SPACE": {
+          "offsetFrames": 33032,
+          "frameCount": 3444
+        },
+        "release:ENTER": {
+          "offsetFrames": 36572,
+          "frameCount": 3548
+        },
+        "release:BACKSPACE": {
+          "offsetFrames": 40216,
+          "frameCount": 3222
+        }
+      },
+      "press": {
+        "rows": {
+          "R0": "press:GENERIC_R0",
+          "R1": "press:GENERIC_R1",
+          "R2": "press:GENERIC_R2",
+          "R3": "press:GENERIC_R3",
+          "R4": "press:GENERIC_R4"
+        },
+        "specials": {
+          "space": "press:SPACE",
+          "enter": "press:ENTER",
+          "backspace": "press:BACKSPACE"
+        }
+      },
+      "release": {
+        "rows": {},
+        "specials": {
+          "space": "release:SPACE",
+          "enter": "release:ENTER",
+          "backspace": "release:BACKSPACE"
+        },
+        "generic": "release:GENERIC"
+      }
+    },
+    {
+      "id": "alpaca",
+      "displayName": "Alpaca",
+      "family": "线性",
+      "tone": "干净、柔和",
+      "attribution": null,
+      "sprite": "/battuta/demo-audio/alpaca.a7c9dff7cd66.wav",
+      "samples": {
+        "press:GENERIC_R0": {
+          "offsetFrames": 0,
+          "frameCount": 3702
+        },
+        "press:GENERIC_R1": {
+          "offsetFrames": 3798,
+          "frameCount": 3702
+        },
+        "press:GENERIC_R2": {
+          "offsetFrames": 7596,
+          "frameCount": 3702
+        },
+        "press:GENERIC_R3": {
+          "offsetFrames": 11394,
+          "frameCount": 3702
+        },
+        "press:GENERIC_R4": {
+          "offsetFrames": 15192,
+          "frameCount": 3702
+        },
+        "press:SPACE": {
+          "offsetFrames": 18990,
+          "frameCount": 4390
+        },
+        "press:ENTER": {
+          "offsetFrames": 23476,
+          "frameCount": 4187
+        },
+        "press:BACKSPACE": {
+          "offsetFrames": 27759,
+          "frameCount": 4507
+        },
+        "release:GENERIC": {
+          "offsetFrames": 32362,
+          "frameCount": 3108
+        },
+        "release:SPACE": {
+          "offsetFrames": 35566,
+          "frameCount": 3136
+        },
+        "release:ENTER": {
+          "offsetFrames": 38798,
+          "frameCount": 3651
+        },
+        "release:BACKSPACE": {
+          "offsetFrames": 42545,
+          "frameCount": 2846
+        }
+      },
+      "press": {
+        "rows": {
+          "R0": "press:GENERIC_R0",
+          "R1": "press:GENERIC_R1",
+          "R2": "press:GENERIC_R2",
+          "R3": "press:GENERIC_R3",
+          "R4": "press:GENERIC_R4"
+        },
+        "specials": {
+          "space": "press:SPACE",
+          "enter": "press:ENTER",
+          "backspace": "press:BACKSPACE"
+        }
+      },
+      "release": {
+        "rows": {},
+        "specials": {
+          "space": "release:SPACE",
+          "enter": "release:ENTER",
+          "backspace": "release:BACKSPACE"
+        },
+        "generic": "release:GENERIC"
+      }
+    },
+    {
+      "id": "blackink",
+      "displayName": "Gateron Black Ink",
+      "family": "线性",
+      "tone": "低沉、扎实",
+      "attribution": null,
+      "sprite": "/battuta/demo-audio/blackink.ef67491f7da0.wav",
+      "samples": {
+        "press:GENERIC_R0": {
+          "offsetFrames": 0,
+          "frameCount": 3142
+        },
+        "press:GENERIC_R1": {
+          "offsetFrames": 3238,
+          "frameCount": 3142
+        },
+        "press:GENERIC_R2": {
+          "offsetFrames": 6476,
+          "frameCount": 3142
+        },
+        "press:GENERIC_R3": {
+          "offsetFrames": 9714,
+          "frameCount": 3142
+        },
+        "press:GENERIC_R4": {
+          "offsetFrames": 12952,
+          "frameCount": 3142
+        },
+        "press:SPACE": {
+          "offsetFrames": 16190,
+          "frameCount": 3125
+        },
+        "press:ENTER": {
+          "offsetFrames": 19411,
+          "frameCount": 3207
+        },
+        "press:BACKSPACE": {
+          "offsetFrames": 22714,
+          "frameCount": 3497
+        },
+        "release:GENERIC": {
+          "offsetFrames": 26307,
+          "frameCount": 3026
+        },
+        "release:SPACE": {
+          "offsetFrames": 29429,
+          "frameCount": 3093
+        },
+        "release:ENTER": {
+          "offsetFrames": 32618,
+          "frameCount": 3554
+        },
+        "release:BACKSPACE": {
+          "offsetFrames": 36268,
+          "frameCount": 3797
+        }
+      },
+      "press": {
+        "rows": {
+          "R0": "press:GENERIC_R0",
+          "R1": "press:GENERIC_R1",
+          "R2": "press:GENERIC_R2",
+          "R3": "press:GENERIC_R3",
+          "R4": "press:GENERIC_R4"
+        },
+        "specials": {
+          "space": "press:SPACE",
+          "enter": "press:ENTER",
+          "backspace": "press:BACKSPACE"
+        }
+      },
+      "release": {
+        "rows": {},
+        "specials": {
+          "space": "release:SPACE",
+          "enter": "release:ENTER",
+          "backspace": "release:BACKSPACE"
+        },
+        "generic": "release:GENERIC"
+      }
+    },
+    {
+      "id": "redink",
+      "displayName": "Gateron Red Ink",
+      "family": "线性",
+      "tone": "轻快、圆润",
+      "attribution": null,
+      "sprite": "/battuta/demo-audio/redink.d3314bdc549e.wav",
+      "samples": {
+        "press:GENERIC_R0": {
+          "offsetFrames": 0,
+          "frameCount": 4410
+        },
+        "press:GENERIC_R1": {
+          "offsetFrames": 4506,
+          "frameCount": 4410
+        },
+        "press:GENERIC_R2": {
+          "offsetFrames": 9012,
+          "frameCount": 4410
+        },
+        "press:GENERIC_R3": {
+          "offsetFrames": 13518,
+          "frameCount": 4410
+        },
+        "press:GENERIC_R4": {
+          "offsetFrames": 18024,
+          "frameCount": 4410
+        },
+        "press:SPACE": {
+          "offsetFrames": 22530,
+          "frameCount": 4400
+        },
+        "press:ENTER": {
+          "offsetFrames": 27026,
+          "frameCount": 5571
+        },
+        "press:BACKSPACE": {
+          "offsetFrames": 32693,
+          "frameCount": 3527
+        },
+        "release:GENERIC": {
+          "offsetFrames": 36316,
+          "frameCount": 3022
+        },
+        "release:SPACE": {
+          "offsetFrames": 39434,
+          "frameCount": 2629
+        },
+        "release:ENTER": {
+          "offsetFrames": 42159,
+          "frameCount": 2848
+        },
+        "release:BACKSPACE": {
+          "offsetFrames": 45103,
+          "frameCount": 2519
+        }
+      },
+      "press": {
+        "rows": {
+          "R0": "press:GENERIC_R0",
+          "R1": "press:GENERIC_R1",
+          "R2": "press:GENERIC_R2",
+          "R3": "press:GENERIC_R3",
+          "R4": "press:GENERIC_R4"
+        },
+        "specials": {
+          "space": "press:SPACE",
+          "enter": "press:ENTER",
+          "backspace": "press:BACKSPACE"
+        }
+      },
+      "release": {
+        "rows": {},
+        "specials": {
+          "space": "release:SPACE",
+          "enter": "release:ENTER",
+          "backspace": "release:BACKSPACE"
+        },
+        "generic": "release:GENERIC"
+      }
+    },
+    {
+      "id": "mxblack",
+      "displayName": "Cherry MX Black",
+      "family": "线性",
+      "tone": "沉稳、硬朗",
+      "attribution": null,
+      "sprite": "/battuta/demo-audio/mxblack.3bbdad20e8a3.wav",
+      "samples": {
+        "press:GENERIC_R0": {
+          "offsetFrames": 0,
+          "frameCount": 3172
+        },
+        "press:GENERIC_R1": {
+          "offsetFrames": 3268,
+          "frameCount": 3172
+        },
+        "press:GENERIC_R2": {
+          "offsetFrames": 6536,
+          "frameCount": 3172
+        },
+        "press:GENERIC_R3": {
+          "offsetFrames": 9804,
+          "frameCount": 3172
+        },
+        "press:GENERIC_R4": {
+          "offsetFrames": 13072,
+          "frameCount": 3172
+        },
+        "press:SPACE": {
+          "offsetFrames": 16340,
+          "frameCount": 4220
+        },
+        "press:ENTER": {
+          "offsetFrames": 20656,
+          "frameCount": 4322
+        },
+        "press:BACKSPACE": {
+          "offsetFrames": 25074,
+          "frameCount": 3211
+        },
+        "release:GENERIC": {
+          "offsetFrames": 28381,
+          "frameCount": 2483
+        },
+        "release:SPACE": {
+          "offsetFrames": 30960,
+          "frameCount": 3773
+        },
+        "release:ENTER": {
+          "offsetFrames": 34829,
+          "frameCount": 3352
+        },
+        "release:BACKSPACE": {
+          "offsetFrames": 38277,
+          "frameCount": 3144
+        }
+      },
+      "press": {
+        "rows": {
+          "R0": "press:GENERIC_R0",
+          "R1": "press:GENERIC_R1",
+          "R2": "press:GENERIC_R2",
+          "R3": "press:GENERIC_R3",
+          "R4": "press:GENERIC_R4"
+        },
+        "specials": {
+          "space": "press:SPACE",
+          "enter": "press:ENTER",
+          "backspace": "press:BACKSPACE"
+        }
+      },
+      "release": {
+        "rows": {},
+        "specials": {
+          "space": "release:SPACE",
+          "enter": "release:ENTER",
+          "backspace": "release:BACKSPACE"
+        },
+        "generic": "release:GENERIC"
+      }
+    },
+    {
+      "id": "turquoise",
+      "displayName": "Turquoise Tealios",
+      "family": "线性",
+      "tone": "明亮、顺滑",
+      "attribution": null,
+      "sprite": "/battuta/demo-audio/turquoise.cdb91884b0e0.wav",
+      "samples": {
+        "press:GENERIC_R0": {
+          "offsetFrames": 0,
+          "frameCount": 4240
+        },
+        "press:GENERIC_R1": {
+          "offsetFrames": 4336,
+          "frameCount": 4240
+        },
+        "press:GENERIC_R2": {
+          "offsetFrames": 8672,
+          "frameCount": 4240
+        },
+        "press:GENERIC_R3": {
+          "offsetFrames": 13008,
+          "frameCount": 4240
+        },
+        "press:GENERIC_R4": {
+          "offsetFrames": 17344,
+          "frameCount": 4240
+        },
+        "press:SPACE": {
+          "offsetFrames": 21680,
+          "frameCount": 3137
+        },
+        "press:ENTER": {
+          "offsetFrames": 24913,
+          "frameCount": 3765
+        },
+        "press:BACKSPACE": {
+          "offsetFrames": 28774,
+          "frameCount": 3478
+        },
+        "release:GENERIC": {
+          "offsetFrames": 32348,
+          "frameCount": 2306
+        },
+        "release:SPACE": {
+          "offsetFrames": 34750,
+          "frameCount": 1142
+        },
+        "release:ENTER": {
+          "offsetFrames": 35988,
+          "frameCount": 1619
+        },
+        "release:BACKSPACE": {
+          "offsetFrames": 37703,
+          "frameCount": 2433
+        }
+      },
+      "press": {
+        "rows": {
+          "R0": "press:GENERIC_R0",
+          "R1": "press:GENERIC_R1",
+          "R2": "press:GENERIC_R2",
+          "R3": "press:GENERIC_R3",
+          "R4": "press:GENERIC_R4"
+        },
+        "specials": {
+          "space": "press:SPACE",
+          "enter": "press:ENTER",
+          "backspace": "press:BACKSPACE"
+        }
+      },
+      "release": {
+        "rows": {},
+        "specials": {
+          "space": "release:SPACE",
+          "enter": "release:ENTER",
+          "backspace": "release:BACKSPACE"
+        },
+        "generic": "release:GENERIC"
+      }
+    },
+    {
+      "id": "keychronred",
+      "displayName": "Keychron Red Linear",
+      "family": "线性",
+      "tone": "干净、轻快",
+      "attribution": {
+        "author": "C40115",
+        "licenseName": "CC BY 4.0"
+      },
+      "sprite": "/battuta/demo-audio/keychronred.8a2a48b4fb06.wav",
+      "samples": {
+        "press:GENERIC_R0": {
+          "offsetFrames": 0,
+          "frameCount": 3600
+        },
+        "press:GENERIC_R1": {
+          "offsetFrames": 3696,
+          "frameCount": 4080
+        },
+        "press:GENERIC_R2": {
+          "offsetFrames": 7872,
+          "frameCount": 4176
+        },
+        "press:GENERIC_R3": {
+          "offsetFrames": 12144,
+          "frameCount": 3120
+        },
+        "press:GENERIC_R4": {
+          "offsetFrames": 15360,
+          "frameCount": 4464
+        },
+        "release:GENERIC_R0": {
+          "offsetFrames": 19920,
+          "frameCount": 2400
+        },
+        "release:GENERIC_R1": {
+          "offsetFrames": 22416,
+          "frameCount": 2880
+        },
+        "release:GENERIC_R2": {
+          "offsetFrames": 25392,
+          "frameCount": 2544
+        },
+        "release:GENERIC_R3": {
+          "offsetFrames": 28032,
+          "frameCount": 1920
+        },
+        "release:GENERIC_R4": {
+          "offsetFrames": 30048,
+          "frameCount": 2496
+        }
+      },
+      "press": {
+        "rows": {
+          "R0": "press:GENERIC_R0",
+          "R1": "press:GENERIC_R1",
+          "R2": "press:GENERIC_R2",
+          "R3": "press:GENERIC_R3",
+          "R4": "press:GENERIC_R4"
+        },
+        "specials": {}
+      },
+      "release": {
+        "rows": {
+          "R0": "release:GENERIC_R0",
+          "R1": "release:GENERIC_R1",
+          "R2": "release:GENERIC_R2",
+          "R3": "release:GENERIC_R3",
+          "R4": "release:GENERIC_R4"
+        },
+        "specials": {}
+      }
+    },
+    {
+      "id": "topre",
+      "displayName": "Topre",
+      "family": "静电容",
+      "tone": "柔韧、闷响",
+      "attribution": null,
+      "sprite": "/battuta/demo-audio/topre.f8deafc8e63b.wav",
+      "samples": {
+        "press:GENERIC_R0": {
+          "offsetFrames": 0,
+          "frameCount": 6446
+        },
+        "press:GENERIC_R1": {
+          "offsetFrames": 6542,
+          "frameCount": 6446
+        },
+        "press:GENERIC_R2": {
+          "offsetFrames": 13084,
+          "frameCount": 6446
+        },
+        "press:GENERIC_R3": {
+          "offsetFrames": 19626,
+          "frameCount": 6446
+        },
+        "press:GENERIC_R4": {
+          "offsetFrames": 26168,
+          "frameCount": 6446
+        },
+        "press:SPACE": {
+          "offsetFrames": 32710,
+          "frameCount": 3209
+        },
+        "press:ENTER": {
+          "offsetFrames": 36015,
+          "frameCount": 4871
+        },
+        "press:BACKSPACE": {
+          "offsetFrames": 40982,
+          "frameCount": 5147
+        },
+        "release:GENERIC": {
+          "offsetFrames": 46225,
+          "frameCount": 3598
+        },
+        "release:SPACE": {
+          "offsetFrames": 49919,
+          "frameCount": 3057
+        },
+        "release:ENTER": {
+          "offsetFrames": 53072,
+          "frameCount": 2921
+        },
+        "release:BACKSPACE": {
+          "offsetFrames": 56089,
+          "frameCount": 3956
+        }
+      },
+      "press": {
+        "rows": {
+          "R0": "press:GENERIC_R0",
+          "R1": "press:GENERIC_R1",
+          "R2": "press:GENERIC_R2",
+          "R3": "press:GENERIC_R3",
+          "R4": "press:GENERIC_R4"
+        },
+        "specials": {
+          "space": "press:SPACE",
+          "enter": "press:ENTER",
+          "backspace": "press:BACKSPACE"
+        }
+      },
+      "release": {
+        "rows": {},
+        "specials": {
+          "space": "release:SPACE",
+          "enter": "release:ENTER",
+          "backspace": "release:BACKSPACE"
+        },
+        "generic": "release:GENERIC"
+      }
+    },
+    {
+      "id": "buckling",
+      "displayName": "IBM Buckling Spring",
+      "family": "屈曲弹簧",
+      "tone": "复古、金属感",
+      "attribution": null,
+      "sprite": "/battuta/demo-audio/buckling.5a79c8fea438.wav",
+      "samples": {
+        "press:GENERIC_R0": {
+          "offsetFrames": 0,
+          "frameCount": 6392
+        },
+        "press:GENERIC_R1": {
+          "offsetFrames": 6488,
+          "frameCount": 6392
+        },
+        "press:GENERIC_R2": {
+          "offsetFrames": 12976,
+          "frameCount": 6392
+        },
+        "press:GENERIC_R3": {
+          "offsetFrames": 19464,
+          "frameCount": 6392
+        },
+        "press:GENERIC_R4": {
+          "offsetFrames": 25952,
+          "frameCount": 6392
+        },
+        "press:SPACE": {
+          "offsetFrames": 32440,
+          "frameCount": 6922
+        },
+        "press:ENTER": {
+          "offsetFrames": 39458,
+          "frameCount": 4471
+        },
+        "press:BACKSPACE": {
+          "offsetFrames": 44025,
+          "frameCount": 5439
+        },
+        "release:GENERIC": {
+          "offsetFrames": 49560,
+          "frameCount": 5200
+        },
+        "release:SPACE": {
+          "offsetFrames": 54856,
+          "frameCount": 5217
+        },
+        "release:ENTER": {
+          "offsetFrames": 60169,
+          "frameCount": 3585
+        },
+        "release:BACKSPACE": {
+          "offsetFrames": 63850,
+          "frameCount": 3203
+        }
+      },
+      "press": {
+        "rows": {
+          "R0": "press:GENERIC_R0",
+          "R1": "press:GENERIC_R1",
+          "R2": "press:GENERIC_R2",
+          "R3": "press:GENERIC_R3",
+          "R4": "press:GENERIC_R4"
+        },
+        "specials": {
+          "space": "press:SPACE",
+          "enter": "press:ENTER",
+          "backspace": "press:BACKSPACE"
+        }
+      },
+      "release": {
+        "rows": {},
+        "specials": {
+          "space": "release:SPACE",
+          "enter": "release:ENTER",
+          "backspace": "release:BACKSPACE"
+        },
+        "generic": "release:GENERIC"
+      }
+    }
+  ]
+}
