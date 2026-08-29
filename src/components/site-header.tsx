@@ -1,10 +1,11 @@
+import Image from "next/image";
 import Link from "next/link";
 
 const navItems = [
   { label: "Home", href: "/#home" },
-  { label: "Team", href: "/#team" },
+  { label: "Projects", href: "/#projects" },
   { label: "Members", href: "/#members" },
-  { label: "Projects", href: "/projects" },
+  { label: "Team", href: "/#team" },
   { label: "Contact", href: "/#contact" },
 ];
 
@@ -13,7 +14,7 @@ export function SiteHeader() {
     <header className="relative top-0 z-50 border-b border-[var(--color-border)] bg-[color-mix(in_srgb,var(--color-bg)_78%,transparent)] backdrop-blur-xl lg:sticky">
       <div className="content-shell flex h-14 items-center justify-between gap-4 lg:h-16">
         <Link href="/#home" className="inline-flex min-h-11 items-center gap-5">
-          <img
+          <Image
             src="/icon.svg"
             alt=""
             className="h-8 w-auto shrink-0 invert"
@@ -21,7 +22,7 @@ export function SiteHeader() {
             height={116}
             aria-hidden
           />
-          <img
+          <Image
             src="/handwrite.svg"
             alt="Wormforce"
             className="h-7 w-auto"

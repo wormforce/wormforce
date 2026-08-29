@@ -1,12 +1,13 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { BattutaTypingDemo } from '@/components/battuta-typing-demo';
+import { battutaGuidePaths, battutaRelease } from '@/content/battuta';
 import { getLatestBattutaVersion } from '@/lib/battuta-releases';
 
-const repositoryHref = 'https://github.com/wormforce/battuta';
+const repositoryHref = battutaRelease.repositoryUrl;
 const latestReleaseHref = `${repositoryHref}/releases/latest`;
 const macDownloadHref = '/downloads/battuta/macos';
-const windowsStoreHref = 'https://apps.microsoft.com/detail/9NDHDBM6F3DR?hl=zh-cn&gl=CN&ocid=pdpshare';
+const windowsStoreHref = battutaRelease.windowsStoreUrl;
 const windowsPortableDownloadHref = '/downloads/battuta/windows';
 
 const soundFamilies = [
@@ -100,9 +101,9 @@ export async function BattutaProductPage() {
 
       <header className="hero" id="top">
         <div className="hero-copy">
-          <p className="eyebrow">Battuta for macOS + Windows</p>
+          <p className="eyebrow">Keyboard sound app for macOS + Windows</p>
           <h1>
-            把喜欢的键盘声音，
+            Battuta，把喜欢的键盘声音
             <span>装进你的电脑。</span>
           </h1>
           <p className="hero-lede">
@@ -253,7 +254,7 @@ export async function BattutaProductPage() {
             </h2>
             <p>
               查看今日输入量、峰值速度、常用应用、七日趋势、年度热力图与逐键分布。
-              1.2.0 保留经典荧光绿与青色配色，并依据当前数据自动调整连续色阶；悬停或点击格子即可立即查看时段与输入量。
+              {battutaRelease.version} 保留经典荧光绿与青色配色，并依据当前数据自动调整连续色阶；悬停或点击格子即可立即查看时段与输入量。
               统计只保留聚合数量、物理键码、时间和前台应用，不保存你写下的内容。
             </p>
           </div>
@@ -333,7 +334,7 @@ export async function BattutaProductPage() {
             <article className="bento-card bento-startup">
               <p className="card-label">日常使用</p>
               <h3>登录启动。更新也很轻松。</h3>
-              <p>旧版 macOS 用户需手动覆盖安装 1.2.0 一次，以切换到新的更新源；之后继续使用应用内更新。Windows Store 版由商店自动更新，ZIP 版从 GitHub Release 手动更新。</p>
+              <p>从 1.1.1 升级的 macOS 用户需手动覆盖安装一次；1.1.2 及后续版本可继续使用应用内更新。Windows Store 版由商店自动更新，ZIP 版从 GitHub Release 手动更新。</p>
               <div className="status-line"><i />Battuta 正在运行</div>
             </article>
           </div>
@@ -386,13 +387,46 @@ export async function BattutaProductPage() {
             ))}
           </div>
 
+          <div className="mt-8 grid gap-4 md:grid-cols-2">
+            <Link
+              href={battutaGuidePaths.macos}
+              className="rounded-3xl border border-black/15 bg-white/35 p-6 text-left transition hover:-translate-y-0.5 hover:border-black/35 hover:bg-white/55"
+            >
+              <span className="text-xs font-semibold tracking-[0.12em] text-[#607f15] uppercase">
+                macOS installation guide
+              </span>
+              <h3 className="mt-3 text-xl font-semibold text-[#171914]">
+                Add mechanical keyboard sounds on a Mac
+              </h3>
+              <p className="mt-3 text-sm leading-7 text-[#61655c]">
+                Install the DMG, pass Gatekeeper safely, enable Input Monitoring,
+                and confirm that Battuta is receiving hardware events.
+              </p>
+            </Link>
+            <Link
+              href={battutaGuidePaths.windows}
+              className="rounded-3xl border border-black/15 bg-white/35 p-6 text-left transition hover:-translate-y-0.5 hover:border-black/35 hover:bg-white/55"
+            >
+              <span className="text-xs font-semibold tracking-[0.12em] text-[#607f15] uppercase">
+                Windows installation guide
+              </span>
+              <h3 className="mt-3 text-xl font-semibold text-[#171914]">
+                Add mechanical keyboard sounds on Windows
+              </h3>
+              <p className="mt-3 text-sm leading-7 text-[#61655c]">
+                Choose Microsoft Store or the portable ZIP, then keep Battuta in
+                the notification area for system-wide sound.
+              </p>
+            </Link>
+          </div>
+
           <div className="download-panel">
             <Image src="/battuta/battuta-icon.png" alt="" width={204} height={204} />
             <div>
               <p className="download-version">Battuta {latestVersion} · macOS + Windows</p>
               <h3>现在，给下一次敲击一个声音。</h3>
               <p className="download-meta">Mac Universal App 约 9 MB · Windows 10/11 x64 · MIT 开源</p>
-              <p className="download-note">旧版 Mac 用户需手动覆盖安装 1.2.0 一次；Windows 可选商店安装，或直接下载同版本 ZIP 便携版。</p>
+              <p className="download-note">macOS 提供 Universal DMG；Windows 可选商店安装，或直接下载同版本 ZIP 便携版。</p>
             </div>
             <div className="download-actions">
               <a className="button button-dark" href={macDownloadHref}>下载 macOS DMG</a>
@@ -431,8 +465,10 @@ export async function BattutaProductPage() {
           <p>给每一次输入，配上你喜欢的声音。</p>
           <div>
             <a href="https://github.com/wormforce/battuta" target="_blank" rel="noreferrer">GitHub</a>
+            <Link href={battutaGuidePaths.macos}>macOS guide</Link>
+            <Link href={battutaGuidePaths.windows}>Windows guide</Link>
             <Link href="/projects/battuta/privacy">隐私政策</Link>
-            <a href="https://github.com/wormforce/battuta/blob/main/LICENSE" target="_blank" rel="noreferrer">MIT License</a>
+            <a href={battutaRelease.licenseUrl} target="_blank" rel="noreferrer">MIT License</a>
           </div>
         </div>
       </section>

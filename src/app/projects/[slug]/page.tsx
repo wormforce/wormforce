@@ -3,9 +3,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BattutaProductPage } from "@/components/battuta-product-page";
+import { JsonLd } from "@/components/json-ld";
 import { SustechCliProductPage } from "@/components/sustech-cli-product-page";
 import { getProjectBySlug, projects } from "@/content/projects";
 import { absoluteUrl } from "@/lib/utils";
+import { projectStructuredData } from "@/lib/structured-data";
 
 type ProjectPageProps = {
   params: Promise<{ slug: string }>;
@@ -37,7 +39,7 @@ export async function generateMetadata({
           url: absoluteUrl("/battuta/og-v1.2.0.png"),
           width: 1672,
           height: 941,
-          alt: "Battuta 1.2.0 keyboard sound app for macOS and Windows",
+          alt: "Battuta keyboard sound app for macOS and Windows",
         }
       : project.slug === "sustech-cli"
         ? {
@@ -49,14 +51,14 @@ export async function generateMetadata({
         : undefined;
 
   return {
-    title: `${project.name}`,
-    description: project.shortDescription,
+    title: project.seoTitle,
+    description: project.seoDescription,
     alternates: {
       canonical: projectUrl,
     },
     openGraph: {
-      title: `${project.name} | Wormforce`,
-      description: project.shortDescription,
+      title: `${project.seoTitle} | Wormforce`,
+      description: project.seoDescription,
       url: projectUrl,
       type: "website",
       images: socialImage ? [socialImage] : undefined,
@@ -65,8 +67,8 @@ export async function generateMetadata({
       socialImage
         ? {
             card: "summary_large_image",
-            title: `${project.name} | Wormforce`,
-            description: project.shortDescription,
+            title: `${project.seoTitle} | Wormforce`,
+            description: project.seoDescription,
             images: [socialImage.url],
           }
         : undefined,
@@ -82,22 +84,34 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
   }
 
   if (project.slug === "battuta") {
-    return <BattutaProductPage />;
+    return (
+      <>
+        <JsonLd data={projectStructuredData(project)} />
+        <BattutaProductPage />
+      </>
+    );
   }
 
   if (project.slug === "sustech-cli") {
-    return <SustechCliProductPage />;
+    return (
+      <>
+        <JsonLd data={projectStructuredData(project)} />
+        <SustechCliProductPage />
+      </>
+    );
   }
 
   return (
-    <section className="section-shell pt-24">
-      <div className="content-shell">
-        <Link
-          href="/projects"
-          className="mono-label inline-flex items-center transition hover:text-white"
-        >
-          {"<-"} Back to projects
-        </Link>
+    <>
+      <JsonLd data={projectStructuredData(project)} />
+      <section className="section-shell pt-24">
+        <div className="content-shell">
+          <Link
+            href="/projects"
+            className="mono-label inline-flex items-center transition hover:text-white"
+          >
+            {"<-"} Back to projects
+          </Link>
 
         <article className="mt-6 space-y-6">
           <div className="reveal overflow-hidden rounded-[36px] border border-[#2f2f2f] bg-[linear-gradient(155deg,#f5f5f5_0%,#e2e2e2_45%,#d4d4d4_100%)] p-7 text-[#101010] shadow-[0_30px_80px_rgba(0,0,0,0.45)] md:p-10">
@@ -178,8 +192,9 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
               </Link>
             </div>
           </div>
-        </article>
-      </div>
-    </section>
+          </article>
+        </div>
+      </section>
+    </>
   );
 }

@@ -23,32 +23,34 @@ const spaceMono = Space_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL(absoluteUrl("/")),
   title: {
-    default: "Wormforce",
+    default: "Wormforce — Applied AI and Open-Source Software",
     template: "%s | Wormforce",
   },
-  description: teamProfile.description,
-  keywords: [
-    "Wormforce",
-    "team website",
-    "engineering team",
-    "AI",
-    "product development",
-  ],
+  description: teamProfile.seoDescription,
   alternates: {
     canonical: absoluteUrl("/"),
   },
   openGraph: {
-    title: teamProfile.name,
-    description: teamProfile.tagline,
+    title: "Wormforce — Applied AI and Open-Source Software",
+    description: teamProfile.seoDescription,
     url: absoluteUrl("/"),
     siteName: teamProfile.name,
     locale: "en_US",
     type: "website",
+    images: [
+      {
+        url: absoluteUrl("/brand/wormforce-app-icon-1024.png"),
+        width: 1024,
+        height: 1024,
+        alt: "Wormforce",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: teamProfile.name,
-    description: teamProfile.tagline,
+    title: "Wormforce — Applied AI and Open-Source Software",
+    description: teamProfile.seoDescription,
+    images: [absoluteUrl("/brand/wormforce-app-icon-1024.png")],
   },
 };
 
@@ -68,7 +70,7 @@ export default function RootLayout({
           <main>{children}</main>
           <SiteFooter />
         </div>
-        <Analytics />
+        {process.env.VERCEL ? <Analytics /> : null}
       </body>
     </html>
   );

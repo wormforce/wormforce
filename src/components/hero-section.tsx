@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { TeamProfile } from "@/content/site";
 
@@ -13,7 +14,7 @@ export function HeroSection({ team, memberCount }: HeroSectionProps) {
         <div className="reveal">
           <p className="mono-label">Independent Engineering Team</p>
           <h1 className="mt-4">
-            <img
+            <Image
               src="/handwrite.svg"
               alt={team.name}
               className="h-12 w-auto md:h-14"
@@ -29,16 +30,16 @@ export function HeroSection({ team, memberCount }: HeroSectionProps) {
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
-              href="/#members"
+              href="/#projects"
               className="inline-flex items-center rounded-full border border-[#3a3a3a] bg-[#1a1a1a] px-5 py-2.5 text-sm font-semibold text-white transition hover:border-[var(--color-brand)] hover:bg-[var(--color-brand)] hover:text-black"
             >
-              Meet the Team
+              View Projects
             </Link>
             <Link
-              href="/projects"
+              href="/#members"
               className="inline-flex items-center rounded-full border border-[var(--color-border)] px-5 py-2.5 text-sm font-semibold text-[var(--color-text)] transition hover:border-[var(--color-text)] hover:text-white"
             >
-              View Projects
+              Meet the Team
             </Link>
           </div>
         </div>

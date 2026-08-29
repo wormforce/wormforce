@@ -12,6 +12,7 @@ export type MemberProfile = {
   name: string;
   role: string;
   shortBio: string;
+  seoDescription: string;
   profileRole?: string;
   profileShortBio?: string;
   fullBio?: string;
@@ -32,6 +33,8 @@ export const members: MemberProfile[] = [
     name: "Mingyang Wu",
     role: "AI Research Engineer",
     shortBio: "Data-centric AI, RL, and multimodal LLM research.",
+    seoDescription:
+      "Mingyang Wu is a SUSTech undergraduate and CUHK MMLab research assistant working on data-centric AI, reinforcement learning, and audio-video multimodal LLMs.",
     profileRole: "Undergraduate@SUSTech\nResearch Assistant@CUHK MMLab",
     profileShortBio: "I like aeroplanes and travelling.\nCanton, China",
     fullBio:
@@ -113,6 +116,8 @@ export const members: MemberProfile[] = [
     role: "Product Engineer",
     shortBio:
       "Neuroscience, product layout, brand design, and multimodal models.",
+    seoDescription:
+      "Kunpeng Xie is a Wormforce co-founder and product engineer working across neuroscience, product design, multimodal models, and software systems.",
     profileRole: "Product Engineer\nCo-Founder@WormForce",
     profileShortBio:
       "Neuroscience, product, and multimodal systems.\nWormForce Corp.",
@@ -137,6 +142,8 @@ export const members: MemberProfile[] = [
     role: "All-situation Engineer",
     shortBio:
       "Versatile engineer spanning optical systems, AI vision, and full-stack development.",
+    seoDescription:
+      "Quanbo Zhao is a Wormforce engineer working across computer vision, optical imaging, full-stack systems, and mobile applications.",
     fullBio:
       "I am a versatile tech generalist combining hardware knowledge with robust software engineering capabilities. My expertise encompasses optical imaging, aerospace cameras, computer vision, and deep learning for image/sequence processing. Additionally, I am an experienced developer across AR, mobile (Android/iOS), and frontend/backend full-stack environments.",
     avatar: "/images/members/member-3.jpg",

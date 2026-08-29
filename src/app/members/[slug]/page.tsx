@@ -2,9 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
+import { JsonLd } from "@/components/json-ld";
 import { MemberAvatar } from "@/components/member-avatar";
 import { getMemberBySlug, members } from "@/content/members";
 import { absoluteUrl } from "@/lib/utils";
+import { memberStructuredData } from "@/lib/structured-data";
 
 type MemberPageProps = {
   params: Promise<{ slug: string }>;
@@ -32,16 +34,28 @@ export async function generateMetadata({
   const profileUrl = absoluteUrl(`/members/${member.slug}`);
 
   return {
-    title: member.name,
-    description: member.profileShortBio ?? member.shortBio,
+    title: `${member.name} — ${member.role}`,
+    description: member.seoDescription,
     alternates: {
       canonical: profileUrl,
     },
     openGraph: {
       title: `${member.name} | Wormforce`,
-      description: member.profileShortBio ?? member.shortBio,
+      description: member.seoDescription,
       url: profileUrl,
       type: "profile",
+      images: [
+        {
+          url: absoluteUrl(member.avatar),
+          alt: member.name,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary",
+      title: `${member.name} | Wormforce`,
+      description: member.seoDescription,
+      images: [absoluteUrl(member.avatar)],
     },
   };
 }
@@ -95,14 +109,16 @@ export default async function MemberPage({ params }: MemberPageProps) {
   const profileShortBio = member.profileShortBio ?? member.shortBio;
 
   return (
-    <section className="section-shell pt-24">
-      <div className="content-shell">
-        <Link
-          href="/#members"
-          className="mono-label inline-flex items-center transition hover:text-white"
-        >
-          {"<-"} Back to members
-        </Link>
+    <>
+      <JsonLd data={memberStructuredData(member)} />
+      <section className="section-shell pt-24">
+        <div className="content-shell">
+          <Link
+            href="/#members"
+            className="mono-label inline-flex items-center transition hover:text-white"
+          >
+            {"<-"} Back to members
+          </Link>
 
         <article className="mt-6 grid items-start gap-8 lg:grid-cols-[320px_1fr]">
           <div className="card-surface reveal rounded-3xl p-5">
@@ -228,8 +244,9 @@ export default async function MemberPage({ params }: MemberPageProps) {
               </>
             ) : null}
           </div>
-        </article>
-      </div>
-    </section>
+          </article>
+        </div>
+      </section>
+    </>
   );
 }

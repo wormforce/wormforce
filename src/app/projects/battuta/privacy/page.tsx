@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { JsonLd } from "@/components/json-ld";
 import { teamProfile } from "@/content/site";
 import { absoluteUrl } from "@/lib/utils";
 
@@ -26,7 +27,7 @@ export const metadata: Metadata = {
         url: absoluteUrl("/battuta/og-v1.2.0.png"),
         width: 1672,
         height: 941,
-        alt: "Battuta 1.2.0 keyboard sound app for macOS and Windows",
+        alt: "Battuta keyboard sound app for macOS and Windows",
       },
     ],
   },
@@ -63,6 +64,58 @@ function PolicySection({ number, title, children }: PolicySectionProps) {
 export default function BattutaPrivacyPage() {
   return (
     <div className="battuta-product battuta-privacy-page" lang="zh-CN">
+      <JsonLd
+        data={[
+          {
+            "@context": "https://schema.org",
+            "@type": "WebPage",
+            "@id": `${policyUrl}#policy`,
+            url: policyUrl,
+            name: "Battuta 隐私政策 / Privacy Policy",
+            description:
+              "Battuta 的设备本地输入处理、存储、用户控制和第三方服务说明。",
+            datePublished: effectiveDate,
+            dateModified: effectiveDate,
+            inLanguage: ["zh-CN", "en"],
+            about: {
+              "@type": "SoftwareApplication",
+              "@id": `${absoluteUrl("/projects/battuta")}#software`,
+              name: "Battuta",
+              url: absoluteUrl("/projects/battuta"),
+            },
+            publisher: {
+              "@type": "Organization",
+              "@id": absoluteUrl("/#organization"),
+              name: teamProfile.name,
+              url: absoluteUrl("/"),
+            },
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              {
+                "@type": "ListItem",
+                position: 1,
+                name: "Wormforce",
+                item: absoluteUrl("/"),
+              },
+              {
+                "@type": "ListItem",
+                position: 2,
+                name: "Battuta",
+                item: absoluteUrl("/projects/battuta"),
+              },
+              {
+                "@type": "ListItem",
+                position: 3,
+                name: "Privacy Policy",
+                item: policyUrl,
+              },
+            ],
+          },
+        ]}
+      />
       <nav className="battuta-subnav" aria-label="Battuta 隐私政策导航">
         <div className="battuta-subnav-inner">
           <Link

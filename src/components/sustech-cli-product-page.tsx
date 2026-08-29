@@ -3,10 +3,11 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { sustechCliRelease } from "@/content/sustech-cli";
 
-const repositoryHref = "https://github.com/wormforce/sustech-cli";
-const npmHref = "https://www.npmjs.com/package/sustech-cli";
-const installCommand = "npm install --global sustech-cli";
+const repositoryHref = sustechCliRelease.repositoryUrl;
+const npmHref = sustechCliRelease.npmUrl;
+const installCommand = sustechCliRelease.installCommand;
 
 type IconName = "book" | "blackboard" | "campus" | "research" | "transit";
 
@@ -40,7 +41,7 @@ const capabilities: { icon: IconName; title: string; description: string }[] = [
 
 const outputModes = {
   Text: [
-    "sustech-cli 0.8.3 (node v22.19.0)",
+    `sustech-cli ${sustechCliRelease.version} (node v22.19.0)`,
     "",
     "输出模式",
     "  text   为人阅读的清晰文本",
@@ -53,7 +54,7 @@ const outputModes = {
     '  "ok": true,',
     '  "command": "version",',
     '  "data": {',
-    '    "version": "0.8.3",',
+    `    "version": "${sustechCliRelease.version}",`,
     '    "runtime": "node v22.19.0"',
     "  }",
     "}",
@@ -121,9 +122,9 @@ function TerminalWindow() {
       </div>
       <div className="sc-terminal-body">
         <p><span className="sc-prompt">$</span> <span className="sc-command">npm install --global sustech-cli</span></p>
-        <p className="sc-result">added sustech-cli@0.8.3</p>
+        <p className="sc-result">added sustech-cli@{sustechCliRelease.version}</p>
         <p><span className="sc-prompt">$</span> sustech version</p>
-        <p className="sc-result">sustech-cli 0.8.3 (node v22.19.0)</p>
+        <p className="sc-result">sustech-cli {sustechCliRelease.version} (node v22.19.0)</p>
         <p><span className="sc-prompt">$</span> sustech calendar day 2026-09-01</p>
         <div className="sc-output-block">
           <span>2026-09-01 · 星期二</span>

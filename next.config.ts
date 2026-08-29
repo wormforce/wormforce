@@ -9,6 +9,16 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: projectRoot,
   },
+  async redirects() {
+    return [
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "wormforce.net" }],
+        destination: "https://www.wormforce.net/:path*",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

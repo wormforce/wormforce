@@ -6,6 +6,9 @@ export type ProjectProfile = {
   tagline: string;
   shortDescription: string;
   fullDescription: string;
+  seoTitle: string;
+  seoDescription: string;
+  updatedAt: string;
   coverImage: string;
   coverImageAlt: string;
   highlights: string[];
@@ -26,6 +29,10 @@ export const projects: ProjectProfile[] = [
       "为人、脚本与智能体设计的南科大命令行工具，覆盖教务、Blackboard、校园服务与结构化输出。",
     fullDescription:
       "sustech cli 将分散的校园服务统一成清晰的命令行界面，默认输出适合人类阅读的文本，也支持带版本的 JSON 与 JSONL。",
+    seoTitle: "sustech cli — 南科大学生命令行工具",
+    seoDescription:
+      "sustech cli 是面向南科大学生、脚本与智能体的命令行工具，支持课表、课程、校车、Blackboard、校园服务及版本化 JSON 输出。",
+    updatedAt: "2026-08-29",
     coverImage: "/sustech-cli/sustech-cli-og.png",
     coverImageAlt: "白色背景上的 sustech cli 字标",
     highlights: [
@@ -49,6 +56,10 @@ export const projects: ProjectProfile[] = [
       "A native desktop app with 21 keyboard sound profiles, five click styles, DIY sound packs, and private local typing statistics.",
     fullDescription:
       "Battuta turns keyboard and pointer events into responsive, natural mechanical feedback across macOS and Windows. The selected profile's recordings are preloaded for low-latency playback, while all 265 samples and typing analytics remain local to the device.",
+    seoTitle: "Battuta: Keyboard Sound App for Mac & Windows",
+    seoDescription:
+      "Battuta is an open-source keyboard sound app for Mac and Windows with 21 mechanical profiles, custom sound packs, low-latency playback, and local stats.",
+    updatedAt: "2026-08-28",
     coverImage: "/battuta/og-v1.2.0.png",
     coverImageAlt: "Battuta keyboard sound app for macOS and Windows",
     highlights: [
