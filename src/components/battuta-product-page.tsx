@@ -1,12 +1,13 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { BattutaTypingDemo } from '@/components/battuta-typing-demo';
+import { getLatestBattutaVersion } from '@/lib/battuta-releases';
 
 const repositoryHref = 'https://github.com/wormforce/battuta';
-const latestReleaseHref = `${repositoryHref}/releases/tag/v1.2.0`;
-const macDownloadHref = `${repositoryHref}/releases/download/v1.2.0/Battuta-1.2.0-unnotarized.dmg`;
+const latestReleaseHref = `${repositoryHref}/releases/latest`;
+const macDownloadHref = '/downloads/battuta/macos';
 const windowsStoreHref = 'https://apps.microsoft.com/detail/9NDHDBM6F3DR?hl=zh-cn&gl=CN&ocid=pdpshare';
-const windowsPortableDownloadHref = `${repositoryHref}/releases/download/v1.2.0/Battuta-Windows-1.2.0-win-x64.zip`;
+const windowsPortableDownloadHref = '/downloads/battuta/windows';
 
 const soundFamilies = [
   {
@@ -72,7 +73,9 @@ const faqItems = [
   },
 ];
 
-export function BattutaProductPage() {
+export async function BattutaProductPage() {
+  const latestVersion = await getLatestBattutaVersion();
+
   return (
     <div className="battuta-product" lang="zh-CN">
       <nav className="battuta-subnav" aria-label="Battuta 产品导航">
@@ -121,7 +124,7 @@ export function BattutaProductPage() {
             </a>
           </div>
           <p className="compatibility">
-            macOS 13+ · Windows 10/11 x64 · 最新版 1.2.0
+            macOS 13+ · Windows 10/11 x64 · 最新版 {latestVersion}
           </p>
           <a className="hero-try-link" href="#try">
             先不下载，在线试打 <span aria-hidden="true">↓</span>
@@ -386,7 +389,7 @@ export function BattutaProductPage() {
           <div className="download-panel">
             <Image src="/battuta/battuta-icon.png" alt="" width={204} height={204} />
             <div>
-              <p className="download-version">Battuta 1.2.0 · macOS + Windows</p>
+              <p className="download-version">Battuta {latestVersion} · macOS + Windows</p>
               <h3>现在，给下一次敲击一个声音。</h3>
               <p className="download-meta">Mac Universal App 约 9 MB · Windows 10/11 x64 · MIT 开源</p>
               <p className="download-note">旧版 Mac 用户需手动覆盖安装 1.2.0 一次；Windows 可选商店安装，或直接下载同版本 ZIP 便携版。</p>
@@ -395,7 +398,7 @@ export function BattutaProductPage() {
               <a className="button button-dark" href={macDownloadHref}>下载 macOS DMG</a>
               <a className="button button-dark" href={windowsStoreHref} target="_blank" rel="noreferrer">Microsoft Store ↗</a>
               <a className="button button-outline-dark" href={windowsPortableDownloadHref}>下载 Windows ZIP</a>
-              <a className="text-link" href={latestReleaseHref} target="_blank" rel="noreferrer">查看 1.2.0 发布说明 ↗</a>
+              <a className="text-link" href={latestReleaseHref} target="_blank" rel="noreferrer">查看最新发布说明 ↗</a>
               <a className="text-link" href={repositoryHref} target="_blank" rel="noreferrer">去 GitHub Star 项目 ↗</a>
             </div>
           </div>
