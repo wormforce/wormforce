@@ -3,24 +3,30 @@ import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { JsonLd } from "@/components/json-ld";
+import { battutaPaths, type BattutaLocale } from "@/content/battuta";
 import { teamProfile } from "@/content/site";
 import { absoluteUrl } from "@/lib/utils";
 
-const policyUrl = absoluteUrl("/projects/battuta/privacy");
+const chinesePolicyUrl = absoluteUrl(battutaPaths.privacy.zh);
+const englishPolicyUrl = absoluteUrl(battutaPaths.privacy.en);
 const effectiveDate = "2026-08-25";
 
 export const metadata: Metadata = {
-  title: "Battuta 隐私政策 / Privacy Policy",
+  title: "Battuta 隐私政策",
   description:
     "了解 Battuta 如何在设备本地处理键盘与鼠标事件、输入统计、DIY 音色和更新请求。",
   alternates: {
-    canonical: policyUrl,
+    canonical: chinesePolicyUrl,
+    languages: {
+      "zh-CN": chinesePolicyUrl,
+      en: englishPolicyUrl,
+    },
   },
   openGraph: {
-    title: "Battuta 隐私政策 / Privacy Policy",
+    title: "Battuta 隐私政策 | Wormforce",
     description:
       "Battuta 的数据处理、设备本地存储、用户控制和第三方服务说明。",
-    url: policyUrl,
+    url: chinesePolicyUrl,
     type: "article",
     images: [
       {
@@ -33,7 +39,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Battuta 隐私政策 / Privacy Policy",
+    title: "Battuta 隐私政策 | Wormforce",
     description: "Battuta 如何处理和保护你的数据。",
     images: [absoluteUrl("/battuta/og-v1.2.0.png")],
   },
@@ -61,9 +67,22 @@ function PolicySection({ number, title, children }: PolicySectionProps) {
   );
 }
 
-export default function BattutaPrivacyPage() {
+export function BattutaPrivacyPage({
+  locale,
+}: {
+  locale: BattutaLocale;
+}) {
+  const isEnglish = locale === "en";
+  const policyUrl = isEnglish ? englishPolicyUrl : chinesePolicyUrl;
+  const productPath = isEnglish ? battutaPaths.en : battutaPaths.zh;
+  const otherLocalePath = isEnglish ? battutaPaths.privacy.zh : battutaPaths.privacy.en;
+  const localizedTitle = isEnglish ? "Battuta Privacy Policy" : "Battuta 隐私政策";
+  const localizedDescription = isEnglish
+    ? "How Battuta processes local input events, typing statistics, custom sounds, and update requests."
+    : "Battuta 的设备本地输入处理、存储、用户控制和第三方服务说明。";
+
   return (
-    <div className="battuta-product battuta-privacy-page" lang="zh-CN">
+    <div className="battuta-product battuta-privacy-page" lang={locale}>
       <JsonLd
         data={[
           {
@@ -71,17 +90,16 @@ export default function BattutaPrivacyPage() {
             "@type": "WebPage",
             "@id": `${policyUrl}#policy`,
             url: policyUrl,
-            name: "Battuta 隐私政策 / Privacy Policy",
-            description:
-              "Battuta 的设备本地输入处理、存储、用户控制和第三方服务说明。",
+            name: localizedTitle,
+            description: localizedDescription,
             datePublished: effectiveDate,
             dateModified: effectiveDate,
-            inLanguage: ["zh-CN", "en"],
+            inLanguage: locale,
             about: {
               "@type": "SoftwareApplication",
-              "@id": `${absoluteUrl("/projects/battuta")}#software`,
+              "@id": `${absoluteUrl(productPath)}#software`,
               name: "Battuta",
-              url: absoluteUrl("/projects/battuta"),
+              url: absoluteUrl(productPath),
             },
             publisher: {
               "@type": "Organization",
@@ -104,34 +122,42 @@ export default function BattutaPrivacyPage() {
                 "@type": "ListItem",
                 position: 2,
                 name: "Battuta",
-                item: absoluteUrl("/projects/battuta"),
+                item: absoluteUrl(productPath),
               },
               {
                 "@type": "ListItem",
                 position: 3,
-                name: "Privacy Policy",
+                name: localizedTitle,
                 item: policyUrl,
               },
             ],
           },
         ]}
       />
-      <nav className="battuta-subnav" aria-label="Battuta 隐私政策导航">
+      <nav className="battuta-subnav" aria-label={isEnglish ? "Battuta privacy navigation" : "Battuta 隐私政策导航"}>
         <div className="battuta-subnav-inner">
           <Link
             className="brand-lockup"
-            href="/projects/battuta"
-            aria-label="返回 Battuta 产品页"
+            href={productPath}
+            aria-label={isEnglish ? "Back to the Battuta product page" : "返回 Battuta 产品页"}
           >
             <Image src="/battuta/battuta-icon.png" alt="" width={68} height={68} />
             <span>Battuta</span>
           </Link>
           <div className="nav-links">
-            <Link href="/projects/battuta">产品页</Link>
-            <a href="#chinese">中文</a>
-            <a href="#english">English</a>
-            <a className="nav-download" href={`mailto:${teamProfile.contactEmail}`}>
-              联系我们
+            <Link href={productPath}>{isEnglish ? "Product" : "产品页"}</Link>
+            <span className="locale-switcher" aria-label={isEnglish ? "Switch to Chinese" : "切换为英文"}>
+              <span aria-current="page">{isEnglish ? "EN" : "ZH"}</span>
+              <Link
+                href={otherLocalePath}
+                lang={isEnglish ? "zh-CN" : "en"}
+                aria-label={isEnglish ? "Switch to Chinese" : "切换为英文"}
+              >
+                {isEnglish ? "ZH" : "EN"}
+              </Link>
+            </span>
+            <a className="nav-download" href={"mailto:" + teamProfile.contactEmail}>
+              {isEnglish ? "Contact" : "联系我们"}
             </a>
           </div>
         </div>
@@ -140,49 +166,43 @@ export default function BattutaPrivacyPage() {
       <header className="privacy-policy-hero">
         <div className="section-inner privacy-policy-hero-grid">
           <div>
-            <p className="section-kicker lime">Privacy by boundary</p>
+            <p className="section-kicker lime">{isEnglish ? "Privacy by boundary" : "以边界保护隐私"}</p>
             <h1>
-              隐私不是一句承诺，
-              <span>而是一条清楚的边界。</span>
+              {isEnglish ? "Privacy is not a promise." : "隐私不是一句承诺，"}
+              <span>{isEnglish ? "It is a clear boundary." : "而是一条清楚的边界。"}</span>
             </h1>
             <p className="privacy-policy-lede">
-              Battuta 需要知道某个物理按键或鼠标按钮发生了动作，才能及时播放声音；
-              它不会把这些事件转换成你输入的文字，也不会把本地输入统计或 DIY 音频上传给 Wormforce。
+              {isEnglish
+                ? "Battuta needs to know that a physical key or pointer button changed state so it can play a sound immediately. It never turns those events into the text you type or uploads local typing statistics or DIY audio to Wormforce."
+                : "Battuta 需要知道某个物理按键或鼠标按钮发生了动作，才能及时播放声音；它不会把这些事件转换成你输入的文字，也不会把本地输入统计或 DIY 音频上传给 Wormforce。"}
             </p>
             <div className="privacy-policy-meta">
-              <span>生效日期</span>
-              <time dateTime={effectiveDate}>2026 年 8 月 25 日</time>
-              <span>版本</span>
+              <span>{isEnglish ? "Effective date" : "生效日期"}</span>
+              <time dateTime={effectiveDate}>{isEnglish ? "August 25, 2026" : "2026 年 8 月 25 日"}</time>
+              <span>{isEnglish ? "Version" : "版本"}</span>
               <strong>1.0</strong>
             </div>
           </div>
 
-          <div className="privacy-policy-summary" aria-label="隐私要点">
+          <div className="privacy-policy-summary" aria-label={isEnglish ? "Privacy highlights" : "隐私要点"}>
             <Image src="/battuta/battuta-icon.png" alt="" width={180} height={180} />
             <div>
               <span>01</span>
-              <p>输入事件与统计在设备本地处理。</p>
+              <p>{isEnglish ? "Input events and statistics are processed locally." : "输入事件与统计在设备本地处理。"}</p>
             </div>
             <div>
               <span>02</span>
-              <p>不读取文字、密码、窗口标题或剪贴板。</p>
+              <p>{isEnglish ? "Text, passwords, window titles, and the clipboard are never read." : "不读取文字、密码、窗口标题或剪贴板。"}</p>
             </div>
             <div>
               <span>03</span>
-              <p>不出售输入数据，不使用广告追踪 SDK。</p>
+              <p>{isEnglish ? "No input data is sold and no advertising-tracking SDK is used." : "不出售输入数据，不使用广告追踪 SDK。"}</p>
             </div>
           </div>
         </div>
       </header>
 
-      <nav className="privacy-policy-language-nav" aria-label="选择隐私政策语言">
-        <div className="section-inner">
-          <a href="#chinese">中文政策</a>
-          <a href="#english" lang="en">English policy</a>
-          <span>同一页面 · Same page</span>
-        </div>
-      </nav>
-
+      {!isEnglish ? (
       <article className="privacy-policy-document" id="chinese" aria-labelledby="chinese-title">
         <div className="section-inner privacy-policy-reading-width">
           <header className="privacy-policy-document-header">
@@ -335,7 +355,9 @@ export default function BattutaPrivacyPage() {
           </PolicySection>
         </div>
       </article>
+      ) : null}
 
+      {isEnglish ? (
       <article
         className="privacy-policy-document privacy-policy-document-english"
         id="english"
@@ -518,33 +540,39 @@ export default function BattutaPrivacyPage() {
           </PolicySection>
         </div>
       </article>
+      ) : null}
 
-      <section className="privacy-policy-contact" aria-label="隐私政策联系方式">
+      <section className="privacy-policy-contact" aria-label={isEnglish ? "Privacy policy contact" : "隐私政策联系方式"}>
         <div className="section-inner">
           <div>
-            <p className="section-kicker">还有问题？</p>
-            <h2>我们愿意把边界讲清楚。</h2>
+            <p className="section-kicker">{isEnglish ? "Still have questions?" : "还有问题？"}</p>
+            <h2>{isEnglish ? "We are happy to make the boundary clear." : "我们愿意把边界讲清楚。"}</h2>
           </div>
-          <a className="button button-dark" href={`mailto:${teamProfile.contactEmail}`}>
+          <a className="button button-dark" href={"mailto:" + teamProfile.contactEmail}>
             {teamProfile.contactEmail}
           </a>
         </div>
       </section>
 
-      <section className="battuta-product-footer" aria-label="Battuta 页脚">
+      <section className="battuta-product-footer" aria-label={isEnglish ? "Battuta footer" : "Battuta 页脚"}>
         <div className="footer-inner">
-          <Link className="brand-lockup" href="/projects/battuta">
+          <Link className="brand-lockup" href={productPath}>
             <Image src="/battuta/battuta-icon.png" alt="" width={68} height={68} />
             <span>Battuta</span>
           </Link>
-          <p>给每一次输入，配上你喜欢的声音。</p>
+          <p>{isEnglish ? "Give every keystroke a sound you love." : "给每一次输入，配上你喜欢的声音。"}</p>
           <div>
-            <Link href="/projects/battuta">产品页</Link>
-            <a href="#chinese">中文</a>
-            <a href="#english" lang="en">English</a>
+            <Link href={productPath}>{isEnglish ? "Product" : "产品页"}</Link>
+            <Link href={otherLocalePath} lang={isEnglish ? "zh-CN" : "en"}>
+              {isEnglish ? "ZH" : "EN"}
+            </Link>
           </div>
         </div>
       </section>
     </div>
   );
+}
+
+export default function BattutaChinesePrivacyPage() {
+  return <BattutaPrivacyPage locale="zh-CN" />;
 }

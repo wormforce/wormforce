@@ -7,9 +7,19 @@ export const battutaRelease = {
     "https://github.com/wormforce/battuta/releases/download/v1.2.1/Battuta-1.2.1-unnotarized.dmg",
   windowsPortableDownloadUrl:
     "https://github.com/wormforce/battuta/releases/download/v1.2.1/Battuta-Windows-1.2.1-win-x64.zip",
-  windowsStoreUrl:
-    "https://apps.microsoft.com/detail/9NDHDBM6F3DR?hl=zh-cn&gl=CN&ocid=pdpshare",
+  windowsStoreUrl: "https://apps.microsoft.com/detail/9NDHDBM6F3DR",
   licenseUrl: "https://github.com/wormforce/battuta/blob/main/LICENSE",
+} as const;
+
+export type BattutaLocale = "zh-CN" | "en";
+
+export const battutaPaths = {
+  zh: "/projects/battuta",
+  en: "/en/projects/battuta",
+  privacy: {
+    zh: "/projects/battuta/privacy",
+    en: "/en/projects/battuta/privacy",
+  },
 } as const;
 
 export const battutaGuidePaths = {

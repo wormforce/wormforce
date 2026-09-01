@@ -6,7 +6,7 @@ import {
   battutaGuides,
   getBattutaGuideBySlug,
 } from "@/content/battuta-guides";
-import { battutaRelease } from "@/content/battuta";
+import { battutaPaths, battutaRelease } from "@/content/battuta";
 import { absoluteUrl } from "@/lib/utils";
 
 type GuidePageProps = {
@@ -65,7 +65,7 @@ export async function generateMetadata({
 
 function guideStructuredData(guide: (typeof battutaGuides)[number]) {
   const url = absoluteUrl(guide.path);
-  const battutaUrl = absoluteUrl("/projects/battuta");
+  const battutaUrl = absoluteUrl(battutaPaths.en);
 
   return {
     "@context": "https://schema.org",

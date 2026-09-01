@@ -7,7 +7,7 @@ import { JsonLd } from "@/components/json-ld";
 import { SustechCliProductPage } from "@/components/sustech-cli-product-page";
 import { getProjectBySlug, projects } from "@/content/projects";
 import { absoluteUrl } from "@/lib/utils";
-import { projectStructuredData } from "@/lib/structured-data";
+import { battutaStructuredData, projectStructuredData } from "@/lib/structured-data";
 
 type ProjectPageProps = {
   params: Promise<{ slug: string }>;
@@ -33,6 +33,7 @@ export async function generateMetadata({
   }
 
   const projectUrl = absoluteUrl(`/projects/${project.slug}`);
+  const englishBattutaUrl = absoluteUrl("/en/projects/battuta");
   const socialImage =
     project.slug === "battuta"
       ? {
@@ -50,15 +51,29 @@ export async function generateMetadata({
           }
         : undefined;
 
+  const isBattuta = project.slug === "battuta";
+  const title = isBattuta
+    ? "Battuta：macOS 与 Windows 键盘音效应用"
+    : project.seoTitle;
+  const description = isBattuta
+    ? "Battuta 是一款适用于 macOS 与 Windows 的开源键盘音效应用，提供 21 种机械键盘音色、DIY 音色包、低延迟播放与本地输入统计。"
+    : project.seoDescription;
+
   return {
-    title: project.seoTitle,
-    description: project.seoDescription,
+    title,
+    description,
     alternates: {
       canonical: projectUrl,
+      languages: isBattuta
+        ? {
+            "zh-CN": projectUrl,
+            en: englishBattutaUrl,
+          }
+        : undefined,
     },
     openGraph: {
-      title: `${project.seoTitle} | Wormforce`,
-      description: project.seoDescription,
+      title: `${title} | Wormforce`,
+      description,
       url: projectUrl,
       type: "website",
       images: socialImage ? [socialImage] : undefined,
@@ -67,8 +82,8 @@ export async function generateMetadata({
       socialImage
         ? {
             card: "summary_large_image",
-            title: `${project.seoTitle} | Wormforce`,
-            description: project.seoDescription,
+            title: `${title} | Wormforce`,
+            description,
             images: [socialImage.url],
           }
         : undefined,
@@ -86,8 +101,8 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
   if (project.slug === "battuta") {
     return (
       <>
-        <JsonLd data={projectStructuredData(project)} />
-        <BattutaProductPage />
+        <JsonLd data={battutaStructuredData("zh-CN")} />
+        <BattutaProductPage locale="zh-CN" />
       </>
     );
   }

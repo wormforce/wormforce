@@ -1,4 +1,4 @@
-import { battutaGuidePaths, battutaRelease } from "@/content/battuta";
+import { battutaGuidePaths, battutaPaths, battutaRelease } from "@/content/battuta";
 
 export type BattutaGuide = {
   slug: string;
@@ -145,7 +145,7 @@ export const battutaGuides: BattutaGuide[] = [
     },
     secondaryAction: {
       label: "View Battuta features",
-      href: "/projects/battuta",
+      href: battutaPaths.en,
     },
     relatedGuide: {
       label: "Set up keyboard sounds on Windows",

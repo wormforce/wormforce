@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { battutaPaths } from "@/content/battuta";
 import { battutaGuides } from "@/content/battuta-guides";
 import { members } from "@/content/members";
 import { projects } from "@/content/projects";
@@ -15,8 +16,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: "2026-08-29",
     },
     {
-      url: absoluteUrl("/projects/battuta/privacy"),
+      url: absoluteUrl(battutaPaths.privacy.zh),
       lastModified: "2026-08-25",
+    },
+    {
+      url: absoluteUrl(battutaPaths.en),
+      lastModified: "2026-09-01",
+    },
+    {
+      url: absoluteUrl(battutaPaths.privacy.en),
+      lastModified: "2026-09-01",
     },
   ];
 

@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import type { BattutaGuide } from "@/content/battuta-guides";
-import { battutaRelease } from "@/content/battuta";
+import { battutaPaths, battutaRelease } from "@/content/battuta";
 
 type BattutaGuidePageProps = {
   guide: BattutaGuide;
@@ -48,7 +48,7 @@ export function BattutaGuidePage({ guide }: BattutaGuidePageProps) {
             Wormforce
           </Link>
           <span aria-hidden="true">/</span>
-          <Link href="/projects/battuta" className="transition hover:text-white">
+          <Link href={battutaPaths.en} className="transition hover:text-white">
             Battuta
           </Link>
           <span aria-hidden="true">/</span>
@@ -225,7 +225,7 @@ export function BattutaGuidePage({ guide }: BattutaGuidePageProps) {
 
         <nav className="mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-white/10 pt-7 text-sm">
           <Link
-            href="/projects/battuta"
+            href={battutaPaths.en}
             className="text-[var(--color-muted)] transition hover:text-white"
           >
             ← Back to Battuta
