@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { sustechCliRelease } from "@/content/sustech-cli";
@@ -11,31 +11,200 @@ const installCommand = sustechCliRelease.installCommand;
 
 type IconName = "book" | "blackboard" | "campus" | "research" | "transit";
 
-const capabilities: { icon: IconName; title: string; description: string }[] = [
+type CapabilityGroup = {
+  id: string;
+  icon: IconName;
+  title: string;
+  description: string;
+  access: string;
+  detail: string;
+  highlights: string[];
+  commands: {
+    command: string;
+    summary: string;
+  }[];
+};
+
+const capabilityGroups: CapabilityGroup[] = [
   {
+    id: "academic",
     icon: "book",
     title: "教务与学业",
     description: "课表、成绩、考试、培养方案与选课计划。",
+    access: "公开数据 / 登录后读取",
+    detail:
+      "先查日历、课表和培养进度。需要改变选课状态时，命令会先显示预览。",
+    highlights: ["学期日历与教学周", "个人课表、成绩和考试", "培养方案进度与选课规划"],
+    commands: [
+      {
+        command: "calendar day",
+        summary: "看某一天属于哪一教学周，是否是假期、调课日或考试日。",
+      },
+      {
+        command: "tis schedule",
+        summary: "按周或按学期读取个人课表。",
+      },
+      {
+        command: "tis grades",
+        summary: "查看成绩并计算 GPA。",
+      },
+      {
+        command: "tis timetable",
+        summary: "求解不冲突的课程组合，排课前先试一遍。",
+      },
+      {
+        command: "tis degree progress",
+        summary: "读取 TIS 里的培养方案进度、模块要求和学分缺口。",
+      },
+      {
+        command: "tis selection preview",
+        summary: "加退选、购物车和志愿变更先预览，再由用户确认提交。",
+      },
+    ],
   },
   {
+    id: "blackboard",
     icon: "blackboard",
     title: "Blackboard",
     description: "课程、截止日期、附件、作业与日历。",
+    access: "需要 Blackboard 登录",
+    detail:
+      "课程、附件和截止日期可以一起查。提交作业前会先做 preview，正式执行才用 apply。",
+    highlights: ["课程与内容目录", "附件下载与同步", "截止日期与提交检查"],
+    commands: [
+      {
+        command: "bb courses",
+        summary: "列出当前账号可访问的 Blackboard 课程。",
+      },
+      {
+        command: "bb content",
+        summary: "查看课程或文件夹下的内容项。",
+      },
+      {
+        command: "bb deadlines",
+        summary: "聚合即将到期的作业和截止时间。",
+      },
+      {
+        command: "bb search",
+        summary: "跨课程搜索内容项和附件名，找资料很快。",
+      },
+      {
+        command: "bb sync",
+        summary: "把教师附件同步到本地目录，方便持续跟踪。",
+      },
+      {
+        command: "bb submit preview",
+        summary: "提交作业前先做只读校验，并把文件哈希绑定到正式提交。",
+      },
+    ],
   },
   {
+    id: "campus",
     icon: "campus",
     title: "校园服务",
     description: "场馆、图书馆、预约与计算平台。",
+    access: "变更前先预览、确认",
+    detail:
+      "查馆藏和预约记录不会改变状态。创建预约或上传文件前会先做 preview，提交时再要求确认。",
+    highlights: ["eHall 场馆预约", "IC 图书馆预约", "SUSTech Global 与 PMS"],
+    commands: [
+      {
+        command: "booking rooms",
+        summary: "查 eHall 场馆和会议室，不直接占用资源。",
+      },
+      {
+        command: "booking create preview",
+        summary: "先做库存和冲突检查，再提交精确预约。",
+      },
+      {
+        command: "lib-booking home-summary",
+        summary: "看图书馆当前可预约房间和分类余量。",
+      },
+      {
+        command: "library search",
+        summary: "通过 Primo 查公开馆藏，拿到规范化结果。",
+      },
+      {
+        command: "ws programs",
+        summary: "查看 SUSTech Global 项目列表和详情。",
+      },
+      {
+        command: "pms jobs",
+        summary: "查看打印队列；上传文件前会先用 preview 校验目标。",
+      },
+    ],
   },
   {
+    id: "research",
     icon: "research",
     title: "科研与课程",
     description: "教师、论文、开放获取与课程资源。",
+    access: "公开数据为主",
+    detail:
+      "可以查教师、论文元数据、课程评价和公开校园内容。社区资料会保留来源说明。",
+    highlights: ["教师与院系检索", "论文元数据与 OA 下载", "NCES 与公开校园资料"],
+    commands: [
+      {
+        command: "faculty search",
+        summary: "按姓名、研究方向或院系搜索教师资料。",
+      },
+      {
+        command: "faculty render",
+        summary: "把教师信息整理成更适合 Agent 继续消费的 Markdown。",
+      },
+      {
+        command: "papers search",
+        summary: "查 CrossRef 论文元数据，并可继续解析开放获取来源。",
+      },
+      {
+        command: "papers fetch-oa",
+        summary: "把一篇开放获取 PDF 下载到明确指定的本地位置。",
+      },
+      {
+        command: "nces search",
+        summary: "查 NCES 课程评价和评论样本。",
+      },
+      {
+        command: "online talks search",
+        summary: "搜索社区维护的讲座与公开校园内容。",
+      },
+    ],
   },
   {
+    id: "transit",
     icon: "transit",
     title: "设备与出行",
     description: "校园交通、线路信息与本机网络状态。",
+    access: "公开数据 / 本机状态",
+    detail:
+      "大部分不需要登录。查线路、看校车位置或检查当前 Mac 的 Wi‑Fi，不必在几个工具之间来回切换。",
+    highlights: ["校园巴士与实时位置", "本机 Wi-Fi 状态", "服务连通性与登录检查"],
+    commands: [
+      {
+        command: "transit lines",
+        summary: "看工作日或节假日可用的校车线路。",
+      },
+      {
+        command: "transit schedule",
+        summary: "查看某条线路的发车时刻。",
+      },
+      {
+        command: "transit live",
+        summary: "读取校车实时位置，适合临出门时查一下。",
+      },
+      {
+        command: "wifi status",
+        summary: "检查本机当前的校园 Wi-Fi 连接状态。",
+      },
+      {
+        command: "doctor",
+        summary: "做运行环境与可选服务登录状态的只读检查。",
+      },
+      {
+        command: "services status",
+        summary: "看哪些服务已经实现、哪些仍需适配器或暂不可用。",
+      },
+    ],
   },
 ];
 
@@ -93,6 +262,10 @@ function ProductIcon({ name }: { name: IconName }) {
     return <svg {...common}><path d="M9 3h6M10 3v5l-5.5 9.2A2.5 2.5 0 0 0 6.7 21h10.6a2.5 2.5 0 0 0 2.2-3.8L14 8V3" /><path d="M7.2 15h9.6M9 12h6" /></svg>;
   }
   return <svg {...common}><rect x="5" y="3" width="14" height="16" rx="3" /><path d="M8 6h8M8 14h8M8 19l-2 2M16 19l2 2" /><circle cx="8.5" cy="16.5" r=".7" fill="currentColor" stroke="none" /><circle cx="15.5" cy="16.5" r=".7" fill="currentColor" stroke="none" /></svg>;
+}
+
+function CapabilityChevron() {
+  return <svg className="sc-capability-chevron" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m3 5.5 5 5 5-5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" /></svg>;
 }
 
 function CopyButton({ command = installCommand, compact = false }: { command?: string; compact?: boolean }) {
@@ -161,6 +334,12 @@ function OutputDemo() {
 }
 
 export function SustechCliProductPage() {
+  const [expandedCapability, setExpandedCapability] = useState<string | null>(
+    capabilityGroups[0]?.id ?? null,
+  );
+  const activeCapability = capabilityGroups.find((item) => item.id === expandedCapability);
+  const activeCapabilityIndex = capabilityGroups.findIndex((item) => item.id === expandedCapability);
+
   return (
     <div className="sustech-cli-product" lang="zh-CN">
       <nav className="sc-nav" aria-label="sustech cli 产品导航">
@@ -204,15 +383,83 @@ export function SustechCliProductPage() {
 
       <section className="sc-capabilities" id="capabilities">
         <div className="sc-container">
-          <h2>校园服务，统一成一种语言<span>。</span></h2>
+          <h2>常用校园服务，都在终端里<span>。</span></h2>
+          <p className="sc-capabilities-lede">点开卡片，就能看到常用命令，以及哪些操作需要登录或确认。</p>
           <div className="sc-capability-rail">
-            {capabilities.map((item, index) => (
-              <article key={item.title}>
-                <div className={`sc-icon sc-icon-${index}`}><ProductIcon name={item.icon} /></div>
-                <h3>{item.title}</h3>
-                <p>{item.description}</p>
-              </article>
-            ))}
+            {capabilityGroups.map((item, index) => {
+              const isExpanded = expandedCapability === item.id;
+
+              return (
+                <article
+                  key={item.id}
+                  className={isExpanded ? "is-active" : undefined}
+                  style={{ "--sc-capability-order": index * 2 } as CSSProperties}
+                >
+                  <button
+                    className="sc-capability-trigger"
+                    id={`capability-trigger-${item.id}`}
+                    type="button"
+                    aria-expanded={isExpanded}
+                    aria-controls="capability-detail-panel"
+                    onClick={() => setExpandedCapability((current) => current === item.id ? null : item.id)}
+                  >
+                    <span className="sc-capability-access">{item.access}</span>
+                    <div className={`sc-icon sc-icon-${index}`}><ProductIcon name={item.icon} /></div>
+                    <h3>{item.title}</h3>
+                    <p>{item.description}</p>
+                    <span className="sc-capability-disclosure">
+                      {isExpanded ? "收起功能" : "查看功能"}
+                      <CapabilityChevron />
+                    </span>
+                  </button>
+                </article>
+              );
+            })}
+            {activeCapability ? (
+              <section
+                className="sc-capability-detail"
+                id="capability-detail-panel"
+                aria-labelledby="capability-detail-heading"
+                style={{ "--sc-capability-detail-order": activeCapabilityIndex * 2 + 1 } as CSSProperties}
+              >
+                <div className="sc-capability-detail-heading">
+                  <div className={`sc-capability-detail-icon sc-icon sc-icon-${activeCapabilityIndex}`}>
+                    <ProductIcon name={activeCapability.icon} />
+                  </div>
+                  <div className="sc-capability-detail-copy">
+                    <p className="sc-capability-eyebrow">按场景展开</p>
+                    <h3 id="capability-detail-heading">{activeCapability.title}</h3>
+                    <p>{activeCapability.detail}</p>
+                  </div>
+                  <button
+                    className="sc-capability-close"
+                    type="button"
+                    aria-label={`收起${activeCapability.title}功能`}
+                    onClick={() => setExpandedCapability(null)}
+                  >
+                    收起
+                    <CapabilityChevron />
+                  </button>
+                </div>
+                <div className="sc-capability-highlight-list">
+                  {activeCapability.highlights.map((highlight) => (
+                    <span key={highlight}>{highlight}</span>
+                  ))}
+                </div>
+                <ul className="sc-capability-command-grid">
+                  {activeCapability.commands.map((command) => (
+                    <li key={command.command}>
+                      <code>sustech {command.command}</code>
+                      <p>{command.summary}</p>
+                    </li>
+                  ))}
+                </ul>
+                <div className="sc-capability-detail-footer">
+                  <p>这里只列出常用入口。安装后运行 <code>sustech capabilities</code>，可以查看当前版本的完整命令、登录方式和确认要求。</p>
+                  <a href={`${repositoryHref}#what-it-covers`} target="_blank" rel="noreferrer">查看完整说明 <span aria-hidden="true">↗</span></a>
+                </div>
+              </section>
+            ) : <div id="capability-detail-panel" hidden />}
           </div>
         </div>
       </section>
