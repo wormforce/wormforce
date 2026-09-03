@@ -55,6 +55,70 @@ final result: passed
 
 ---
 
+# Battuta exact-sequence waveform QA
+
+- Source visual truth: `/var/folders/fl/yb17qc717wz3ljd5p3_15b900000gn/T/codex-clipboard-8869df86-81e1-4212-94cc-89580aa8d235.png`
+- Final browser-rendered implementation: `/private/tmp/battuta-true-waveform-final.png`
+- Final side-by-side evidence: `/private/tmp/battuta-true-waveform-comparison.png`
+- Source and implementation comparison size: 1487 × 1058 each
+- State: Chinese locale, desktop light theme, BCP selected and playing at 0:04, BCP and Topre selected for A/B comparison
+- Preview route: `https://wormforce-git-codex-battuta-latest-downloads-7b7b7bs-projects.vercel.app/projects/battuta/community`
+
+## Audio-to-waveform invariant
+
+Each 12-second profile preview is rendered once with `OfflineAudioContext` from the exact 103-hit typing schedule, including the same press/release sample resolution, 55 ms release offset, playback gain/rate variation, sample offsets, and 16-voice ceiling used by live playback. `buildWaveform()` reads that rendered `AudioBuffer`, and `playPreparedSequence()` assigns the same buffer object to the live `AudioBufferSourceNode`.
+
+Collection and A/B previews follow the same rule with one composite multi-profile buffer. If exact offline rendering is unavailable or the prepared buffer cannot be played, the UI marks the waveform unavailable and displays a zero envelope instead of substituting an unrelated sprite waveform.
+
+## Runtime and interaction evidence
+
+- 18 visible/near-visible canvases reported `data-waveform-source="rendered-sequence"`; 9 below-fold canvases remained intentionally pending under lazy loading; 0 canvases reported unavailable.
+- BCP and Topre rendered visibly different waveform envelopes.
+- BCP's card, right player, and comparison item reuse the same cached profile-preview points.
+- BCP progressed to 0:04 / 0:12 and remained active after the 12-second loop boundary.
+- Quick audition stopped the running main track before emitting its one-shot sample, keeping the displayed active waveform aligned with current output.
+- The deep-night collection used a single exact composite buffer and reported 0:02 / 0:05 during playback.
+- The BCP/Topre A/B run used a single exact composite buffer and reported 0:02 / 0:04 during playback.
+- The 390 × 844 responsive layout retained working search, filters, collection preview, sound cards, and comparison dock.
+- Browser console warnings/errors after the final desktop interaction pass: none.
+
+## Performance safeguards
+
+- Waveforms render only when their canvas enters or approaches the viewport.
+- Offline rendering is limited to two concurrent contexts; remaining work uses a FIFO queue.
+- Prepared audio keeps an eight-entry LRU cache and releases queued work, cached buffers, timers, voices, and contexts on teardown.
+- Resize observers remain stable while playback progress redraws the canvas.
+
+## Findings and fixes
+
+### Pass 1
+
+- P1: waveform points came from each full sample sprite, not from the 12-second track actually being played.
+- P2: a prepared-buffer playback failure could fall back to timer taps while the UI still claimed the waveform was exact.
+- P2: quick audition could overlap the main preview with sound absent from the displayed waveform.
+- P2: vertical peak bars read more like an equalizer than the continuous audio waveform in the supplied reference.
+
+### Final fix
+
+- Replaced sprite-derived display data with peaks computed from the exact rendered preview buffer.
+- Made playback report its actual mode and removed false exact markers from every fallback path.
+- Made one-shot audition cancel active preview playback.
+- Drew the real peaks as a continuous symmetric envelope with a clipped lime played region.
+- Added visibility-based generation, two-render concurrency, and stable canvas resizing.
+
+## Verification
+
+- `npx tsc --noEmit`: passed
+- `npm run lint`: passed
+- `npm run build`: passed, including the Battuta community manifest verifier and all 23 static/dynamic route checks
+- Vercel deployment for commit `1e99d7d`: passed
+
+No actionable P0, P1, or P2 visual, responsive, interaction, console, or waveform-integrity issues remain for the tested states.
+
+final result: passed
+
+---
+
 # Battuta Sound Atlas design QA
 
 - Source visual truth: `/var/folders/fl/yb17qc717wz3ljd5p3_15b900000gn/T/codex-clipboard-8869df86-81e1-4212-94cc-89580aa8d235.png`
