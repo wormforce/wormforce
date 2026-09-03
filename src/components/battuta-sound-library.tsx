@@ -179,6 +179,8 @@ const copy = {
     gridView: "网格视图",
     previous: "上一个音色",
     next: "下一个音色",
+    collapsePlayer: "收起播放器",
+    expandPlayer: "展开播放器",
     stop: "暂停试听",
     play: "播放试听",
   },
@@ -239,6 +241,8 @@ const copy = {
     gridView: "Grid view",
     previous: "Previous sound",
     next: "Next sound",
+    collapsePlayer: "Collapse player",
+    expandPlayer: "Expand player",
     stop: "Pause preview",
     play: "Play preview",
   },
@@ -254,6 +258,10 @@ function localizedTone(profile: DemoProfile, locale: BattutaLocale) {
 
 function profileAuthor(profile: DemoProfile, fallback: string) {
   return profile.attribution?.author?.trim() || fallback;
+}
+
+function waveformLabel(profileName: string, locale: BattutaLocale) {
+  return profileName + (locale === "en" ? " waveform" : " 波形图");
 }
 
 function AudioWaveform({
@@ -351,6 +359,7 @@ export function BattutaSoundLibrary({
   const [favorites, setFavorites] = useState<Set<string>>(() => new Set());
   const [loadState, setLoadState] = useState<"loading" | "ready" | "error">("loading");
   const [audioError, setAudioError] = useState(false);
+  const [railCollapsed, setRailCollapsed] = useState(false);
 
   const engineRef = useRef<BattutaPreviewAudio | null>(null);
   const timerIDsRef = useRef<number[]>([]);
@@ -545,11 +554,12 @@ export function BattutaSoundLibrary({
   }, [playProfile, profiles, selectedProfileID]);
 
   const playRandom = useCallback(() => {
-    if (!profiles.length) return;
-    const candidates = profiles.filter((profile) => profile.id !== selectedProfileID);
-    const profile = candidates[Math.floor(Math.random() * candidates.length)] ?? profiles[0];
+    const pool = visibleProfiles.length ? visibleProfiles : profiles;
+    if (!pool.length) return;
+    const candidates = pool.filter((profile) => profile.id !== selectedProfileID);
+    const profile = candidates[Math.floor(Math.random() * candidates.length)] ?? pool[0];
     void playProfile(profile.id);
-  }, [playProfile, profiles, selectedProfileID]);
+  }, [playProfile, profiles, selectedProfileID, visibleProfiles]);
 
   const toggleCompare = useCallback((profileID: string) => {
     if (comparisonRunning) clearPlayback();
@@ -626,6 +636,61 @@ export function BattutaSoundLibrary({
     }
   }, [clearPlayback, compareIDs, profiles]);
 
+  const playCollection = useCallback(async (profileIDs: readonly string[]) => {
+    const engine = engineRef.current;
+    const IDs = profileIDs.filter((id) => profiles.some((profile) => profile.id === id));
+    if (!engine || !IDs.length) return;
+    clearPlayback();
+    const token = playbackTokenRef.current;
+    try {
+      await engine.activate(IDs[0]);
+      await Promise.all(IDs.map((id) => engine.loadProfile(id)));
+      if (token !== playbackTokenRef.current || engine !== engineRef.current) return;
+
+      setIsPlaying(true);
+      setSelectedProfileID(IDs[0]);
+      setPlayingProfileID(IDs[0]);
+      setProgress(0);
+
+      const sampleCodes = ["KeyA", "KeyS", "KeyD", "Space", "KeyJ", "KeyK", "Enter"];
+      const segmentDuration = 1_650;
+      IDs.forEach((profileID, profileIndex) => {
+        const segmentStart = profileIndex * segmentDuration;
+        const selectionTimer = window.setTimeout(() => {
+          if (token !== playbackTokenRef.current) return;
+          setSelectedProfileID(profileID);
+          setPlayingProfileID(profileID);
+        }, segmentStart);
+        timerIDsRef.current.push(selectionTimer);
+        sampleCodes.forEach((code, sampleIndex) => {
+          const timerID = window.setTimeout(() => {
+            if (token === playbackTokenRef.current) engine.tap(profileID, code);
+          }, segmentStart + 130 + sampleIndex * 142);
+          timerIDsRef.current.push(timerID);
+        });
+      });
+
+      const startedAt = performance.now();
+      const totalDuration = IDs.length * segmentDuration;
+      const update = () => {
+        if (token !== playbackTokenRef.current) return;
+        const nextProgress = Math.min(1, (performance.now() - startedAt) / totalDuration);
+        setProgress(nextProgress);
+        if (nextProgress < 1) animationFrameRef.current = requestAnimationFrame(update);
+        else {
+          clearPlayback(false);
+          setProgress(1);
+        }
+      };
+      animationFrameRef.current = requestAnimationFrame(update);
+    } catch {
+      if (token === playbackTokenRef.current) {
+        clearPlayback();
+        setAudioError(true);
+      }
+    }
+  }, [clearPlayback, profiles]);
+
   const handleTypingKey = useCallback((event: ReactKeyboardEvent<HTMLInputElement>) => {
     if (event.repeat || event.nativeEvent.isComposing || event.metaKey || event.ctrlKey || event.altKey) return;
     const profile = selectedProfile;
@@ -667,7 +732,7 @@ export function BattutaSoundLibrary({
 
   return (
     <main className="community-library-shell">
-      <div className="community-library-workspace">
+      <div className={"community-library-workspace" + (railCollapsed ? " is-rail-collapsed" : "")}>
         <section className="community-library-main" aria-labelledby="sound-atlas-title">
           <header className="community-library-topbar">
             <div className="community-library-title-block">
@@ -690,7 +755,7 @@ export function BattutaSoundLibrary({
             </button>
           </header>
 
-          <div className="community-library-filter-row" aria-label={locale === "en" ? "Sound filters" : "音色筛选"}>
+          <div className="community-library-filter-row" role="group" aria-label={locale === "en" ? "Sound filters" : "音色筛选"}>
             <div className="community-library-filter-scroll">
               {familyFilters.map((filter) => (
                 <button
@@ -735,7 +800,7 @@ export function BattutaSoundLibrary({
                     <button
                       type="button"
                       aria-label={content.playCollection + ": " + collection.title}
-                      onClick={() => representative && void playProfile(representative.id)}
+                      onClick={() => void playCollection(collection.profileIDs)}
                     >
                       <PlayIcon size={17} weight="fill" aria-hidden />
                       <span>{content.playCollection}</span>
@@ -747,7 +812,7 @@ export function BattutaSoundLibrary({
                       active={playingProfileID === representative.id && isPlaying}
                       progress={playingProfileID === representative.id ? progress : 0}
                       light
-                      label={representative.displayName + " waveform"}
+                      label={waveformLabel(representative.displayName, locale)}
                     />
                   ) : null}
                 </article>
@@ -801,7 +866,7 @@ export function BattutaSoundLibrary({
                         points={waveforms[profile.id]}
                         active={profileIsPlaying}
                         progress={profileIsPlaying ? progress : 0}
-                        label={profile.displayName + " waveform"}
+                        label={waveformLabel(profile.displayName, locale)}
                       />
                       <button
                         type="button"
@@ -851,10 +916,17 @@ export function BattutaSoundLibrary({
         <aside className="community-library-player-rail" aria-label={content.playing}>
           <div className="community-library-player-heading">
             <strong>{content.playing}</strong>
-            <CaretDoubleLeftIcon size={18} weight="bold" aria-hidden />
+            <button
+              type="button"
+              aria-label={railCollapsed ? content.expandPlayer : content.collapsePlayer}
+              aria-expanded={!railCollapsed}
+              onClick={() => setRailCollapsed((current) => !current)}
+            >
+              <CaretDoubleLeftIcon size={18} weight="bold" aria-hidden />
+            </button>
           </div>
           <section className="community-library-player-card">
-            <div className="community-library-player-title">
+            <div className="community-library-player-title" aria-live="polite">
               <span className="community-library-author-mark"><WaveformIcon size={14} weight="bold" aria-hidden /></span>
               <div>
                 <h2>{selectedProfile.displayName}</h2>
@@ -866,7 +938,7 @@ export function BattutaSoundLibrary({
                 points={selectedWaveform}
                 active={playingProfileID === selectedProfile.id && isPlaying}
                 progress={playingProfileID === selectedProfile.id ? progress : 0}
-                label={selectedProfile.displayName + " detailed waveform"}
+                label={waveformLabel(selectedProfile.displayName, locale)}
               />
               <div>
                 <strong>{formatTime(currentElapsed)}</strong>
@@ -943,7 +1015,7 @@ export function BattutaSoundLibrary({
                 <button type="button" className="community-library-compare-preview" onClick={() => void triggerSample(profile.id, "KeyA")}>
                   <span className="community-library-author-mark"><WaveformIcon size={13} weight="bold" aria-hidden /></span>
                   <span><strong>{profile.displayName}</strong><small>{profileAuthor(profile, content.bundled)}</small></span>
-                  <AudioWaveform points={waveforms[profile.id]} light label={profile.displayName + " waveform"} />
+                  <AudioWaveform points={waveforms[profile.id]} light label={waveformLabel(profile.displayName, locale)} />
                 </button>
                 <button type="button" className="community-library-compare-remove" aria-label={content.removeCompare + ": " + profile.displayName} onClick={() => toggleCompare(profile.id)}><XIcon size={14} weight="bold" aria-hidden /></button>
               </div>

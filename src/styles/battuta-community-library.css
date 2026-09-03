@@ -21,6 +21,7 @@
 .community-library-nav {
   top: 0;
   height: var(--community-library-nav-h);
+  color: #f5f5f2;
   background: #212221;
 }
 
@@ -107,7 +108,7 @@
   font-size: 14px;
 }
 
-.community-library-search input::placeholder { color: #9ca09a; }
+.community-library-search input::placeholder { color: #666b65; }
 
 .community-library-random-button {
   min-height: 46px;
@@ -417,7 +418,7 @@
   display: flex;
   align-items: center;
   gap: 7px;
-  color: #777b75;
+  color: #6d706c;
   font-size: 10px;
 }
 
@@ -518,6 +519,49 @@
   justify-content: space-between;
   min-height: 30px;
   font-size: 16px;
+}
+
+.community-library-player-heading button {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+}
+
+.community-library-player-heading button:hover { background: #f0f2ed; }
+
+@media (min-width: 981px) {
+  .community-library-workspace.is-rail-collapsed {
+    grid-template-columns: minmax(0, 1fr) 58px;
+  }
+
+  .community-library-workspace.is-rail-collapsed .community-library-player-rail {
+    padding-inline: 11px;
+    overflow: hidden;
+  }
+
+  .community-library-workspace.is-rail-collapsed .community-library-player-heading {
+    justify-content: center;
+  }
+
+  .community-library-workspace.is-rail-collapsed .community-library-player-heading strong,
+  .community-library-workspace.is-rail-collapsed .community-library-player-card,
+  .community-library-workspace.is-rail-collapsed .community-library-quick-listen,
+  .community-library-workspace.is-rail-collapsed .community-library-type-test,
+  .community-library-workspace.is-rail-collapsed .community-library-audio-error,
+  .community-library-workspace.is-rail-collapsed .community-library-player-actions {
+    display: none;
+  }
+
+  .community-library-workspace.is-rail-collapsed .community-library-player-heading svg {
+    transform: rotate(180deg);
+  }
 }
 
 .community-library-player-card {
@@ -872,6 +916,7 @@
   .community-library-type-test,
   .community-library-audio-error { grid-column: 1 / -1; }
   .community-library-player-actions { grid-column: 2; }
+  .community-library-player-heading button { display: none; }
   .community-library-sound-grid.is-list .community-library-sound-card { grid-template-columns: 180px 1fr; }
   .community-library-sound-grid.is-list .community-library-sound-meta { grid-column: 1 / -1; justify-content: flex-start; }
 }
