@@ -676,6 +676,8 @@ export function BattutaSoundLibrary({
 
     clearPlayback();
     const token = playbackTokenRef.current;
+    isPlayingRef.current = true;
+    playingProfileRef.current = profileID;
     setSelectedProfileID(profileID);
     setAudioError(false);
 
@@ -703,6 +705,8 @@ export function BattutaSoundLibrary({
       setActivePlaybackWaveform(renderedWaveform);
       setActivePlaybackExact(exactPlayback);
       setActivePlaybackDurationMS(prepared.durationMilliseconds);
+      isPlayingRef.current = true;
+      playingProfileRef.current = profileID;
       setIsPlaying(true);
       setProgress(0);
 
@@ -789,6 +793,8 @@ export function BattutaSoundLibrary({
     if (!engine || IDs.length < 2) return;
     clearPlayback();
     const token = playbackTokenRef.current;
+    isPlayingRef.current = true;
+    playingProfileRef.current = IDs[0];
     const hits = buildMultiProfileSequence(IDs);
     const duration = IDs.length * comparisonSegmentDurationMS;
     setComparisonRunning(true);
@@ -806,6 +812,8 @@ export function BattutaSoundLibrary({
       setActivePlaybackDurationMS(prepared.durationMilliseconds);
       setSelectedProfileID(IDs[0]);
       setPlayingProfileID(IDs[0]);
+      isPlayingRef.current = true;
+      playingProfileRef.current = IDs[0];
       setIsPlaying(true);
 
       IDs.forEach((profileID, profileIndex) => {
@@ -813,6 +821,7 @@ export function BattutaSoundLibrary({
           if (token !== playbackTokenRef.current) return;
           setSelectedProfileID(profileID);
           setPlayingProfileID(profileID);
+          playingProfileRef.current = profileID;
         }, profileIndex * comparisonSegmentDurationMS);
         timerIDsRef.current.push(selectionTimer);
       });
@@ -853,6 +862,8 @@ export function BattutaSoundLibrary({
     if (!engine || !IDs.length) return;
     clearPlayback();
     const token = playbackTokenRef.current;
+    isPlayingRef.current = true;
+    playingProfileRef.current = IDs[0];
     const hits = buildMultiProfileSequence(IDs);
     const duration = IDs.length * comparisonSegmentDurationMS;
     setAudioError(false);
@@ -879,6 +890,8 @@ export function BattutaSoundLibrary({
       setIsPlaying(true);
       setSelectedProfileID(IDs[0]);
       setPlayingProfileID(IDs[0]);
+      isPlayingRef.current = true;
+      playingProfileRef.current = IDs[0];
       setProgress(0);
 
       IDs.forEach((profileID, profileIndex) => {
@@ -886,6 +899,7 @@ export function BattutaSoundLibrary({
           if (token !== playbackTokenRef.current) return;
           setSelectedProfileID(profileID);
           setPlayingProfileID(profileID);
+          playingProfileRef.current = profileID;
         }, profileIndex * comparisonSegmentDurationMS);
         timerIDsRef.current.push(selectionTimer);
       });
