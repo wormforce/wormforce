@@ -55,6 +55,32 @@ type Collection = {
 
 const manifestURL = "/battuta/demo-audio/manifest.json";
 const defaultProfileID = "bcp-suit80";
+const curatedProfileOrder = [
+  "bcp-suit80",
+  "holypanda",
+  "mxblue",
+  "cream",
+  "topre",
+  "buckling",
+  "mxbrown",
+  "mxclear",
+  "g915brown",
+  "studiotactile",
+  "boxnavy",
+  "boxwhite",
+  "lowprofileblue",
+  "bluealps",
+  "studioclicky",
+  "alpaca",
+  "blackink",
+  "redink",
+  "mxblack",
+  "turquoise",
+  "keychronred",
+] as const;
+const curatedProfileRank = new Map<string, number>(
+  curatedProfileOrder.map((profileID, index) => [profileID, index]),
+);
 const sequenceDurationMS = 12_000;
 const typingCodes = [
   "KeyT", "KeyH", "KeyE", "Space", "KeyQ", "KeyU", "KeyI", "KeyC", "KeyK",
@@ -370,6 +396,7 @@ export function BattutaSoundLibrary({
 
     return () => {
       disposed = true;
+      playbackTokenRef.current += 1;
       controller.abort();
       const engine = engineRef.current;
       engineRef.current = null;
@@ -416,7 +443,10 @@ export function BattutaSoundLibrary({
     if (sort === "samples") {
       return [...result].sort((a, b) => Object.keys(b.samples).length - Object.keys(a.samples).length);
     }
-    return result;
+    return [...result].sort((a, b) => (
+      (curatedProfileRank.get(a.id) ?? Number.MAX_SAFE_INTEGER)
+      - (curatedProfileRank.get(b.id) ?? Number.MAX_SAFE_INTEGER)
+    ));
   }, [family, profiles, query, sort]);
 
   const clearPlayback = useCallback((resetProgress = true) => {
@@ -428,6 +458,8 @@ export function BattutaSoundLibrary({
       animationFrameRef.current = null;
     }
     engineRef.current?.stopAll();
+    isPlayingRef.current = false;
+    playingProfileRef.current = null;
     setIsPlaying(false);
     setComparisonRunning(false);
     setPlayingProfileID(null);
@@ -498,9 +530,10 @@ export function BattutaSoundLibrary({
     setAudioError(false);
     try {
       await engine.activate(profileID);
+      if (engine !== engineRef.current) return;
       engine.tap(profileID, code);
     } catch {
-      setAudioError(true);
+      if (engine === engineRef.current) setAudioError(true);
     }
   }, []);
 
@@ -519,17 +552,24 @@ export function BattutaSoundLibrary({
   }, [playProfile, profiles, selectedProfileID]);
 
   const toggleCompare = useCallback((profileID: string) => {
+    if (comparisonRunning) clearPlayback();
     setCompareIDs((current) => {
       if (current.includes(profileID)) return current.filter((id) => id !== profileID);
       if (current.length >= 3) return [...current.slice(1), profileID];
       return [...current, profileID];
     });
-  }, []);
+  }, [clearPlayback, comparisonRunning]);
 
   const addNextCompareProfile = useCallback(() => {
+    if (comparisonRunning) clearPlayback();
     const next = profiles.find((profile) => !compareIDs.includes(profile.id));
     if (next) setCompareIDs((current) => [...current, next.id].slice(0, 3));
-  }, [compareIDs, profiles]);
+  }, [clearPlayback, compareIDs, comparisonRunning, profiles]);
+
+  const clearComparison = useCallback(() => {
+    if (comparisonRunning) clearPlayback();
+    setCompareIDs([]);
+  }, [clearPlayback, comparisonRunning]);
 
   const runComparison = useCallback(async () => {
     const engine = engineRef.current;
@@ -917,7 +957,7 @@ export function BattutaSoundLibrary({
           ) : null}
         </div>
         <div className="community-library-compare-actions">
-          <button type="button" className="is-clear" onClick={() => setCompareIDs([])} disabled={!compareIDs.length}>{content.clear}</button>
+          <button type="button" className="is-clear" onClick={clearComparison} disabled={!compareIDs.length}>{content.clear}</button>
           <button type="button" className="is-compare" onClick={() => comparisonRunning ? clearPlayback() : void runComparison()} disabled={compareIDs.length < 2}>
             {comparisonRunning ? <PauseIcon size={18} weight="fill" aria-hidden /> : <PlayIcon size={18} weight="fill" aria-hidden />}
             {comparisonRunning ? content.comparing : content.compare}
