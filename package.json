@@ -4,10 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "npm run verify:battuta-community && next build",
     "start": "next start",
     "lint": "eslint",
-    "sync:battuta-demo-audio": "node scripts/build-battuta-demo-audio.mjs"
+    "sync:battuta-demo-audio": "node scripts/build-battuta-demo-audio.mjs",
+    "verify:battuta-community": "node scripts/verify-battuta-community.mjs",
+    "verify:battuta-community:remote": "node scripts/verify-battuta-community.mjs --remote"
   },
   "dependencies": {
     "@vercel/analytics": "^1.6.1",

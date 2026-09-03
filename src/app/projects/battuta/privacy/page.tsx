@@ -9,12 +9,12 @@ import { absoluteUrl } from "@/lib/utils";
 
 const chinesePolicyUrl = absoluteUrl(battutaPaths.privacy.zh);
 const englishPolicyUrl = absoluteUrl(battutaPaths.privacy.en);
-const effectiveDate = "2026-08-25";
+const effectiveDate = "2026-09-03";
 
 export const metadata: Metadata = {
   title: "Battuta 隐私政策",
   description:
-    "了解 Battuta 如何在设备本地处理键盘与鼠标事件、输入统计、DIY 音色和更新请求。",
+    "了解 Battuta 如何在设备本地处理键盘与鼠标事件、输入统计、DIY 音色，以及更新和社区音色请求。",
   alternates: {
     canonical: chinesePolicyUrl,
     languages: {
@@ -75,11 +75,12 @@ export function BattutaPrivacyPage({
   const isEnglish = locale === "en";
   const policyUrl = isEnglish ? englishPolicyUrl : chinesePolicyUrl;
   const productPath = isEnglish ? battutaPaths.en : battutaPaths.zh;
+  const communityPath = isEnglish ? battutaPaths.community.en : battutaPaths.community.zh;
   const otherLocalePath = isEnglish ? battutaPaths.privacy.zh : battutaPaths.privacy.en;
   const localizedTitle = isEnglish ? "Battuta Privacy Policy" : "Battuta 隐私政策";
   const localizedDescription = isEnglish
-    ? "How Battuta processes local input events, typing statistics, custom sounds, and update requests."
-    : "Battuta 的设备本地输入处理、存储、用户控制和第三方服务说明。";
+    ? "How Battuta processes local input events, typing statistics, custom sounds, updates, and community-sound requests."
+    : "Battuta 的设备本地输入处理、存储、用户控制，以及更新和社区音色请求说明。";
 
   return (
     <div className="battuta-product battuta-privacy-page" lang={locale}>
@@ -146,6 +147,7 @@ export function BattutaPrivacyPage({
           </Link>
           <div className="nav-links">
             <Link href={productPath}>{isEnglish ? "Product" : "产品页"}</Link>
+            <Link href={communityPath}>{isEnglish ? "Community" : "社区音色"}</Link>
             <span className="locale-switcher" aria-label={isEnglish ? "Switch to Chinese" : "切换为英文"}>
               <span aria-current="page">{isEnglish ? "EN" : "ZH"}</span>
               <Link
@@ -178,9 +180,9 @@ export function BattutaPrivacyPage({
             </p>
             <div className="privacy-policy-meta">
               <span>{isEnglish ? "Effective date" : "生效日期"}</span>
-              <time dateTime={effectiveDate}>{isEnglish ? "August 25, 2026" : "2026 年 8 月 25 日"}</time>
+              <time dateTime={effectiveDate}>{isEnglish ? "September 3, 2026" : "2026 年 9 月 3 日"}</time>
               <span>{isEnglish ? "Version" : "版本"}</span>
-              <strong>1.0</strong>
+              <strong>1.1</strong>
             </div>
           </div>
 
@@ -315,6 +317,14 @@ export function BattutaPrivacyPage({
                 参见 <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" target="_blank" rel="noreferrer">GitHub 隐私声明 ↗</a>。
               </li>
               <li>
+                <strong>Battuta 社区音色：</strong>浏览社区目录时，用户的浏览器会访问 <code>www.wormforce.net</code>；
+                只有在用户明确点击安装并唤起 Battuta 后，Battuta 才会请求所选音色与发布版本的公开安装描述，并从
+                <code>assets.wormforce.net</code> 下载对应的公开音色包。浏览器、应用、相关服务器与内容分发服务会自然收到
+                IP 地址、请求时间、User-Agent、音色 ID 和发布 ID 等请求元数据，但请求不包含输入文字、本地输入统计、
+                前台应用统计或 DIY 音频。公开资源由 Cloudflare 基础设施提供；参见
+                {" "}<a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noreferrer">Cloudflare 隐私政策 ↗</a>。
+              </li>
+              <li>
                 <strong>用户主动分享：</strong>用户自行导出并发送的音色包只会发送到用户选择的目的地；Wormforce 不参与该传输。
               </li>
             </ul>
@@ -350,7 +360,7 @@ export function BattutaPrivacyPage({
               {" "}<a href={`mailto:${teamProfile.contactEmail}`}>{teamProfile.contactEmail}</a>。
             </p>
             <p className="privacy-policy-updated">
-              生效及最后更新：<time dateTime={effectiveDate}>2026 年 8 月 25 日</time>
+              生效及最后更新：<time dateTime={effectiveDate}>2026 年 9 月 3 日</time>
             </p>
           </PolicySection>
         </div>
@@ -494,6 +504,17 @@ export function BattutaPrivacyPage({
                 <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" target="_blank" rel="noreferrer">GitHub Privacy Statement ↗</a>.
               </li>
               <li>
+                <strong>Battuta Community:</strong> The user&apos;s browser contacts
+                <code>www.wormforce.net</code> while browsing the catalog. Only after the user
+                explicitly selects Install and launches Battuta does the app request the public
+                descriptor for that sound and release, then download its archive from
+                <code>assets.wormforce.net</code>. The browser, app, servers, and delivery service
+                naturally receive request metadata such as an IP address, request time, User-Agent,
+                sound ID, and release ID. Requests do not contain typed text, local typing statistics,
+                foreground-app statistics, or DIY audio. Public assets use Cloudflare infrastructure;
+                see the {" "}<a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noreferrer">Cloudflare Privacy Policy ↗</a>.
+              </li>
+              <li>
                 <strong>User-directed sharing:</strong> A sound pack exported and sent by a user goes
                 only to the destination selected by that user. Wormforce is not involved in that transfer.
               </li>
@@ -535,7 +556,7 @@ export function BattutaPrivacyPage({
               email <a href={`mailto:${teamProfile.contactEmail}`}>{teamProfile.contactEmail}</a>.
             </p>
             <p className="privacy-policy-updated">
-              Effective and last updated: <time dateTime={effectiveDate}>August 25, 2026</time>
+              Effective and last updated: <time dateTime={effectiveDate}>September 3, 2026</time>
             </p>
           </PolicySection>
         </div>

@@ -33,6 +33,7 @@ All editable content for the v1 site is in code:
 - Member profiles: `src/content/members.ts`
 - Project profiles: `src/content/projects.ts`
 - Battuta release and search guides: `src/content/battuta.ts`, `src/content/battuta-guides.ts`
+- Battuta curated community catalog: `src/content/battuta-community/catalog.json`
 
 Replace placeholder text, links, and avatar files when production content is ready.
 
@@ -43,9 +44,23 @@ Replace placeholder text, links, and avatar files when production content is rea
 - `/projects` - project directory
 - `/projects/[slug]` - project detail pages
 - `/projects/battuta/guides/[slug]` - Battuta platform setup guides
+- `/projects/battuta/community` and `/en/projects/battuta/community` - curated community catalog
+- `/projects/battuta/community/packs/[slug]` - localized community sound details
+- `/api/battuta/community/v1/packs/[packId]/releases/[releaseId]/install` - immutable install descriptors
 - `/projects/battuta/privacy` - Battuta privacy policy
 - `not-found` - custom 404
 - `/robots.txt` and `/sitemap.xml` via metadata routes
+
+## Battuta Community
+
+Community v1 is published from a reviewed static catalog. Website builds run
+`npm run verify:battuta-community` before Next.js compilation, so malformed IDs,
+versions, hashes, paths, sizes, dates, localized fields, or descriptors fail the
+deployment. Use `npm run verify:battuta-community:remote` to verify the exact R2
+headers, byte count, and SHA-256 after uploading an archive.
+
+See [`docs/battuta-community-publishing.md`](docs/battuta-community-publishing.md)
+for the R2 layout, immutable-release rules, catalog shape, and release checklist.
 
 ## CI
 

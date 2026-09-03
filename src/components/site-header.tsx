@@ -23,7 +23,9 @@ const chineseNavItems = [
 export function SiteHeader() {
   const pathname = usePathname();
   const isChineseBattutaPage =
-    pathname === "/projects/battuta" || pathname === "/projects/battuta/privacy";
+    pathname === "/projects/battuta"
+    || (pathname.startsWith("/projects/battuta/")
+      && !pathname.startsWith("/projects/battuta/guides/"));
   const navItems = isChineseBattutaPage ? chineseNavItems : englishNavItems;
 
   return (

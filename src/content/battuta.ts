@@ -16,6 +16,10 @@ export type BattutaLocale = "zh-CN" | "en";
 export const battutaPaths = {
   zh: "/projects/battuta",
   en: "/en/projects/battuta",
+  community: {
+    zh: "/projects/battuta/community",
+    en: "/en/projects/battuta/community",
+  },
   privacy: {
     zh: "/projects/battuta/privacy",
     en: "/en/projects/battuta/privacy",

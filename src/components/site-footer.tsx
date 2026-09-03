@@ -7,7 +7,9 @@ export function SiteFooter() {
   const pathname = usePathname();
   const currentYear = new Date().getFullYear();
   const isChineseBattutaPage =
-    pathname === "/projects/battuta" || pathname === "/projects/battuta/privacy";
+    pathname === "/projects/battuta"
+    || (pathname.startsWith("/projects/battuta/")
+      && !pathname.startsWith("/projects/battuta/guides/"));
 
   return (
     <footer
