@@ -343,24 +343,55 @@ function AudioWaveform({
     const values = waveformState.points?.length
       ? waveformState.points
       : [0.08, 0.08, 0.08, 0.08];
-    const slot = rect.width / values.length;
-    const barWidth = Math.max(1, Math.min(3, slot * 0.48));
-    values.forEach((value, index) => {
-      const x = (index + 0.5) * slot;
-      const amplitude = Math.max(1, value * rect.height * 0.43);
-      const played = waveformState.active && x / rect.width <= waveformState.progress;
-      context.strokeStyle = played
-        ? "#d8ff73"
-        : waveformState.light
-          ? "rgba(21, 23, 20, 0.28)"
-          : "rgba(246, 248, 241, 0.68)";
-      context.lineWidth = barWidth;
-      context.lineCap = "round";
+    const xForIndex = (index: number) => (
+      values.length === 1
+        ? rect.width / 2
+        : (index / (values.length - 1)) * rect.width
+    );
+    const amplitudeForValue = (value: number) => Math.max(0.65, value * rect.height * 0.43);
+    const drawEnvelope = (fillStyle: string, strokeStyle: string) => {
       context.beginPath();
-      context.moveTo(x, center - amplitude);
-      context.lineTo(x, center + amplitude);
+      context.moveTo(xForIndex(0), center - amplitudeForValue(values[0]));
+      values.forEach((value, index) => {
+        context.lineTo(xForIndex(index), center - amplitudeForValue(value));
+      });
+      for (let index = values.length - 1; index >= 0; index -= 1) {
+        context.lineTo(
+          xForIndex(index),
+          center + amplitudeForValue(values[index]),
+        );
+      }
+      context.closePath();
+      context.fillStyle = fillStyle;
+      context.fill();
+      context.strokeStyle = strokeStyle;
+      context.lineWidth = 0.8;
+      context.lineJoin = "round";
       context.stroke();
-    });
+    };
+
+    context.strokeStyle = waveformState.light
+      ? "rgba(21, 23, 20, 0.10)"
+      : "rgba(246, 248, 241, 0.12)";
+    context.lineWidth = 1;
+    context.beginPath();
+    context.moveTo(0, center);
+    context.lineTo(rect.width, center);
+    context.stroke();
+
+    drawEnvelope(
+      waveformState.light ? "rgba(21, 23, 20, 0.13)" : "rgba(246, 248, 241, 0.30)",
+      waveformState.light ? "rgba(21, 23, 20, 0.30)" : "rgba(246, 248, 241, 0.66)",
+    );
+
+    if (waveformState.active && waveformState.progress > 0) {
+      context.save();
+      context.beginPath();
+      context.rect(0, 0, rect.width * waveformState.progress, rect.height);
+      context.clip();
+      drawEnvelope("rgba(210, 255, 60, 0.46)", "#d8ff73");
+      context.restore();
+    }
   }, []);
 
   useEffect(() => {
