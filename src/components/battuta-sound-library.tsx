@@ -37,6 +37,8 @@ import {
 import type { BattutaLocale } from "@/content/battuta";
 import {
   BattutaPreviewAudio,
+  type BattutaPreparedSequence,
+  type BattutaSequenceHit,
   type DemoManifest,
   type DemoProfile,
 } from "@/lib/battuta-preview-audio";
@@ -44,6 +46,7 @@ import {
 type FamilyFilter = "all" | "线性" | "段落" | "点击" | "静电容" | "屈曲弹簧";
 type SortMode = "curated" | "name" | "samples";
 type ViewMode = "grid" | "list";
+type PlaybackKind = "profile" | "collection" | "comparison";
 
 type Collection = {
   id: string;
@@ -88,6 +91,36 @@ const typingCodes = [
   "KeyX", "Space", "KeyJ", "KeyU", "KeyM", "KeyP", "KeyS", "Enter",
 ];
 const typingIntervals = [96, 82, 121, 168, 74, 88, 109, 77, 142, 196, 92, 71, 114, 86, 133, 182];
+const comparisonCodes = ["KeyA", "KeyS", "KeyD", "Space", "KeyJ", "KeyK", "Enter"];
+const comparisonSegmentDurationMS = 1_650;
+
+function buildTypingSequence(): BattutaSequenceHit[] {
+  const hits: BattutaSequenceHit[] = [];
+  let elapsed = 70;
+  let hitIndex = 0;
+  while (elapsed < sequenceDurationMS - 240) {
+    hits.push({
+      code: typingCodes[hitIndex % typingCodes.length],
+      atMilliseconds: elapsed,
+    });
+    elapsed += typingIntervals[hitIndex % typingIntervals.length];
+    hitIndex += 1;
+  }
+  return hits;
+}
+
+function buildMultiProfileSequence(profileIDs: readonly string[]): BattutaSequenceHit[] {
+  return profileIDs.flatMap((profileID, profileIndex) => (
+    comparisonCodes.map((code, sampleIndex) => ({
+      profileID,
+      code,
+      atMilliseconds: profileIndex * comparisonSegmentDurationMS + 130 + sampleIndex * 142,
+    }))
+  ));
+}
+
+const typingSequence = buildTypingSequence();
+const unavailableWaveform = new Array<number>(128).fill(0);
 
 const familyEnglish: Record<string, string> = {
   "线性": "Linear",
@@ -264,11 +297,18 @@ function waveformLabel(profileName: string, locale: BattutaLocale) {
   return profileName + (locale === "en" ? " waveform" : " 波形图");
 }
 
+function waveformSource(exact: boolean | undefined | null) {
+  if (exact == null) return "pending" as const;
+  return exact ? "rendered-sequence" as const : "unavailable" as const;
+}
+
 function AudioWaveform({
   points,
   active = false,
   progress = 0,
   light = false,
+  source = "pending",
+  onVisible,
   label,
   className = "",
 }: {
@@ -276,60 +316,106 @@ function AudioWaveform({
   active?: boolean;
   progress?: number;
   light?: boolean;
+  source?: "rendered-sequence" | "unavailable" | "pending";
+  onVisible?: () => void;
   label: string;
   className?: string;
 }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const onVisibleRef = useRef(onVisible);
+  const waveformStateRef = useRef({ active, light, points, progress });
+
+  const drawWaveform = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const waveformState = waveformStateRef.current;
+    const rect = canvas.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+    const density = Math.min(2, window.devicePixelRatio || 1);
+    canvas.width = Math.round(rect.width * density);
+    canvas.height = Math.round(rect.height * density);
+    const context = canvas.getContext("2d");
+    if (!context) return;
+    context.setTransform(density, 0, 0, density, 0, 0);
+    context.clearRect(0, 0, rect.width, rect.height);
+
+    const center = rect.height / 2;
+    const values = waveformState.points?.length
+      ? waveformState.points
+      : [0.08, 0.08, 0.08, 0.08];
+    const slot = rect.width / values.length;
+    const barWidth = Math.max(1, Math.min(3, slot * 0.48));
+    values.forEach((value, index) => {
+      const x = (index + 0.5) * slot;
+      const amplitude = Math.max(1, value * rect.height * 0.43);
+      const played = waveformState.active && x / rect.width <= waveformState.progress;
+      context.strokeStyle = played
+        ? "#d8ff73"
+        : waveformState.light
+          ? "rgba(21, 23, 20, 0.28)"
+          : "rgba(246, 248, 241, 0.68)";
+      context.lineWidth = barWidth;
+      context.lineCap = "round";
+      context.beginPath();
+      context.moveTo(x, center - amplitude);
+      context.lineTo(x, center + amplitude);
+      context.stroke();
+    });
+  }, []);
+
+  useEffect(() => {
+    waveformStateRef.current = { active, light, points, progress };
+    drawWaveform();
+  }, [active, drawWaveform, light, points, progress]);
+
+  useEffect(() => {
+    onVisibleRef.current = onVisible;
+  }, [onVisible]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-
-    const draw = () => {
-      const rect = canvas.getBoundingClientRect();
-      if (!rect.width || !rect.height) return;
-      const density = Math.min(2, window.devicePixelRatio || 1);
-      canvas.width = Math.round(rect.width * density);
-      canvas.height = Math.round(rect.height * density);
-      const context = canvas.getContext("2d");
-      if (!context) return;
-      context.setTransform(density, 0, 0, density, 0, 0);
-      context.clearRect(0, 0, rect.width, rect.height);
-
-      const center = rect.height / 2;
-      const values = points?.length ? points : [0.08, 0.08, 0.08, 0.08];
-      const slot = rect.width / values.length;
-      const barWidth = Math.max(1, Math.min(3, slot * 0.48));
-      values.forEach((value, index) => {
-        const x = (index + 0.5) * slot;
-        const amplitude = Math.max(1, value * rect.height * 0.43);
-        const played = active && x / rect.width <= progress;
-        context.strokeStyle = played
-          ? "#d8ff73"
-          : light
-            ? "rgba(21, 23, 20, 0.28)"
-            : "rgba(246, 248, 241, 0.68)";
-        context.lineWidth = barWidth;
-        context.lineCap = "round";
-        context.beginPath();
-        context.moveTo(x, center - amplitude);
-        context.lineTo(x, center + amplitude);
-        context.stroke();
-      });
-    };
-
-    draw();
-    const observer = new ResizeObserver(draw);
+    const observer = new ResizeObserver(drawWaveform);
     observer.observe(canvas);
     return () => observer.disconnect();
-  }, [active, light, points, progress]);
+  }, [drawWaveform]);
 
-  return <canvas ref={canvasRef} className={className} role="img" aria-label={label} />;
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas || !onVisibleRef.current) return;
+    if (!("IntersectionObserver" in window)) {
+      onVisibleRef.current();
+      return;
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      if (!entries.some((entry) => entry.isIntersecting)) return;
+      observer.disconnect();
+      onVisibleRef.current?.();
+    }, { rootMargin: "420px 160px" });
+    observer.observe(canvas);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className={className}
+      data-waveform-source={source}
+      role="img"
+      aria-label={label}
+    />
+  );
 }
 
 function formatTime(milliseconds: number) {
-  const seconds = Math.max(0, Math.min(sequenceDurationMS, milliseconds)) / 1000;
-  return "0:" + String(Math.floor(seconds)).padStart(2, "0");
+  const seconds = Math.floor(Math.max(0, milliseconds) / 1000);
+  return Math.floor(seconds / 60) + ":" + String(seconds % 60).padStart(2, "0");
+}
+
+function formatDuration(milliseconds: number) {
+  const seconds = Math.ceil(Math.max(0, milliseconds) / 1000);
+  return Math.floor(seconds / 60) + ":" + String(seconds % 60).padStart(2, "0");
 }
 
 export function BattutaSoundLibrary({
@@ -343,8 +429,16 @@ export function BattutaSoundLibrary({
   const [profiles, setProfiles] = useState<DemoProfile[]>([]);
   const [sampleRate, setSampleRate] = useState(48_000);
   const [waveforms, setWaveforms] = useState<Record<string, number[]>>({});
+  const [waveformExact, setWaveformExact] = useState<Record<string, boolean>>({});
+  const [collectionWaveforms, setCollectionWaveforms] = useState<Record<string, number[]>>({});
+  const [collectionWaveformExact, setCollectionWaveformExact] = useState<Record<string, boolean>>({});
   const [selectedProfileID, setSelectedProfileID] = useState(defaultProfileID);
   const [playingProfileID, setPlayingProfileID] = useState<string | null>(null);
+  const [playingCollectionID, setPlayingCollectionID] = useState<string | null>(null);
+  const [playbackKind, setPlaybackKind] = useState<PlaybackKind | null>(null);
+  const [activePlaybackWaveform, setActivePlaybackWaveform] = useState<number[] | null>(null);
+  const [activePlaybackExact, setActivePlaybackExact] = useState<boolean | null>(null);
+  const [activePlaybackDurationMS, setActivePlaybackDurationMS] = useState(sequenceDurationMS);
   const [isPlaying, setIsPlaying] = useState(false);
   const [comparisonRunning, setComparisonRunning] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -362,6 +456,10 @@ export function BattutaSoundLibrary({
   const [railCollapsed, setRailCollapsed] = useState(false);
 
   const engineRef = useRef<BattutaPreviewAudio | null>(null);
+  const profileWaveformRequestsRef = useRef(new Map<string, Promise<void>>());
+  const collectionWaveformRequestsRef = useRef(new Map<string, Promise<void>>());
+  const readyProfileWaveformsRef = useRef(new Set<string>());
+  const readyCollectionWaveformsRef = useRef(new Set<string>());
   const timerIDsRef = useRef<number[]>([]);
   const animationFrameRef = useRef<number | null>(null);
   const playbackTokenRef = useRef(0);
@@ -375,6 +473,10 @@ export function BattutaSoundLibrary({
 
   useEffect(() => {
     const controller = new AbortController();
+    const profileWaveformRequests = profileWaveformRequestsRef.current;
+    const collectionWaveformRequests = collectionWaveformRequestsRef.current;
+    const readyProfileWaveforms = readyProfileWaveformsRef.current;
+    const readyCollectionWaveforms = readyCollectionWaveformsRef.current;
     let disposed = false;
 
     void fetch(manifestURL, { signal: controller.signal, cache: "force-cache" })
@@ -388,14 +490,6 @@ export function BattutaSoundLibrary({
         setProfiles(manifest.profiles);
         setSampleRate(manifest.sampleRate);
         setLoadState("ready");
-
-        manifest.profiles.forEach((profile) => {
-          void engine.preloadWaveform(profile.id, 128).then((points) => {
-            if (!disposed) {
-              setWaveforms((current) => ({ ...current, [profile.id]: points }));
-            }
-          }).catch(() => undefined);
-        });
       })
       .catch((error: unknown) => {
         if (!disposed && !(error instanceof DOMException && error.name === "AbortError")) {
@@ -409,6 +503,10 @@ export function BattutaSoundLibrary({
       controller.abort();
       const engine = engineRef.current;
       engineRef.current = null;
+      profileWaveformRequests.clear();
+      collectionWaveformRequests.clear();
+      readyProfileWaveforms.clear();
+      readyCollectionWaveforms.clear();
       timerIDsRef.current.forEach((id) => window.clearTimeout(id));
       timerIDsRef.current = [];
       if (animationFrameRef.current !== null) cancelAnimationFrame(animationFrameRef.current);
@@ -425,6 +523,66 @@ export function BattutaSoundLibrary({
   useEffect(() => {
     engineRef.current?.setMuted(muted);
   }, [muted]);
+
+  const ensureProfileWaveform = useCallback((profileID: string) => {
+    const engine = engineRef.current;
+    if (!engine || readyProfileWaveformsRef.current.has(profileID)) return;
+    if (profileWaveformRequestsRef.current.has(profileID)) return;
+
+    const request = engine.preparePreviewSequence(
+      profileID,
+      typingSequence,
+      sequenceDurationMS,
+      128,
+    ).then((prepared) => {
+      if (engine !== engineRef.current) return;
+      setWaveforms((current) => ({
+        ...current,
+        [profileID]: prepared.exact ? prepared.waveform : unavailableWaveform,
+      }));
+      setWaveformExact((current) => ({
+        ...current,
+        [profileID]: prepared.exact,
+      }));
+      readyProfileWaveformsRef.current.add(profileID);
+    }).catch(() => undefined).finally(() => {
+      profileWaveformRequestsRef.current.delete(profileID);
+    });
+    profileWaveformRequestsRef.current.set(profileID, request);
+  }, []);
+
+  const ensureCollectionWaveform = useCallback((
+    collectionID: string,
+    profileIDs: readonly string[],
+  ) => {
+    const engine = engineRef.current;
+    if (!engine || !profileIDs.length) return;
+    if (readyCollectionWaveformsRef.current.has(collectionID)) return;
+    if (collectionWaveformRequestsRef.current.has(collectionID)) return;
+
+    const hits = buildMultiProfileSequence(profileIDs);
+    const duration = profileIDs.length * comparisonSegmentDurationMS;
+    const request = engine.preparePreviewSequence(
+      profileIDs[0],
+      hits,
+      duration,
+      128,
+    ).then((prepared) => {
+      if (engine !== engineRef.current) return;
+      setCollectionWaveforms((current) => ({
+        ...current,
+        [collectionID]: prepared.exact ? prepared.waveform : unavailableWaveform,
+      }));
+      setCollectionWaveformExact((current) => ({
+        ...current,
+        [collectionID]: prepared.exact,
+      }));
+      readyCollectionWaveformsRef.current.add(collectionID);
+    }).catch(() => undefined).finally(() => {
+      collectionWaveformRequestsRef.current.delete(collectionID);
+    });
+    collectionWaveformRequestsRef.current.set(collectionID, request);
+  }, []);
 
   const selectedProfile = useMemo(
     () => profiles.find((profile) => profile.id === selectedProfileID) ?? profiles[0],
@@ -458,7 +616,32 @@ export function BattutaSoundLibrary({
     ));
   }, [family, profiles, query, sort]);
 
-  const clearPlayback = useCallback((resetProgress = true) => {
+  const playPreparedOrFallback = useCallback((
+    engine: BattutaPreviewAudio,
+    prepared: BattutaPreparedSequence,
+    defaultProfileIDForSequence: string,
+    hits: readonly BattutaSequenceHit[],
+    token: number,
+  ): boolean => {
+    if (prepared.exact && engine.playPreparedSequence(prepared)) return true;
+
+    const profileIDs = new Set([
+      defaultProfileIDForSequence,
+      ...hits.map((hit) => hit.profileID ?? defaultProfileIDForSequence),
+    ]);
+    profileIDs.forEach((profileID) => engine.resetVariations(profileID));
+    hits.forEach((hit) => {
+      const timerID = window.setTimeout(() => {
+        if (token === playbackTokenRef.current) {
+          engine.tap(hit.profileID ?? defaultProfileIDForSequence, hit.code);
+        }
+      }, hit.atMilliseconds);
+      timerIDsRef.current.push(timerID);
+    });
+    return false;
+  }, []);
+
+  const clearPlayback = useCallback((resetProgress = true, preserveVisualization = false) => {
     playbackTokenRef.current += 1;
     timerIDsRef.current.forEach((id) => window.clearTimeout(id));
     timerIDsRef.current = [];
@@ -472,6 +655,13 @@ export function BattutaSoundLibrary({
     setIsPlaying(false);
     setComparisonRunning(false);
     setPlayingProfileID(null);
+    setPlayingCollectionID(null);
+    setPlaybackKind(null);
+    if (!preserveVisualization) {
+      setActivePlaybackWaveform(null);
+      setActivePlaybackExact(null);
+      setActivePlaybackDurationMS(sequenceDurationMS);
+    }
     if (resetProgress) setProgress(0);
   }, []);
 
@@ -491,27 +681,38 @@ export function BattutaSoundLibrary({
 
     try {
       await engine.activate(profileID);
-      if (token !== playbackTokenRef.current) return;
+      const prepared = await engine.preparePreviewSequence(
+        profileID,
+        typingSequence,
+        sequenceDurationMS,
+        128,
+      );
+      if (token !== playbackTokenRef.current || engine !== engineRef.current) return;
+      const exactPlayback = playPreparedOrFallback(
+        engine,
+        prepared,
+        profileID,
+        typingSequence,
+        token,
+      );
+      const renderedWaveform = exactPlayback ? prepared.waveform : unavailableWaveform;
+      setWaveforms((current) => ({ ...current, [profileID]: renderedWaveform }));
+      setWaveformExact((current) => ({ ...current, [profileID]: exactPlayback }));
       setPlayingProfileID(profileID);
+      setPlaybackKind("profile");
+      setActivePlaybackWaveform(renderedWaveform);
+      setActivePlaybackExact(exactPlayback);
+      setActivePlaybackDurationMS(prepared.durationMilliseconds);
       setIsPlaying(true);
       setProgress(0);
-
-      let elapsed = 70;
-      let hitIndex = 0;
-      while (elapsed < sequenceDurationMS - 240) {
-        const code = typingCodes[hitIndex % typingCodes.length];
-        const timerID = window.setTimeout(() => {
-          if (token === playbackTokenRef.current) engine.tap(profileID, code);
-        }, elapsed);
-        timerIDsRef.current.push(timerID);
-        elapsed += typingIntervals[hitIndex % typingIntervals.length];
-        hitIndex += 1;
-      }
 
       const startedAt = performance.now();
       const updateProgress = () => {
         if (token !== playbackTokenRef.current) return;
-        const nextProgress = Math.min(1, (performance.now() - startedAt) / sequenceDurationMS);
+        const nextProgress = Math.min(
+          1,
+          (performance.now() - startedAt) / prepared.durationMilliseconds,
+        );
         setProgress(nextProgress);
         if (nextProgress < 1) {
           animationFrameRef.current = requestAnimationFrame(updateProgress);
@@ -519,7 +720,7 @@ export function BattutaSoundLibrary({
           clearPlayback();
           void runProfile(profileID);
         } else {
-          clearPlayback(false);
+          clearPlayback(false, true);
           setProgress(1);
         }
       };
@@ -530,11 +731,12 @@ export function BattutaSoundLibrary({
         setAudioError(true);
       }
     }
-  }, [clearPlayback, comparisonRunning]);
+  }, [clearPlayback, comparisonRunning, playPreparedOrFallback]);
 
   const triggerSample = useCallback(async (profileID: string, code: string) => {
     const engine = engineRef.current;
     if (!engine) return;
+    if (isPlayingRef.current) clearPlayback();
     setSelectedProfileID(profileID);
     setAudioError(false);
     try {
@@ -544,7 +746,7 @@ export function BattutaSoundLibrary({
     } catch {
       if (engine === engineRef.current) setAudioError(true);
     }
-  }, []);
+  }, [clearPlayback]);
 
   const moveProfile = useCallback((direction: number) => {
     if (!profiles.length) return;
@@ -581,49 +783,55 @@ export function BattutaSoundLibrary({
     setCompareIDs([]);
   }, [clearPlayback, comparisonRunning]);
 
-  const runComparison = useCallback(async () => {
+  const runComparison = useCallback(async function runComparisonPreview() {
     const engine = engineRef.current;
     const IDs = compareIDs.filter((id) => profiles.some((profile) => profile.id === id));
     if (!engine || IDs.length < 2) return;
     clearPlayback();
     const token = playbackTokenRef.current;
+    const hits = buildMultiProfileSequence(IDs);
+    const duration = IDs.length * comparisonSegmentDurationMS;
     setComparisonRunning(true);
-    setIsPlaying(true);
+    setAudioError(false);
     setProgress(0);
     try {
       await engine.activate(IDs[0]);
-      await Promise.all(IDs.map((id) => engine.loadProfile(id)));
-      if (token !== playbackTokenRef.current) return;
+      const prepared = await engine.preparePreviewSequence(IDs[0], hits, duration, 128);
+      if (token !== playbackTokenRef.current || engine !== engineRef.current) return;
+      const exactPlayback = playPreparedOrFallback(engine, prepared, IDs[0], hits, token);
+      const renderedWaveform = exactPlayback ? prepared.waveform : unavailableWaveform;
+      setPlaybackKind("comparison");
+      setActivePlaybackWaveform(renderedWaveform);
+      setActivePlaybackExact(exactPlayback);
+      setActivePlaybackDurationMS(prepared.durationMilliseconds);
+      setSelectedProfileID(IDs[0]);
+      setPlayingProfileID(IDs[0]);
+      setIsPlaying(true);
 
-      const sampleCodes = ["KeyA", "KeyS", "KeyD", "Space", "KeyJ", "KeyK", "Enter"];
-      let cursor = 0;
-      const segmentDuration = 1_650;
-      IDs.forEach((profileID) => {
+      IDs.forEach((profileID, profileIndex) => {
         const selectionTimer = window.setTimeout(() => {
           if (token !== playbackTokenRef.current) return;
           setSelectedProfileID(profileID);
           setPlayingProfileID(profileID);
-        }, cursor);
+        }, profileIndex * comparisonSegmentDurationMS);
         timerIDsRef.current.push(selectionTimer);
-        sampleCodes.forEach((code, index) => {
-          const timerID = window.setTimeout(() => {
-            if (token === playbackTokenRef.current) engine.tap(profileID, code);
-          }, cursor + 130 + index * 142);
-          timerIDsRef.current.push(timerID);
-        });
-        cursor += segmentDuration;
       });
 
       const comparisonStartedAt = performance.now();
-      const totalDuration = cursor;
       const update = () => {
         if (token !== playbackTokenRef.current) return;
-        const nextProgress = Math.min(1, (performance.now() - comparisonStartedAt) / totalDuration);
+        const nextProgress = Math.min(
+          1,
+          (performance.now() - comparisonStartedAt) / prepared.durationMilliseconds,
+        );
         setProgress(nextProgress);
         if (nextProgress < 1) {
           animationFrameRef.current = requestAnimationFrame(update);
+        } else if (loopRef.current) {
+          clearPlayback();
+          void runComparisonPreview();
         } else {
-          clearPlayback(false);
+          clearPlayback(false, true);
           setProgress(1);
         }
       };
@@ -634,51 +842,68 @@ export function BattutaSoundLibrary({
         setAudioError(true);
       }
     }
-  }, [clearPlayback, compareIDs, profiles]);
+  }, [clearPlayback, compareIDs, playPreparedOrFallback, profiles]);
 
-  const playCollection = useCallback(async (profileIDs: readonly string[]) => {
+  const playCollection = useCallback(async function runCollectionPreview(
+    collectionID: string,
+    profileIDs: readonly string[],
+  ) {
     const engine = engineRef.current;
     const IDs = profileIDs.filter((id) => profiles.some((profile) => profile.id === id));
     if (!engine || !IDs.length) return;
     clearPlayback();
     const token = playbackTokenRef.current;
+    const hits = buildMultiProfileSequence(IDs);
+    const duration = IDs.length * comparisonSegmentDurationMS;
+    setAudioError(false);
     try {
       await engine.activate(IDs[0]);
-      await Promise.all(IDs.map((id) => engine.loadProfile(id)));
+      const prepared = await engine.preparePreviewSequence(IDs[0], hits, duration, 128);
       if (token !== playbackTokenRef.current || engine !== engineRef.current) return;
 
+      const exactPlayback = playPreparedOrFallback(engine, prepared, IDs[0], hits, token);
+      const renderedWaveform = exactPlayback ? prepared.waveform : unavailableWaveform;
+      setCollectionWaveforms((current) => ({
+        ...current,
+        [collectionID]: renderedWaveform,
+      }));
+      setCollectionWaveformExact((current) => ({
+        ...current,
+        [collectionID]: exactPlayback,
+      }));
+      setPlaybackKind("collection");
+      setPlayingCollectionID(collectionID);
+      setActivePlaybackWaveform(renderedWaveform);
+      setActivePlaybackExact(exactPlayback);
+      setActivePlaybackDurationMS(prepared.durationMilliseconds);
       setIsPlaying(true);
       setSelectedProfileID(IDs[0]);
       setPlayingProfileID(IDs[0]);
       setProgress(0);
 
-      const sampleCodes = ["KeyA", "KeyS", "KeyD", "Space", "KeyJ", "KeyK", "Enter"];
-      const segmentDuration = 1_650;
       IDs.forEach((profileID, profileIndex) => {
-        const segmentStart = profileIndex * segmentDuration;
         const selectionTimer = window.setTimeout(() => {
           if (token !== playbackTokenRef.current) return;
           setSelectedProfileID(profileID);
           setPlayingProfileID(profileID);
-        }, segmentStart);
+        }, profileIndex * comparisonSegmentDurationMS);
         timerIDsRef.current.push(selectionTimer);
-        sampleCodes.forEach((code, sampleIndex) => {
-          const timerID = window.setTimeout(() => {
-            if (token === playbackTokenRef.current) engine.tap(profileID, code);
-          }, segmentStart + 130 + sampleIndex * 142);
-          timerIDsRef.current.push(timerID);
-        });
       });
 
       const startedAt = performance.now();
-      const totalDuration = IDs.length * segmentDuration;
       const update = () => {
         if (token !== playbackTokenRef.current) return;
-        const nextProgress = Math.min(1, (performance.now() - startedAt) / totalDuration);
+        const nextProgress = Math.min(
+          1,
+          (performance.now() - startedAt) / prepared.durationMilliseconds,
+        );
         setProgress(nextProgress);
         if (nextProgress < 1) animationFrameRef.current = requestAnimationFrame(update);
-        else {
-          clearPlayback(false);
+        else if (loopRef.current) {
+          clearPlayback();
+          void runCollectionPreview(collectionID, profileIDs);
+        } else {
+          clearPlayback(false, true);
           setProgress(1);
         }
       };
@@ -689,7 +914,7 @@ export function BattutaSoundLibrary({
         setAudioError(true);
       }
     }
-  }, [clearPlayback, profiles]);
+  }, [clearPlayback, playPreparedOrFallback, profiles]);
 
   const handleTypingKey = useCallback((event: ReactKeyboardEvent<HTMLInputElement>) => {
     if (event.repeat || event.nativeEvent.isComposing || event.metaKey || event.ctrlKey || event.altKey) return;
@@ -726,7 +951,14 @@ export function BattutaSoundLibrary({
 
   const selectedWaveform = waveforms[selectedProfile.id];
   const selectedAuthor = profileAuthor(selectedProfile, content.bundled);
-  const currentElapsed = progress * sequenceDurationMS;
+  const playbackDurationMS = activePlaybackWaveform
+    ? activePlaybackDurationMS
+    : sequenceDurationMS;
+  const currentElapsed = progress * playbackDurationMS;
+  const playerWaveform = activePlaybackWaveform ?? selectedWaveform;
+  const playerWaveformSource = activePlaybackWaveform
+    ? waveformSource(activePlaybackExact)
+    : waveformSource(waveformExact[selectedProfile.id]);
   const sampleRateLabel = Math.round(sampleRate / 1000) + " kHz";
   const familyFilters: FamilyFilter[] = ["all", "线性", "段落", "点击", "静电容", "屈曲弹簧"];
 
@@ -789,6 +1021,9 @@ export function BattutaSoundLibrary({
             {content.collections.map((collection) => {
               const representative = profiles.find((profile) => profile.id === collection.profileIDs[0]);
               const CollectionIcon = collection.icon;
+              const collectionIsPlaying = playbackKind === "collection"
+                && playingCollectionID === collection.id
+                && isPlaying;
               return (
                 <article className="community-library-collection-card" key={collection.id}>
                   <div>
@@ -800,7 +1035,7 @@ export function BattutaSoundLibrary({
                     <button
                       type="button"
                       aria-label={content.playCollection + ": " + collection.title}
-                      onClick={() => void playCollection(collection.profileIDs)}
+                      onClick={() => void playCollection(collection.id, collection.profileIDs)}
                     >
                       <PlayIcon size={17} weight="fill" aria-hidden />
                       <span>{content.playCollection}</span>
@@ -808,11 +1043,13 @@ export function BattutaSoundLibrary({
                   </div>
                   {representative ? (
                     <AudioWaveform
-                      points={waveforms[representative.id]}
-                      active={playingProfileID === representative.id && isPlaying}
-                      progress={playingProfileID === representative.id ? progress : 0}
+                      points={collectionWaveforms[collection.id]}
+                      active={collectionIsPlaying}
+                      progress={collectionIsPlaying ? progress : 0}
                       light
-                      label={waveformLabel(representative.displayName, locale)}
+                      source={waveformSource(collectionWaveformExact[collection.id])}
+                      onVisible={() => ensureCollectionWaveform(collection.id, collection.profileIDs)}
+                      label={waveformLabel(collection.title, locale)}
                     />
                   ) : null}
                 </article>
@@ -829,7 +1066,9 @@ export function BattutaSoundLibrary({
             <section className={"community-library-sound-grid is-" + view} aria-label={content.title}>
               {visibleProfiles.map((profile) => {
                 const isSelected = selectedProfileID === profile.id;
-                const profileIsPlaying = playingProfileID === profile.id && isPlaying;
+                const profileIsPlaying = playbackKind === "profile"
+                  && playingProfileID === profile.id
+                  && isPlaying;
                 const isCompared = compareIDs.includes(profile.id);
                 const isFavorite = favorites.has(profile.id);
                 const profileSamples = Object.keys(profile.samples).length;
@@ -866,6 +1105,8 @@ export function BattutaSoundLibrary({
                         points={waveforms[profile.id]}
                         active={profileIsPlaying}
                         progress={profileIsPlaying ? progress : 0}
+                        source={waveformSource(waveformExact[profile.id])}
+                        onVisible={() => ensureProfileWaveform(profile.id)}
                         label={waveformLabel(profile.displayName, locale)}
                       />
                       <button
@@ -935,19 +1176,26 @@ export function BattutaSoundLibrary({
             </div>
             <div className="community-library-player-waveform">
               <AudioWaveform
-                points={selectedWaveform}
-                active={playingProfileID === selectedProfile.id && isPlaying}
-                progress={playingProfileID === selectedProfile.id ? progress : 0}
+                points={playerWaveform}
+                active={isPlaying}
+                progress={isPlaying ? progress : 0}
+                source={playerWaveformSource}
+                onVisible={() => ensureProfileWaveform(selectedProfile.id)}
                 label={waveformLabel(selectedProfile.displayName, locale)}
               />
               <div>
                 <strong>{formatTime(currentElapsed)}</strong>
-                <span>/ 0:12</span>
+                <span>/ {formatDuration(playbackDurationMS)}</span>
               </div>
             </div>
             <div className="community-library-player-controls">
               <button type="button" aria-label={content.previous} onClick={() => moveProfile(-1)}><SkipBackIcon size={25} weight="fill" aria-hidden /></button>
-              <button className="is-primary" type="button" aria-label={isPlaying ? content.stop : content.play} onClick={() => void playProfile(selectedProfile.id)}>
+              <button
+                className="is-primary"
+                type="button"
+                aria-label={isPlaying ? content.stop : content.play}
+                onClick={() => isPlaying ? clearPlayback() : void playProfile(selectedProfile.id)}
+              >
                 {isPlaying ? <PauseIcon size={29} weight="fill" aria-hidden /> : <PlayIcon size={29} weight="fill" aria-hidden />}
               </button>
               <button type="button" aria-label={content.next} onClick={() => moveProfile(1)}><SkipForwardIcon size={25} weight="fill" aria-hidden /></button>
@@ -1015,7 +1263,13 @@ export function BattutaSoundLibrary({
                 <button type="button" className="community-library-compare-preview" onClick={() => void triggerSample(profile.id, "KeyA")}>
                   <span className="community-library-author-mark"><WaveformIcon size={13} weight="bold" aria-hidden /></span>
                   <span><strong>{profile.displayName}</strong><small>{profileAuthor(profile, content.bundled)}</small></span>
-                  <AudioWaveform points={waveforms[profile.id]} light label={waveformLabel(profile.displayName, locale)} />
+                  <AudioWaveform
+                    points={waveforms[profile.id]}
+                    light
+                    source={waveformSource(waveformExact[profile.id])}
+                    onVisible={() => ensureProfileWaveform(profile.id)}
+                    label={waveformLabel(profile.displayName, locale)}
+                  />
                 </button>
                 <button type="button" className="community-library-compare-remove" aria-label={content.removeCompare + ": " + profile.displayName} onClick={() => toggleCompare(profile.id)}><XIcon size={14} weight="bold" aria-hidden /></button>
               </div>

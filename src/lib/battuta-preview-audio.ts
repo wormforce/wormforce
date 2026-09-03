@@ -41,6 +41,21 @@ export type DemoManifest = {
   profiles: DemoProfile[];
 };
 
+export type BattutaSequenceHit = {
+  code: string;
+  atMilliseconds: number;
+  profileID?: string;
+};
+
+export type BattutaPreparedSequence = {
+  buffer: AudioBuffer | null;
+  waveform: number[];
+  durationMilliseconds: number;
+  eventCount: number;
+  pointCount: number;
+  exact: boolean;
+};
+
 type PreparedSample = {
   offsetSeconds: number;
   durationSeconds: number;
@@ -63,7 +78,27 @@ type PendingTap = {
   requestedAt: number;
 };
 
+type NormalizedSequenceHit = {
+  profileID: string;
+  code: string;
+  atMilliseconds: number;
+  order: number;
+};
+
+type OfflineVoice = {
+  source: AudioBufferSourceNode;
+  endsAt: number;
+};
+
+type PendingOfflineRender = {
+  render: () => Promise<AudioBuffer>;
+  resolve: (buffer: AudioBuffer) => void;
+  reject: (error: unknown) => void;
+};
+
 const maximumVoiceCount = 16;
+const maximumPreparedSequenceCount = 8;
+const maximumConcurrentOfflineRenders = 2;
 const tapReleaseDelay = 0.055;
 const maximumPendingTapDelayMS = 500;
 
@@ -169,8 +204,10 @@ export class BattutaPreviewAudio {
   private readonly banks = new Map<string, LoadedBank>();
   private readonly bankLoads = new Map<string, Promise<LoadedBank>>();
   private readonly waveforms = new Map<string, Map<number, number[]>>();
+  private readonly preparedSequences = new Map<string, Promise<BattutaPreparedSequence>>();
   private readonly variationCursors = new Map<string, number>();
   private readonly fetchControllers = new Set<AbortController>();
+  private readonly offlineRenderQueue: PendingOfflineRender[] = [];
 
   private context: AudioContext | null = null;
   private masterGain: GainNode | null = null;
@@ -183,6 +220,7 @@ export class BattutaPreviewAudio {
   private muted = false;
   private destroyed = false;
   private contextPoisoned = false;
+  private activeOfflineRenderCount = 0;
 
   constructor(
     private readonly manifest: DemoManifest,
@@ -273,6 +311,112 @@ export class BattutaPreviewAudio {
     return waveform;
   }
 
+  async preparePreviewSequence(
+    defaultProfileID: string,
+    hits: readonly BattutaSequenceHit[],
+    durationMilliseconds: number,
+    pointCount = 128,
+  ): Promise<BattutaPreparedSequence> {
+    this.assertUsable();
+    this.getProfile(defaultProfileID);
+
+    const duration = this.normalizedDuration(durationMilliseconds);
+    const count = normalizedPointCount(pointCount);
+    const normalizedHits = this.normalizeSequenceHits(defaultProfileID, hits, duration);
+    const cacheKey = JSON.stringify([
+      defaultProfileID,
+      duration,
+      count,
+      normalizedHits.map(({ profileID, code, atMilliseconds }) => [
+        profileID,
+        code,
+        atMilliseconds,
+      ]),
+    ]);
+    const cached = this.preparedSequences.get(cacheKey);
+    if (cached) {
+      this.preparedSequences.delete(cacheKey);
+      this.preparedSequences.set(cacheKey, cached);
+      return cached;
+    }
+
+    const request = this.buildPreparedSequence(
+      defaultProfileID,
+      normalizedHits,
+      duration,
+      count,
+    ).catch((error: unknown) => {
+      if (this.preparedSequences.get(cacheKey) === request) {
+        this.preparedSequences.delete(cacheKey);
+      }
+      throw error;
+    });
+    this.preparedSequences.set(cacheKey, request);
+    this.trimPreparedSequenceCache();
+    return request;
+  }
+
+  async preloadSequenceWaveform(
+    profileID: string,
+    hits: readonly BattutaSequenceHit[],
+    durationMilliseconds: number,
+    pointCount = 128,
+  ): Promise<number[]> {
+    const prepared = await this.preparePreviewSequence(
+      profileID,
+      hits,
+      durationMilliseconds,
+      pointCount,
+    );
+    return prepared.waveform;
+  }
+
+  playPreparedSequence(prepared: BattutaPreparedSequence): boolean {
+    if (this.destroyed || this.contextPoisoned || !prepared.buffer) return false;
+    const context = this.context;
+    const masterGain = this.masterGain;
+    if (!context || !masterGain || context.state !== "running") return false;
+
+    while (this.voices.length >= maximumVoiceCount) {
+      const oldest = this.voices.shift();
+      if (oldest) this.releaseVoice(oldest, true);
+    }
+
+    const source = context.createBufferSource();
+    const gain = context.createGain();
+    source.buffer = prepared.buffer;
+    source.connect(gain);
+    gain.connect(masterGain);
+    gain.gain.value = 1;
+
+    const voice = { source, gain };
+    this.voices.push(voice);
+    source.onended = () => {
+      const index = this.voices.indexOf(voice);
+      if (index >= 0) this.voices.splice(index, 1);
+      this.releaseVoice(voice, false);
+    };
+
+    try {
+      source.start(context.currentTime);
+      return true;
+    } catch {
+      const index = this.voices.indexOf(voice);
+      if (index >= 0) this.voices.splice(index, 1);
+      this.releaseVoice(voice, false);
+      return false;
+    }
+  }
+
+  resetVariations(profileID: string) {
+    const profileIDs = new Set(this.profileChain(profileID));
+    for (const key of this.variationCursors.keys()) {
+      const separator = key.indexOf(":");
+      const resolvedProfileID = separator < 0 ? key : key.slice(0, separator);
+      if (profileIDs.has(resolvedProfileID)) this.variationCursors.delete(key);
+    }
+  }
+
   getWaveform(profileID: string, pointCount = 96): number[] | undefined {
     const count = normalizedPointCount(pointCount);
     const profileWaveforms = this.waveforms.get(profileID);
@@ -310,6 +454,9 @@ export class BattutaPreviewAudio {
   async destroy(): Promise<void> {
     if (this.destroyed) return;
     this.destroyed = true;
+    const closeError = new Error("Battuta audio engine has been closed");
+    const queuedRenders = this.offlineRenderQueue.splice(0);
+    queuedRenders.forEach(({ reject }) => reject(closeError));
     this.fetchControllers.forEach((controller) => controller.abort());
     this.fetchControllers.clear();
     this.stopAll();
@@ -325,6 +472,7 @@ export class BattutaPreviewAudio {
     this.banks.clear();
     this.bankLoads.clear();
     this.waveforms.clear();
+    this.preparedSequences.clear();
     this.variationCursors.clear();
 
     try {
@@ -363,6 +511,245 @@ export class BattutaPreviewAudio {
     return profileIDs;
   }
 
+  private normalizedDuration(durationMilliseconds: number) {
+    if (!Number.isFinite(durationMilliseconds)) return 12_000;
+    return Math.max(1, Math.round(durationMilliseconds));
+  }
+
+  private normalizeSequenceHits(
+    defaultProfileID: string,
+    hits: readonly BattutaSequenceHit[],
+    durationMilliseconds: number,
+  ): NormalizedSequenceHit[] {
+    return hits.map((hit, order) => ({
+      profileID: hit.profileID ?? defaultProfileID,
+      code: hit.code,
+      atMilliseconds: hit.atMilliseconds,
+      order,
+    })).filter((hit) => (
+      Number.isFinite(hit.atMilliseconds)
+      && hit.atMilliseconds >= 0
+      && hit.atMilliseconds < durationMilliseconds
+    )).map((hit) => {
+      this.getProfile(hit.profileID);
+      return hit;
+    }).sort((left, right) => (
+      left.atMilliseconds - right.atMilliseconds || left.order - right.order
+    ));
+  }
+
+  private trimPreparedSequenceCache() {
+    while (this.preparedSequences.size > maximumPreparedSequenceCount) {
+      const oldest = this.preparedSequences.keys().next().value;
+      if (oldest === undefined) break;
+      this.preparedSequences.delete(oldest);
+    }
+  }
+
+  private async buildPreparedSequence(
+    defaultProfileID: string,
+    hits: readonly NormalizedSequenceHit[],
+    durationMilliseconds: number,
+    pointCount: number,
+  ): Promise<BattutaPreparedSequence> {
+    const profileIDs = new Set([defaultProfileID]);
+    hits.forEach((hit) => profileIDs.add(hit.profileID));
+    await Promise.all(Array.from(profileIDs, (profileID) => this.loadProfile(profileID)));
+
+    const OfflineAudioContextConstructor = this.offlineAudioContextConstructor();
+    if (!OfflineAudioContextConstructor) {
+      return {
+        buffer: null,
+        waveform: new Array<number>(pointCount).fill(0),
+        durationMilliseconds,
+        eventCount: hits.length,
+        pointCount,
+        exact: false,
+      };
+    }
+
+    const banks = Array.from(profileIDs, (profileID) => this.profileChain(profileID))
+      .flatMap((chain) => chain)
+      .map((profileID) => this.banks.get(profileID))
+      .filter((bank): bank is LoadedBank => bank !== undefined);
+    const channelCount = Math.max(
+      1,
+      ...banks.map((bank) => bank.buffer.numberOfChannels),
+    );
+    const frameCount = Math.max(
+      1,
+      Math.ceil((durationMilliseconds * this.manifest.sampleRate) / 1000),
+    );
+
+    try {
+      const buffer = await this.enqueueOfflineRender(async () => {
+        this.assertUsable();
+        const offlineContext = new OfflineAudioContextConstructor(
+          channelCount,
+          frameCount,
+          this.manifest.sampleRate,
+        );
+        const cursors = new Map<string, number>();
+        const voices: OfflineVoice[] = [];
+        const renderDurationSeconds = frameCount / this.manifest.sampleRate;
+
+        for (const hit of hits) {
+          const callTime = hit.atMilliseconds / 1000;
+          this.scheduleOfflineSample(
+            offlineContext,
+            voices,
+            cursors,
+            hit.profileID,
+            hit.code,
+            "press",
+            callTime,
+            callTime,
+            renderDurationSeconds,
+          );
+          this.scheduleOfflineSample(
+            offlineContext,
+            voices,
+            cursors,
+            hit.profileID,
+            hit.code,
+            "release",
+            callTime,
+            callTime + tapReleaseDelay,
+            renderDurationSeconds,
+          );
+        }
+
+        return offlineContext.startRendering();
+      });
+      if (this.destroyed) {
+        throw new Error("Battuta audio engine has been closed");
+      }
+      return {
+        buffer,
+        waveform: this.buildWaveform(buffer, pointCount),
+        durationMilliseconds,
+        eventCount: hits.length,
+        pointCount,
+        exact: true,
+      };
+    } catch (error) {
+      if (this.destroyed) throw error;
+      return {
+        buffer: null,
+        waveform: new Array<number>(pointCount).fill(0),
+        durationMilliseconds,
+        eventCount: hits.length,
+        pointCount,
+        exact: false,
+      };
+    }
+  }
+
+  private enqueueOfflineRender(render: () => Promise<AudioBuffer>) {
+    if (this.destroyed) {
+      return Promise.reject<AudioBuffer>(
+        new Error("Battuta audio engine has been closed"),
+      );
+    }
+
+    const request = new Promise<AudioBuffer>((resolve, reject) => {
+      this.offlineRenderQueue.push({ render, resolve, reject });
+    });
+    this.drainOfflineRenderQueue();
+    return request;
+  }
+
+  private drainOfflineRenderQueue() {
+    if (this.destroyed) return;
+    while (
+      this.activeOfflineRenderCount < maximumConcurrentOfflineRenders
+      && this.offlineRenderQueue.length > 0
+    ) {
+      const pending = this.offlineRenderQueue.shift();
+      if (!pending) break;
+      this.activeOfflineRenderCount += 1;
+      Promise.resolve().then(pending.render).then(
+        pending.resolve,
+        pending.reject,
+      ).finally(() => {
+        this.activeOfflineRenderCount -= 1;
+        this.drainOfflineRenderQueue();
+      });
+    }
+  }
+
+  private offlineAudioContextConstructor(): typeof OfflineAudioContext | undefined {
+    if (typeof window === "undefined") return undefined;
+    const browserWindow = window as typeof window & {
+      webkitOfflineAudioContext?: typeof OfflineAudioContext;
+    };
+    return browserWindow.OfflineAudioContext
+      ?? browserWindow.webkitOfflineAudioContext;
+  }
+
+  private scheduleOfflineSample(
+    context: OfflineAudioContext,
+    voices: OfflineVoice[],
+    cursors: Map<string, number>,
+    profileID: string,
+    code: string,
+    phase: AudioPhase,
+    callTime: number,
+    when: number,
+    renderDuration: number,
+  ) {
+    const resolved = this.resolveSample(profileID, code, phase);
+    if (!resolved) return;
+    const { bank, sampleID, sample } = resolved;
+    const recipe = this.takePlaybackRecipe(cursors, bank.profile.id, sampleID);
+
+    for (let index = voices.length - 1; index >= 0; index -= 1) {
+      if (voices[index].endsAt <= callTime) voices.splice(index, 1);
+    }
+    while (voices.length >= maximumVoiceCount) {
+      const oldest = voices.shift();
+      if (!oldest) break;
+      try {
+        oldest.source.stop(Math.min(renderDuration, Math.max(0, callTime)));
+      } catch {
+        // The source may already have naturally ended at this exact frame.
+      }
+    }
+
+    const startTime = Math.max(callTime, when);
+    if (startTime >= renderDuration) return;
+    const source = context.createBufferSource();
+    const gain = context.createGain();
+    source.buffer = bank.buffer;
+    source.playbackRate.value = recipe.rate;
+    source.connect(gain);
+    gain.connect(context.destination);
+
+    const outputDuration = sample.durationSeconds / recipe.rate;
+    const fadeDuration = Math.min(0.004, outputDuration * 0.2);
+    gain.gain.setValueAtTime(recipe.gain, startTime);
+    if (fadeDuration > 0) {
+      gain.gain.setValueAtTime(recipe.gain, startTime + outputDuration - fadeDuration);
+      gain.gain.linearRampToValueAtTime(0.0001, startTime + outputDuration);
+    }
+
+    source.start(startTime, sample.offsetSeconds, sample.durationSeconds);
+    voices.push({ source, endsAt: startTime + outputDuration });
+  }
+
+  private takePlaybackRecipe(
+    cursors: Map<string, number>,
+    resolvedProfileID: string,
+    sampleID: string,
+  ) {
+    const cursorKey = `${resolvedProfileID}:${sampleID}`;
+    const cursor = cursors.get(cursorKey) ?? 0;
+    const recipeIndex = playbackOrder[cursor] ?? playbackOrder[0];
+    const recipe = playbackRecipes[recipeIndex];
+    cursors.set(cursorKey, (cursor + 1) % playbackOrder.length);
+    return recipe;
+  }
+
   private async loadBank(profileID: string): Promise<LoadedBank> {
     const existing = this.banks.get(profileID);
     if (existing) return existing;
@@ -398,11 +785,11 @@ export class BattutaPreviewAudio {
     const resolved = this.resolveSample(profileID, code, phase);
     if (!resolved) return false;
     const { bank, sampleID, sample } = resolved;
-
-    const cursorKey = `${bank.profile.id}:${sampleID}`;
-    const cursor = this.variationCursors.get(cursorKey) ?? 0;
-    const recipe = playbackRecipes[playbackOrder[cursor]];
-    this.variationCursors.set(cursorKey, (cursor + 1) % playbackOrder.length);
+    const recipe = this.takePlaybackRecipe(
+      this.variationCursors,
+      bank.profile.id,
+      sampleID,
+    );
 
     while (this.voices.length >= maximumVoiceCount) {
       const oldest = this.voices.shift();
