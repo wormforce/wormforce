@@ -90,17 +90,23 @@ const typingCodes = [
   "Space", "KeyB", "KeyR", "KeyO", "KeyW", "KeyN", "Space", "KeyF", "KeyO",
   "KeyX", "Space", "KeyJ", "KeyU", "KeyM", "KeyP", "KeyS", "Enter",
 ];
-const typingIntervals = [96, 82, 121, 168, 74, 88, 109, 77, 142, 196, 92, 71, 114, 86, 133, 182];
+const typingIntervals = [
+  216, 198, 231, 360, 207, 224, 203, 218, 238, 390, 211, 195, 229,
+  214, 235, 375, 202, 223, 217, 405, 208, 226, 199, 232, 219, 520,
+];
+const typingSequenceStartMS = 120;
 const comparisonCodes = ["KeyA", "KeyS", "KeyD", "Space", "KeyJ", "KeyK", "Enter"];
-const comparisonSegmentDurationMS = 1_650;
+const comparisonOffsetsMS = [160, 380, 605, 835, 1_205, 1_425, 1_650];
+const comparisonSegmentDurationMS = 2_200;
 
 function buildTypingSequence(): BattutaSequenceHit[] {
   const hits: BattutaSequenceHit[] = [];
-  let elapsed = 70;
+  let elapsed = typingSequenceStartMS;
   let hitIndex = 0;
-  while (elapsed < sequenceDurationMS - 240) {
+  while (elapsed < sequenceDurationMS - 300) {
+    const code = typingCodes[hitIndex % typingCodes.length];
     hits.push({
-      code: typingCodes[hitIndex % typingCodes.length],
+      code,
       atMilliseconds: elapsed,
     });
     elapsed += typingIntervals[hitIndex % typingIntervals.length];
@@ -114,7 +120,8 @@ function buildMultiProfileSequence(profileIDs: readonly string[]): BattutaSequen
     comparisonCodes.map((code, sampleIndex) => ({
       profileID,
       code,
-      atMilliseconds: profileIndex * comparisonSegmentDurationMS + 130 + sampleIndex * 142,
+      atMilliseconds: profileIndex * comparisonSegmentDurationMS
+        + comparisonOffsetsMS[sampleIndex],
     }))
   ));
 }
