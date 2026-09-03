@@ -22,11 +22,18 @@ const chineseNavItems = [
 
 export function SiteHeader() {
   const pathname = usePathname();
+  const isBattutaCommunityPage =
+    pathname === "/projects/battuta/community"
+    || pathname.startsWith("/projects/battuta/community/")
+    || pathname === "/en/projects/battuta/community"
+    || pathname.startsWith("/en/projects/battuta/community/");
   const isChineseBattutaPage =
     pathname === "/projects/battuta"
     || (pathname.startsWith("/projects/battuta/")
       && !pathname.startsWith("/projects/battuta/guides/"));
   const navItems = isChineseBattutaPage ? chineseNavItems : englishNavItems;
+
+  if (isBattutaCommunityPage) return null;
 
   return (
     <header

@@ -2,27 +2,22 @@ import type { Metadata } from "next";
 import { BattutaCommunityPage } from "@/components/battuta-community-page";
 import { JsonLd } from "@/components/json-ld";
 import { battutaPaths } from "@/content/battuta";
-import { battutaCommunityPacks, communityPackPath } from "@/lib/battuta-community";
+import { battutaDemoProfileCount, battutaDemoProfiles } from "@/content/battuta-demo-audio";
 import { absoluteUrl } from "@/lib/utils";
 
 const pageUrl = absoluteUrl(battutaPaths.community.en);
 const chinesePageUrl = absoluteUrl(battutaPaths.community.zh);
-const hasPublishedPacks = battutaCommunityPacks.length > 0;
 
 export const metadata: Metadata = {
-  title: "Battuta Community Sounds",
-  description: hasPublishedPacks
-    ? "Discover curated keyboard recordings with clear licenses and safe one-click installation for Battuta on macOS and Windows."
-    : "Preview the Battuta community catalog, review standards, and secure installation model being prepared for macOS and Windows.",
+  title: "Battuta Sound Atlas",
+  description: `Search, filter, and freely audition ${battutaDemoProfileCount} real mechanical-keyboard sound profiles with single-key samples, typing sequences, and A/B comparison.`,
   alternates: {
     canonical: pageUrl,
     languages: { "zh-CN": chinesePageUrl, en: pageUrl },
   },
   openGraph: {
-    title: "Battuta Community Sounds | Wormforce",
-    description: hasPublishedPacks
-      ? "Browse curated community keyboard sounds and install a pinned release safely in Battuta."
-      : "Battuta Community and its secure installation model are being prepared.",
+    title: "Battuta Sound Atlas | Wormforce",
+    description: `Freely audition ${battutaDemoProfileCount} real mechanical-keyboard sounds and compare them directly in your browser.`,
     url: pageUrl,
     type: "website",
     images: [absoluteUrl("/battuta/og-v1.2.0.png")],
@@ -35,14 +30,14 @@ export default function BattutaCommunityEnglishPage() {
       <JsonLd data={{
         "@context": "https://schema.org",
         "@type": "ItemList",
-        name: "Battuta Community Sounds",
+        name: "Battuta Sound Atlas",
         url: pageUrl,
-        numberOfItems: battutaCommunityPacks.length,
-        itemListElement: battutaCommunityPacks.map((pack, index) => ({
+        numberOfItems: battutaDemoProfileCount,
+        itemListElement: battutaDemoProfiles.map((profile, index) => ({
           "@type": "ListItem",
           position: index + 1,
-          name: pack.name,
-          url: absoluteUrl(communityPackPath(pack, "en")),
+          name: profile.name,
+          url: `${pageUrl}#sound-${profile.id}`,
         })),
       }} />
       <BattutaCommunityPage locale="en" />

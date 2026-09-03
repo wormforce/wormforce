@@ -5,11 +5,18 @@ import { teamProfile } from "@/content/site";
 
 export function SiteFooter() {
   const pathname = usePathname();
+  const isBattutaCommunityPage =
+    pathname === "/projects/battuta/community"
+    || pathname.startsWith("/projects/battuta/community/")
+    || pathname === "/en/projects/battuta/community"
+    || pathname.startsWith("/en/projects/battuta/community/");
   const currentYear = new Date().getFullYear();
   const isChineseBattutaPage =
     pathname === "/projects/battuta"
     || (pathname.startsWith("/projects/battuta/")
       && !pathname.startsWith("/projects/battuta/guides/"));
+
+  if (isBattutaCommunityPage) return null;
 
   return (
     <footer

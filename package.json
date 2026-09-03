@@ -12,6 +12,7 @@
     "verify:battuta-community:remote": "node scripts/verify-battuta-community.mjs --remote"
   },
   "dependencies": {
+    "@phosphor-icons/react": "^2.1.10",
     "@vercel/analytics": "^1.6.1",
     "next": "16.1.6",
     "react": "19.2.3",
