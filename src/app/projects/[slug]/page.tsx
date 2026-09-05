@@ -41,9 +41,9 @@ export async function generateMetadata({
         }
       : project.slug === "sustech-cli"
         ? {
-            url: absoluteUrl("/sustech-cli/sustech-cli-og.png"),
-            width: 1200,
-            height: 630,
+            url: absoluteUrl("/sustech-cli/sustech-cli-frutiger-social-2400x1260.png"),
+            width: 2400,
+            height: 1260,
             alt: "sustech cli",
           }
         : undefined;

@@ -165,7 +165,7 @@ export function SustechCliProductPage() {
       <nav className="sc-nav" aria-label="sustech cli 产品导航">
         <div className="sc-container sc-nav-inner">
           <a className="sc-brand" href="#sc-top" aria-label="sustech cli 首页">
-            <Image src="/sustech-cli/sustech-cli-wordmark.png" alt="sustech cli" width={270} height={54} priority />
+            <Image src="/sustech-cli/sustech-cli-frutiger.svg" alt="sustech cli" width={926} height={184} priority />
           </a>
           <div className="sc-nav-links">
             <a href="#capabilities">能力</a>
