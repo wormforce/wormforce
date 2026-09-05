@@ -93,6 +93,47 @@
 .nav-links a { transition: color 180ms ease, background 180ms ease, transform 180ms ease; }
 .nav-links a:hover { color: white; }
 
+.locale-switcher {
+  display: inline-flex;
+  overflow: hidden;
+  border: 1px solid rgba(216, 255, 115, 0.28);
+  border-radius: 10px;
+  color: #c8cbc3;
+  font-size: 11px;
+  font-weight: 760;
+  letter-spacing: 0.08em;
+}
+
+.locale-switcher > span,
+.locale-switcher > a {
+  display: inline-flex;
+  min-width: 38px;
+  min-height: 38px;
+  align-items: center;
+  justify-content: center;
+}
+
+.locale-switcher > span {
+  color: #10130e;
+  background: var(--lime);
+}
+
+.locale-switcher > a {
+  color: inherit;
+  transition: color 180ms ease, background 180ms ease;
+}
+
+.locale-switcher > a:hover {
+  color: #10130e;
+  background: #efffc3;
+}
+
+.locale-switcher > a:focus-visible {
+  z-index: 1;
+  outline: 2px solid white;
+  outline-offset: -2px;
+}
+
 .nav-download {
   padding: 10px 17px;
   border-radius: 12px;
@@ -1892,9 +1933,12 @@
 @media (max-width: 850px) {
   .battuta-subnav { position: sticky; top: 0; height: 54px; }
   .battuta-subnav-inner { width: min(calc(100% - 40px), 680px); }
+  .nav-links { gap: 10px; }
   .section-inner,
   .footer-inner { width: min(calc(100% - 40px), 680px); }
   .nav-links a:not(.nav-download) { display: none; }
+  .nav-links .locale-switcher { display: inline-flex; }
+  .nav-links .locale-switcher a { display: inline-flex; }
   .hero { grid-template-columns: 1fr; padding-top: 80px; padding-bottom: 64px; text-align: center; }
   .hero h1 { font-size: clamp(44px, 7vw, 52px); }
   .hero-copy { margin-inline: auto; }

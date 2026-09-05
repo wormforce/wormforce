@@ -1,19 +1,39 @@
-import Link from "next/link";
+"use client";
 
-const navItems = [
+import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+const englishNavItems = [
   { label: "Home", href: "/#home" },
-  { label: "Team", href: "/#team" },
+  { label: "Projects", href: "/#projects" },
   { label: "Members", href: "/#members" },
-  { label: "Projects", href: "/projects" },
+  { label: "Team", href: "/#team" },
   { label: "Contact", href: "/#contact" },
 ];
 
+const chineseNavItems = [
+  { label: "首页", href: "/#home" },
+  { label: "项目", href: "/#projects" },
+  { label: "成员", href: "/#members" },
+  { label: "团队", href: "/#team" },
+  { label: "联系", href: "/#contact" },
+];
+
 export function SiteHeader() {
+  const pathname = usePathname();
+  const isChineseBattutaPage =
+    pathname === "/projects/battuta" || pathname === "/projects/battuta/privacy";
+  const navItems = isChineseBattutaPage ? chineseNavItems : englishNavItems;
+
   return (
-    <header className="relative top-0 z-50 border-b border-[var(--color-border)] bg-[color-mix(in_srgb,var(--color-bg)_78%,transparent)] backdrop-blur-xl lg:sticky">
+    <header
+      className="relative top-0 z-50 border-b border-[var(--color-border)] bg-[color-mix(in_srgb,var(--color-bg)_78%,transparent)] backdrop-blur-xl lg:sticky"
+      lang={isChineseBattutaPage ? "zh-CN" : "en"}
+    >
       <div className="content-shell flex h-14 items-center justify-between gap-4 lg:h-16">
         <Link href="/#home" className="inline-flex min-h-11 items-center gap-5">
-          <img
+          <Image
             src="/icon.svg"
             alt=""
             className="h-8 w-auto shrink-0 invert"
@@ -21,7 +41,7 @@ export function SiteHeader() {
             height={116}
             aria-hidden
           />
-          <img
+          <Image
             src="/handwrite.svg"
             alt="Wormforce"
             className="h-7 w-auto"

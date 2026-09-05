@@ -31,14 +31,19 @@ All editable content for the v1 site is in code:
 
 - Team profile: `src/content/site.ts`
 - Member profiles: `src/content/members.ts`
+- Project profiles: `src/content/projects.ts`
+- Battuta release and search guides: `src/content/battuta.ts`, `src/content/battuta-guides.ts`
 
 Replace placeholder text, links, and avatar files when production content is ready.
 
 ## Route Map
 
-- `/` - home (Hero, Team, Members, Projects preview, Contact)
+- `/` - home (Hero, Projects, Members, Team and Mission, Contact)
 - `/members/[slug]` - member profile pages
-- `/projects` - projects placeholder page
+- `/projects` - project directory
+- `/projects/[slug]` - project detail pages
+- `/projects/battuta/guides/[slug]` - Battuta platform setup guides
+- `/projects/battuta/privacy` - Battuta privacy policy
 - `not-found` - custom 404
 - `/robots.txt` and `/sitemap.xml` via metadata routes
 

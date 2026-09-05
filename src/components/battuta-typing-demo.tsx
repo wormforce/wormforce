@@ -11,6 +11,7 @@ import {
   type FormEvent as ReactFormEvent,
   type KeyboardEvent as ReactKeyboardEvent,
 } from 'react';
+import type { BattutaLocale } from '@/content/battuta';
 
 type AudioPhase = 'press' | 'release';
 type KeyboardRow = 'R0' | 'R1' | 'R2' | 'R3' | 'R4';
@@ -50,6 +51,95 @@ type DemoManifest = {
   sampleRate: number;
   profiles: DemoProfile[];
 };
+
+const telemetryCopy = {
+  "zh-CN": {
+    panelLabel: "本次输入统计",
+    rhythmKicker: "实时节奏",
+    rhythmTitle: "实时键速",
+    barLegend: "1 秒柱",
+    trendLegend: "平滑趋势",
+    current: "当前",
+    peak: "峰值",
+    session: "本轮",
+    perSecond: "次/秒",
+    count: "次",
+    recent: "最近 12 秒",
+    dynamicMaximum: "动态上限",
+    now: "现在",
+    heatmapKicker: "本次热力图",
+    heatmapTitle: "本次键位热力图",
+    mappedSuffix: "次已映射",
+    mostUsed: "最常用键位：",
+    low: "低",
+    high: "高",
+    noKeys: "还没有键位记录",
+    keySeparator: "、",
+  },
+  en: {
+    panelLabel: "Current typing statistics",
+    rhythmKicker: "Live rhythm",
+    rhythmTitle: "Live typing speed",
+    barLegend: "one-second bars",
+    trendLegend: "smoothed trend",
+    current: "Current",
+    peak: "Peak",
+    session: "Session",
+    perSecond: " keys/s",
+    count: " keys",
+    recent: "Last 12 seconds",
+    dynamicMaximum: "Dynamic maximum",
+    now: "Now",
+    heatmapKicker: "Session heatmap",
+    heatmapTitle: "Current key heatmap",
+    mappedSuffix: "mapped keys",
+    mostUsed: "Most used keys: ",
+    low: "Low",
+    high: "High",
+    noKeys: "No keys recorded yet",
+    keySeparator: ", ",
+  },
+} as const;
+
+const englishProfileFamily: Record<string, string> = {
+  "段落": "Tactile",
+  "点击": "Clicky",
+  "线性": "Linear",
+  "静电容": "Electro-capacitive",
+  "屈曲弹簧": "Buckling spring",
+};
+
+const englishProfileTone: Record<string, string> = {
+  "厚实、木感": "Full and woody",
+  "饱满、集中": "Full and focused",
+  "温和、均衡": "Gentle and balanced",
+  "扎实、段落明显": "Firm and tactile",
+  "轻薄、利落": "Light and crisp",
+  "近场、细腻": "Close and detailed",
+  "清脆、经典": "Crisp and classic",
+  "厚重、响亮": "Heavy and loud",
+  "短促、清亮": "Short and bright",
+  "薄脆、双向点击": "Thin and clicky both ways",
+  "复古、锐利": "Vintage and sharp",
+  "明快、颗粒感": "Bright and textured",
+  "顺滑、奶油": "Smooth and creamy",
+  "干净、柔和": "Clean and soft",
+  "低沉、扎实": "Low and solid",
+  "轻快、圆润": "Light and rounded",
+  "沉稳、硬朗": "Steady and firm",
+  "明亮、顺滑": "Bright and smooth",
+  "干净、轻快": "Clean and lively",
+  "柔韧、闷响": "Resilient and muted",
+  "复古、金属感": "Vintage and metallic",
+};
+
+function localizedProfileFamily(profile: DemoProfile, locale: BattutaLocale) {
+  return locale === "en" ? (englishProfileFamily[profile.family] ?? profile.family) : profile.family;
+}
+
+function localizedProfileTone(profile: DemoProfile, locale: BattutaLocale) {
+  return locale === "en" ? (englishProfileTone[profile.tone] ?? profile.tone) : profile.tone;
+}
 
 type PreparedSample = {
   offsetSeconds: number;
@@ -394,9 +484,12 @@ function buildSmoothChartPath(
 
 const TypingTelemetryPanel = memo(function TypingTelemetryPanel({
   store,
+  locale,
 }: {
   store: TypingTelemetryStore;
+  locale: BattutaLocale;
 }) {
+  const copy = telemetryCopy[locale];
   const [snapshot, setSnapshot] = useState<TypingTelemetrySnapshot>(() => emptyTelemetrySnapshot());
   const snapshotRef = useRef(snapshot);
   const barTrackRef = useRef<SVGGElement | null>(null);
@@ -459,8 +552,8 @@ const TypingTelemetryPanel = memo(function TypingTelemetryPanel({
   const linePath = buildSmoothChartPath(snapshot.line, axisMaximum, chartWidth, chartHeight, barStep);
   const maximumKeyCount = Math.max(0, ...snapshot.keyCounts);
   const topKeySummary = snapshot.topKeys.length > 0
-    ? snapshot.topKeys.map((key) => `${key.label} ${key.count} 次`).join('、')
-    : '还没有键位记录';
+    ? snapshot.topKeys.map((key) => key.label + " " + key.count).join(copy.keySeparator)
+    : copy.noKeys;
 
   useLayoutEffect(() => {
     renderedSecondBucketIDRef.current = snapshot.secondBucketID;
@@ -508,23 +601,23 @@ const TypingTelemetryPanel = memo(function TypingTelemetryPanel({
   }, [barStep, store]);
 
   return (
-    <aside className="typing-demo-insights" aria-label="本次输入统计">
+    <aside className="typing-demo-insights" aria-label={copy.panelLabel}>
       <section className="typing-demo-stat-card typing-demo-rhythm-card" aria-labelledby="typing-rhythm-title">
         <div className="typing-demo-stat-heading">
           <div>
-            <span>Live rhythm</span>
-            <h3 id="typing-rhythm-title">实时键速</h3>
+            <span>{copy.rhythmKicker}</span>
+            <h3 id="typing-rhythm-title">{copy.rhythmTitle}</h3>
           </div>
           <div className="typing-demo-chart-legend" aria-hidden="true">
-            <span><i className="is-bar" />1 秒柱</span>
-            <span><i className="is-line" />平滑趋势</span>
+            <span><i className="is-bar" />{copy.barLegend}</span>
+            <span><i className="is-line" />{copy.trendLegend}</span>
           </div>
         </div>
 
         <dl className="typing-demo-metrics">
-          <div><dt>当前</dt><dd>{snapshot.currentKPS}<small>次/秒</small></dd></div>
-          <div><dt>峰值</dt><dd>{snapshot.peakKPS}<small>次/秒</small></dd></div>
-          <div><dt>本轮</dt><dd>{snapshot.total}<small>次</small></dd></div>
+          <div><dt>{copy.current}</dt><dd>{snapshot.currentKPS}<small>{copy.perSecond}</small></dd></div>
+          <div><dt>{copy.peak}</dt><dd>{snapshot.peakKPS}<small>{copy.perSecond}</small></dd></div>
+          <div><dt>{copy.session}</dt><dd>{snapshot.total}<small>{copy.count}</small></dd></div>
         </dl>
 
         <figure className="typing-demo-chart">
@@ -561,9 +654,9 @@ const TypingTelemetryPanel = memo(function TypingTelemetryPanel({
             </g>
           </svg>
           <figcaption>
-            <span>最近 12 秒</span>
-            <span>动态上限 {axisMaximum} 次/秒</span>
-            <span>现在</span>
+            <span>{copy.recent}</span>
+            <span>{copy.dynamicMaximum} {axisMaximum} {copy.perSecond}</span>
+            <span>{copy.now}</span>
           </figcaption>
         </figure>
       </section>
@@ -571,12 +664,12 @@ const TypingTelemetryPanel = memo(function TypingTelemetryPanel({
       <section className="typing-demo-stat-card typing-demo-heatmap-card" aria-labelledby="typing-heatmap-title">
         <div className="typing-demo-stat-heading">
           <div>
-            <span>Session heatmap</span>
-            <h3 id="typing-heatmap-title">本次键位热力图</h3>
+            <span>{copy.heatmapKicker}</span>
+            <h3 id="typing-heatmap-title">{copy.heatmapTitle}</h3>
           </div>
-          <p>{snapshot.mappedTotal} 次已映射</p>
+          <p>{snapshot.mappedTotal} {copy.mappedSuffix}</p>
         </div>
-        <p className="typing-demo-visually-hidden">最常用键位：{topKeySummary}</p>
+        <p className="typing-demo-visually-hidden">{copy.mostUsed}{topKeySummary}</p>
         <div className="typing-demo-keyboard-scroll">
           <div className="typing-demo-keyboard" aria-hidden="true">
             {heatmapRows.map((row, rowIndex) => (
@@ -603,7 +696,7 @@ const TypingTelemetryPanel = memo(function TypingTelemetryPanel({
           </div>
         </div>
         <div className="typing-demo-heatmap-caption">
-          <span>低</span><i /><i /><i /><i /><i /><span>高</span>
+          <span>{copy.low}</span><i /><i /><i /><i /><i /><span>{copy.high}</span>
           <p>{topKeySummary}</p>
         </div>
       </section>
@@ -1025,18 +1118,98 @@ class TypingAudioEngine {
   }
 }
 
-function audioStateLabel(state: AudioState, selectedProfile?: DemoProfile) {
+const demoCopy = {
+  "zh-CN": {
+    kicker: "无需安装，先听真实手感",
+    title: "现在，先试着打一句。",
+    introduction:
+      "网页试听与 Battuta 使用同一套按下、回弹和大小键录音。桌面端会按物理键位匹配；安装应用后，才能在所有软件中持续生效。",
+    currentProfile: "当前音色",
+    loadingProfiles: "正在载入音色目录",
+    allProfiles: "全部 21 种音色",
+    recommendedProfiles: "推荐音色",
+    recommended: "推荐",
+    inputLabel: "在这里输入 · 仅统计此输入框",
+    inputPlaceholder: "写一句今天想说的话，听听每一次按下与回弹……",
+    preparingAudio: "正在准备音频",
+    decodingAudio: "正在解码音色",
+    reloadAudio: "重新载入音频",
+    unlockAudio: "开启声音并试打",
+    restoreSound: "恢复声音",
+    mute: "静音",
+    previewVolume: "试听音量",
+    clearSession: "清空本次",
+    localNote: "100 ms 记录敲击，1 秒汇总为柱状与趋势；清空或刷新页面即重置。",
+    privacy:
+      "仅在此输入框内统计匿名物理键位与敲击节奏；不读取文字内容、不上传、不保存，也不需要输入监控权限。",
+    credits: "音频来源与许可 ↗",
+    conversionPrompt: "喜欢这个声音？",
+    conversionTitle: "让所有应用都这样响。",
+    conversionLink: "查看安装方式",
+    mobileNote:
+      "手机软键盘会记录敲击节奏，但无法稳定提供物理键位和抬起事件；电脑端可体验完整键位热力图与回弹映射。",
+  },
+  en: {
+    kicker: "No install needed—hear the real feel first",
+    title: "Try typing a sentence.",
+    introduction:
+      "This web preview uses the same press, release, and large-key recordings as Battuta. The desktop app maps physical keys and keeps the effect available in every app.",
+    currentProfile: "Current profile",
+    loadingProfiles: "Loading sound profiles",
+    allProfiles: "All 21 profiles",
+    recommendedProfiles: "Recommended profiles",
+    recommended: "Recommended",
+    inputLabel: "Type here · only this field is counted",
+    inputPlaceholder: "Write something you want to say today and hear every press and release…",
+    preparingAudio: "Preparing audio",
+    decodingAudio: "Decoding sound profile",
+    reloadAudio: "Reload audio",
+    unlockAudio: "Turn on sound and try typing",
+    restoreSound: "Restore sound",
+    mute: "Mute",
+    previewVolume: "Preview volume",
+    clearSession: "Clear this session",
+    localNote: "Keystrokes are sampled every 100 ms and summarized into one-second bars and a trend. Clear or refresh to reset.",
+    privacy:
+      "Only anonymous physical key use and typing rhythm inside this field are counted. Text is never read, uploaded, or saved, and no Input Monitoring permission is needed.",
+    credits: "Audio sources and licenses ↗",
+    conversionPrompt: "Like this sound?",
+    conversionTitle: "Let every app sound this way.",
+    conversionLink: "See install options",
+    mobileNote:
+      "Mobile keyboards can track typing rhythm but cannot reliably expose physical keys or release events. Use a desktop browser for the full heatmap and release mapping.",
+  },
+} as const;
+
+function audioStateLabel(
+  state: AudioState,
+  selectedProfile: DemoProfile | undefined,
+  locale: BattutaLocale,
+) {
+  const profileName = selectedProfile?.displayName ?? (locale === "en" ? "sound profile" : "音色");
+  if (locale === "en") {
+    switch (state) {
+    case 'loading': return 'Preparing web audio…';
+    case 'awaiting': return profileName + ' is downloaded. Click to turn on sound.';
+    case 'activating': return 'Decoding ' + profileName + '…';
+    case 'switching': return 'Switching to ' + (selectedProfile?.displayName ?? 'a new profile') + '…';
+    case 'ready': return profileName + ' is ready. Try typing.';
+    case 'error': return 'Audio could not start. Please try again.';
+    }
+  }
+
   switch (state) {
   case 'loading': return '正在准备网页音频…';
-  case 'awaiting': return `${selectedProfile?.displayName ?? '音色'} 已下载，点击开启声音`;
-  case 'activating': return `正在解码 ${selectedProfile?.displayName ?? '音色'}…`;
-  case 'switching': return `正在切换到 ${selectedProfile?.displayName ?? '新音色'}…`;
-  case 'ready': return `${selectedProfile?.displayName ?? '音色'} 已就绪，可以试打`;
+  case 'awaiting': return profileName + ' 已下载，点击开启声音';
+  case 'activating': return '正在解码 ' + profileName + '…';
+  case 'switching': return '正在切换到 ' + (selectedProfile?.displayName ?? '新音色') + '…';
+  case 'ready': return profileName + ' 已就绪，可以试打';
   case 'error': return '音频没有成功开启，请重试';
   }
 }
 
-export function BattutaTypingDemo() {
+export function BattutaTypingDemo({ locale = "zh-CN" }: { locale?: BattutaLocale }) {
+  const copy = demoCopy[locale];
   const [profiles, setProfiles] = useState<DemoProfile[]>([]);
   const [selectedProfileID, setSelectedProfileID] = useState(defaultProfileID);
   const [audioState, setAudioState] = useState<AudioState>('loading');
@@ -1334,20 +1507,17 @@ export function BattutaTypingDemo() {
   }, [activateAudio]);
 
   const inputReady = audioState === 'ready';
-  const statusText = audioStateLabel(audioState, selectedProfile);
+  const statusText = audioStateLabel(audioState, selectedProfile, locale);
 
   return (
     <section className="typing-demo-section dark-section" id="try" aria-labelledby="typing-demo-title">
       <div className="section-inner">
         <div className="typing-demo-heading">
           <div>
-            <p className="section-kicker lime">无需安装，先听真实手感</p>
-            <h2 id="typing-demo-title">现在，先试着打一句。</h2>
+            <p className="section-kicker lime">{copy.kicker}</p>
+            <h2 id="typing-demo-title">{copy.title}</h2>
           </div>
-          <p>
-            网页试听与 Battuta 使用同一套按下、回弹和大小键录音。桌面端会按物理键位匹配；
-            安装应用后，才能在所有软件中持续生效。
-          </p>
+          <p>{copy.introduction}</p>
         </div>
 
         <div className="typing-demo-panel">
@@ -1355,14 +1525,18 @@ export function BattutaTypingDemo() {
             <div className="typing-demo-current">
               <span className="typing-demo-signal" aria-hidden="true"><i /><i /><i /><i /></span>
               <div>
-                <span>当前音色</span>
+                <span>{copy.currentProfile}</span>
                 <strong>{selectedProfile?.displayName ?? 'BCP (Suit80)'}</strong>
-                <small>{selectedProfile ? `${selectedProfile.family} · ${selectedProfile.tone}` : '正在载入音色目录'}</small>
+                <small>
+                  {selectedProfile
+                    ? localizedProfileFamily(selectedProfile, locale) + " · " + localizedProfileTone(selectedProfile, locale)
+                    : copy.loadingProfiles}
+                </small>
               </div>
             </div>
 
             <label className="typing-demo-select-label">
-              <span>全部 21 种音色</span>
+              <span>{copy.allProfiles}</span>
               <select
                 value={selectedProfileID}
                 onChange={(event) => void selectProfile(event.target.value)}
@@ -1370,7 +1544,7 @@ export function BattutaTypingDemo() {
               >
                 {profiles.map((profile) => (
                   <option key={profile.id} value={profile.id}>
-                    {profile.displayName} · {profile.family}
+                    {profile.displayName} · {localizedProfileFamily(profile, locale)}
                   </option>
                 ))}
               </select>
@@ -1378,7 +1552,7 @@ export function BattutaTypingDemo() {
           </div>
 
           <fieldset className="typing-demo-profile-picks">
-            <legend>推荐音色</legend>
+            <legend>{copy.recommendedProfiles}</legend>
             <div className="typing-demo-profile-scroll">
               {quickProfiles.map((profile) => (
                 <button
@@ -1390,8 +1564,8 @@ export function BattutaTypingDemo() {
                   disabled={audioState === 'activating' || audioState === 'switching'}
                 >
                   <span>{profile.displayName}</span>
-                  <small>{profile.tone}</small>
-                  {profile.recommended ? <em>推荐</em> : null}
+                  <small>{localizedProfileTone(profile, locale)}</small>
+                  {profile.recommended ? <em>{copy.recommended}</em> : null}
                 </button>
               ))}
             </div>
@@ -1400,7 +1574,7 @@ export function BattutaTypingDemo() {
           <div className="typing-demo-workbench">
             <div className="typing-demo-compose">
               <div className={`typing-demo-input-shell${inputReady ? ' is-ready' : ''}`}>
-                <label htmlFor="battuta-demo-input">在这里输入 · 仅统计此输入框</label>
+                <label htmlFor="battuta-demo-input">{copy.inputLabel}</label>
                 <textarea
                   ref={textareaRef}
                   id="battuta-demo-input"
@@ -1410,7 +1584,7 @@ export function BattutaTypingDemo() {
                   autoCorrect="off"
                   autoCapitalize="off"
                   spellCheck={false}
-                  placeholder="写一句今天想说的话，听听每一次按下与回弹……"
+                  placeholder={copy.inputPlaceholder}
                   tabIndex={inputReady ? 0 : -1}
                   aria-describedby="battuta-demo-privacy battuta-demo-status"
                   onClick={handleInputAudioGesture}
@@ -1431,12 +1605,12 @@ export function BattutaTypingDemo() {
                   >
                     <span aria-hidden="true">▶</span>
                     {audioState === 'loading'
-                      ? '正在准备音频'
+                      ? copy.preparingAudio
                       : audioState === 'activating'
-                        ? '正在解码音色'
+                        ? copy.decodingAudio
                         : profiles.length === 0
-                          ? '重新载入音频'
-                          : '开启声音并试打'}
+                          ? copy.reloadAudio
+                          : copy.unlockAudio}
                   </button>
                 ) : null}
                 <div ref={pulseRef} className="typing-demo-pulse" aria-hidden="true" data-active="false" />
@@ -1451,10 +1625,10 @@ export function BattutaTypingDemo() {
                   disabled={!inputReady}
                 >
                   <span aria-hidden="true">{muted ? '🔇' : '🔊'}</span>
-                  {muted ? '恢复声音' : '静音'}
+                  {muted ? copy.restoreSound : copy.mute}
                 </button>
                 <label className="typing-demo-volume">
-                  <span>试听音量</span>
+                  <span>{copy.previewVolume}</span>
                   <input
                     type="range"
                     min="0"
@@ -1467,7 +1641,7 @@ export function BattutaTypingDemo() {
                   <output>{volume}%</output>
                 </label>
                 <button type="button" className="typing-demo-clear" onClick={clearInput} disabled={!inputReady}>
-                  清空本次
+                  {copy.clearSession}
                 </button>
                 <p id="battuta-demo-status" className="typing-demo-status" aria-live="polite">
                   <i data-state={audioState} />{statusText}
@@ -1476,17 +1650,17 @@ export function BattutaTypingDemo() {
 
               <p className="typing-demo-local-note">
                 <span aria-hidden="true">●</span>
-                100 ms 记录敲击，1 秒汇总为柱状与趋势；清空或刷新页面即重置。
+                {copy.localNote}
               </p>
             </div>
 
-            <TypingTelemetryPanel store={telemetryStore} />
+            <TypingTelemetryPanel store={telemetryStore} locale={locale} />
           </div>
 
           <div className="typing-demo-footer">
             <p id="battuta-demo-privacy">
               <span aria-hidden="true">⌁</span>
-              仅在此输入框内统计匿名物理键位与敲击节奏；不读取文字内容、不上传、不保存，也不需要输入监控权限。
+              {copy.privacy}
             </p>
             <div className="typing-demo-credits">
               <a
@@ -1494,7 +1668,7 @@ export function BattutaTypingDemo() {
                 target="_blank"
                 rel="noreferrer"
               >
-                音频来源与许可 ↗
+                {copy.credits}
               </a>
             </div>
           </div>
@@ -1504,15 +1678,15 @@ export function BattutaTypingDemo() {
             aria-hidden={!conversionVisible}
           >
             <div>
-              <span>喜欢这个声音？</span>
-              <strong>让所有应用都这样响。</strong>
+              <span>{copy.conversionPrompt}</span>
+              <strong>{copy.conversionTitle}</strong>
             </div>
-            <a href="#install" tabIndex={conversionVisible ? 0 : -1}>查看安装方式</a>
+            <a href="#install" tabIndex={conversionVisible ? 0 : -1}>{copy.conversionLink}</a>
           </div>
         </div>
 
         <p className="typing-demo-mobile-note">
-          手机软键盘会记录敲击节奏，但无法稳定提供物理键位和抬起事件；电脑端可体验完整键位热力图与回弹映射。
+          {copy.mobileNote}
         </p>
       </div>
     </section>

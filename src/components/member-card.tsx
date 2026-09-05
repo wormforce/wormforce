@@ -36,7 +36,7 @@ export function MemberCard({ member }: MemberCardProps) {
           href={`/members/${member.slug}`}
           className="inline-flex items-center text-sm font-medium text-[var(--color-text)] transition group-hover:text-white"
         >
-          View profile {"->"}
+          View {member.name}&apos;s profile {"->"}
         </Link>
       </div>
     </article>

@@ -3,9 +3,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BattutaProductPage } from "@/components/battuta-product-page";
+import { JsonLd } from "@/components/json-ld";
 import { SustechCliProductPage } from "@/components/sustech-cli-product-page";
 import { getProjectBySlug, projects } from "@/content/projects";
 import { absoluteUrl } from "@/lib/utils";
+import { battutaStructuredData, projectStructuredData } from "@/lib/structured-data";
 
 type ProjectPageProps = {
   params: Promise<{ slug: string }>;
@@ -31,13 +33,14 @@ export async function generateMetadata({
   }
 
   const projectUrl = absoluteUrl(`/projects/${project.slug}`);
+  const englishBattutaUrl = absoluteUrl("/en/projects/battuta");
   const socialImage =
     project.slug === "battuta"
       ? {
           url: absoluteUrl("/battuta/og-v1.2.0.png"),
           width: 1672,
           height: 941,
-          alt: "Battuta 1.2.0 keyboard sound app for macOS and Windows",
+          alt: "Battuta keyboard sound app for macOS and Windows",
         }
       : project.slug === "sustech-cli"
         ? {
@@ -48,15 +51,29 @@ export async function generateMetadata({
           }
         : undefined;
 
+  const isBattuta = project.slug === "battuta";
+  const title = isBattuta
+    ? "Battuta：macOS 与 Windows 键盘音效应用"
+    : project.seoTitle;
+  const description = isBattuta
+    ? "Battuta 是一款适用于 macOS 与 Windows 的开源键盘音效应用，提供 21 种机械键盘音色、DIY 音色包、低延迟播放与本地输入统计。"
+    : project.seoDescription;
+
   return {
-    title: `${project.name}`,
-    description: project.shortDescription,
+    title,
+    description,
     alternates: {
       canonical: projectUrl,
+      languages: isBattuta
+        ? {
+            "zh-CN": projectUrl,
+            en: englishBattutaUrl,
+          }
+        : undefined,
     },
     openGraph: {
-      title: `${project.name} | Wormforce`,
-      description: project.shortDescription,
+      title: `${title} | Wormforce`,
+      description,
       url: projectUrl,
       type: "website",
       images: socialImage ? [socialImage] : undefined,
@@ -65,8 +82,8 @@ export async function generateMetadata({
       socialImage
         ? {
             card: "summary_large_image",
-            title: `${project.name} | Wormforce`,
-            description: project.shortDescription,
+            title: `${title} | Wormforce`,
+            description,
             images: [socialImage.url],
           }
         : undefined,
@@ -82,22 +99,34 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
   }
 
   if (project.slug === "battuta") {
-    return <BattutaProductPage />;
+    return (
+      <>
+        <JsonLd data={battutaStructuredData("zh-CN")} />
+        <BattutaProductPage locale="zh-CN" />
+      </>
+    );
   }
 
   if (project.slug === "sustech-cli") {
-    return <SustechCliProductPage />;
+    return (
+      <>
+        <JsonLd data={projectStructuredData(project)} />
+        <SustechCliProductPage />
+      </>
+    );
   }
 
   return (
-    <section className="section-shell pt-24">
-      <div className="content-shell">
-        <Link
-          href="/projects"
-          className="mono-label inline-flex items-center transition hover:text-white"
-        >
-          {"<-"} Back to projects
-        </Link>
+    <>
+      <JsonLd data={projectStructuredData(project)} />
+      <section className="section-shell pt-24">
+        <div className="content-shell">
+          <Link
+            href="/projects"
+            className="mono-label inline-flex items-center transition hover:text-white"
+          >
+            {"<-"} Back to projects
+          </Link>
 
         <article className="mt-6 space-y-6">
           <div className="reveal overflow-hidden rounded-[36px] border border-[#2f2f2f] bg-[linear-gradient(155deg,#f5f5f5_0%,#e2e2e2_45%,#d4d4d4_100%)] p-7 text-[#101010] shadow-[0_30px_80px_rgba(0,0,0,0.45)] md:p-10">
@@ -178,8 +207,9 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
               </Link>
             </div>
           </div>
-        </article>
-      </div>
-    </section>
+          </article>
+        </div>
+      </section>
+    </>
   );
 }

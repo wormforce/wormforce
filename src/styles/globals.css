@@ -23,6 +23,7 @@ body {
 
 html {
   background: var(--color-bg);
+  scroll-behavior: smooth;
 }
 
 body {
@@ -37,6 +38,11 @@ body {
 a {
   color: inherit;
   text-decoration: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 4px;
 }
 
 .site-radial-bg {
@@ -60,6 +66,7 @@ a {
 
 .section-shell {
   padding-block: 2.8rem;
+  scroll-margin-top: 5rem;
 }
 
 .card-surface {
@@ -107,5 +114,17 @@ a {
 @media (min-width: 768px) {
   .section-shell {
     padding-block: 3.8rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+    animation: none;
   }
 }
