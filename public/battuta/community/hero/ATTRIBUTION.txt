@@ -1,0 +1,26 @@
+MX-compatible mechanical switch 3D model
+
+Original author: Rafael Silva and keyswitch-kicad-library contributors.
+Source project: https://github.com/kiswitch/kiswitch
+Source revision: aefcf65038d48d2666ff14530d482be3c350fa6e
+Source file: library/3dmodels/3d-library.3dshapes/SW_Cherry_MX_PCB.stp
+Source URL: https://github.com/kiswitch/kiswitch/blob/aefcf65038d48d2666ff14530d482be3c350fa6e/library/3dmodels/3d-library.3dshapes/SW_Cherry_MX_PCB.stp
+
+This GLB adaptation is distributed under Creative Commons Attribution-ShareAlike 4.0:
+https://creativecommons.org/licenses/by-sa/4.0/
+Legal text: https://creativecommons.org/licenses/by-sa/4.0/legalcode
+
+Adaptation for Battuta by Wormforce, 2026: offline STEP tessellation with
+occt-import-js, conversion to GLB, right-handed Y-up coordinates, recentering,
+semantic mesh names, and modified display materials. The webpage applies a lime
+stem and translucent housing treatment. This is not official Cherry imagery,
+endorsement, or a representation of a specific commercial switch's materials.
+
+The upstream repository additionally declares an MIT license; its notice is
+included in LICENSE-MIT.txt. Source-file metadata specifies CC BY-SA 4.0, so this
+adaptation retains that license. These terms cover mx-switch.glb, not unrelated
+Battuta site code or other artwork. Attribution and license must accompany any
+redistribution of this adapted model.
+
+The photographic-style hero and product illustrations are separate generated
+visual assets and are not derived from this CAD model.

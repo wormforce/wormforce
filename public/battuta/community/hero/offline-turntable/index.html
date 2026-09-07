@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Battuta · 360° 离线光追预览</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#090b08;color:#eef1e9;font:15px/1.6 -apple-system,BlinkMacSystemFont,sans-serif}main{max-width:1100px;margin:auto;padding:28px 20px}header{display:flex;justify-content:space-between;gap:16px}a{color:#caff35}h1{font-size:clamp(28px,4vw,44px);margin:28px 0 4px;letter-spacing:-.04em}p{color:#abb39f;margin:0 0 18px}.viewer{position:relative;max-width:800px;margin:auto;border:1px solid #293021;border-radius:24px;overflow:hidden;background:#000}.viewer img{display:block;width:100%;aspect-ratio:1;object-fit:contain;touch-action:pan-y;cursor:grab;user-select:none}.viewer img:active{cursor:grabbing}.controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:18px}button{font:inherit;background:#171d11;border:1px solid #39442b;border-radius:12px;color:#eff7e4;padding:10px 16px;cursor:pointer}button:disabled{opacity:.4;cursor:wait}button[aria-pressed=true]{background:#caff35;color:#151b0d}input{flex:1;min-width:120px;accent-color:#caff35}output{font-variant-numeric:tabular-nums;min-width:44px}small{display:block;margin-top:18px;color:#a2ac95}button:focus-visible,input:focus-visible{outline:3px solid #caff35;outline-offset:3px}#status{font-size:13px;margin-top:12px}
+</style>
+<main><header><strong>Battuta / OFFLINE 360°</strong><a href="/projects/battuta/community">返回声音图鉴</a></header>
+<h1>转动角度，不降低画质。</h1><p>固定俯仰角 · 一圈 72 帧 · 512 最大采样与离线降噪 · 无损 WebP</p>
+<section class="viewer" aria-label="360 度离线渲染旋转预览"><img id="turntable-image" src="../offline-proof/frame-000.png" alt="机械键盘轴体，旋转角度 0 度" draggable="false">
+<div class="controls"><button id="previous" disabled aria-label="向左旋转 5 度">←</button><button id="play" disabled aria-pressed="false">自动旋转</button><button id="next" disabled aria-label="向右旋转 5 度">→</button><input id="angle" type="range" min="0" max="71" value="0" step="1" disabled aria-label="旋转角度"><output id="degrees">0°</output></div></section>
+<p id="status" role="status">正在检查整圈渲染文件…</p><small>加载完成后可以左右拖动，或使用滑杆、方向按钮。旋转期间只显示预先算好的图像，没有实时采样或低画质替代。此页为独立预览，尚未替换产品首屏。</small></main>
+<script src="viewer.js" defer></script>
+</html>

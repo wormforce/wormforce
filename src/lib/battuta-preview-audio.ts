@@ -50,10 +50,16 @@ export type BattutaSequenceHit = {
 export type BattutaPreparedSequence = {
   buffer: AudioBuffer | null;
   waveform: number[];
+  metrics: BattutaWaveformMetrics | null;
   durationMilliseconds: number;
   eventCount: number;
   pointCount: number;
   exact: boolean;
+};
+
+export type BattutaWaveformMetrics = {
+  peakDecibels: number;
+  rmsDecibels: number;
 };
 
 type PreparedSample = {
@@ -561,6 +567,7 @@ export class BattutaPreviewAudio {
       return {
         buffer: null,
         waveform: new Array<number>(pointCount).fill(0),
+        metrics: null,
         durationMilliseconds,
         eventCount: hits.length,
         pointCount,
@@ -627,6 +634,7 @@ export class BattutaPreviewAudio {
       return {
         buffer,
         waveform: this.buildWaveform(buffer, pointCount),
+        metrics: this.buildWaveformMetrics(buffer),
         durationMilliseconds,
         eventCount: hits.length,
         pointCount,
@@ -637,6 +645,7 @@ export class BattutaPreviewAudio {
       return {
         buffer: null,
         waveform: new Array<number>(pointCount).fill(0),
+        metrics: null,
         durationMilliseconds,
         eventCount: hits.length,
         pointCount,
@@ -1114,6 +1123,34 @@ export class BattutaPreviewAudio {
 
     if (maximum === 0) return points;
     return points.map((point) => Math.min(1, point / maximum));
+  }
+
+  private buildWaveformMetrics(buffer: AudioBuffer): BattutaWaveformMetrics {
+    if (buffer.length === 0 || buffer.numberOfChannels === 0) {
+      return { peakDecibels: -120, rmsDecibels: -120 };
+    }
+
+    let peak = 0;
+    let sumSquares = 0;
+    let sampleCount = 0;
+    for (let channelIndex = 0; channelIndex < buffer.numberOfChannels; channelIndex += 1) {
+      const channel = buffer.getChannelData(channelIndex);
+      sampleCount += channel.length;
+      for (let frame = 0; frame < channel.length; frame += 1) {
+        const amplitude = Math.abs(channel[frame]);
+        peak = Math.max(peak, amplitude);
+        sumSquares += amplitude * amplitude;
+      }
+    }
+
+    const toDecibels = (amplitude: number) => (
+      amplitude > 0 ? Math.max(-120, 20 * Math.log10(amplitude)) : -120
+    );
+    const rms = sampleCount > 0 ? Math.sqrt(sumSquares / sampleCount) : 0;
+    return {
+      peakDecibels: toDecibels(peak),
+      rmsDecibels: toDecibels(rms),
+    };
   }
 
   private notifyUnavailable() {

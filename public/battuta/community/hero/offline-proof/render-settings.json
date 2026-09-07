@@ -1,0 +1,12 @@
+{
+  "engine": "Blender Cycles",
+  "samples": 512,
+  "denoise": "OpenImageDenoise RGB+Albedo+Normal",
+  "noiseThreshold": 0.006,
+  "frames": 72,
+  "size": 900,
+  "pitch": 51.4,
+  "yawStart": -45.4,
+  "roll": -24,
+  "note": "Actual GLB cavity geometry; offline traced transmission, not baked highlights."
+}
