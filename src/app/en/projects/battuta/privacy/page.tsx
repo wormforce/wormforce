@@ -9,7 +9,7 @@ const chinesePageUrl = absoluteUrl(battutaPaths.privacy.zh);
 export const metadata: Metadata = {
   title: "Battuta Privacy Policy",
   description:
-    "Learn how Battuta processes local keyboard and pointer events, typing statistics, custom sounds, and update requests.",
+    "Learn how Battuta processes local keyboard and pointer events, typing statistics, custom sounds, updates, and community-sound requests.",
   alternates: {
     canonical: pageUrl,
     languages: {

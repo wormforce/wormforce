@@ -8,6 +8,7 @@ import {
   type BattutaLocale,
 } from "@/content/battuta";
 import { getLatestBattutaVersion } from "@/lib/battuta-releases";
+import { battutaCommunityPacks } from "@/lib/battuta-community";
 
 const repositoryHref = battutaRelease.repositoryUrl;
 const latestReleaseHref = repositoryHref + "/releases/latest";
@@ -23,6 +24,7 @@ const localizedCopy = {
       try: "试打",
       sound: "音效",
       stats: "统计",
+      community: "社区",
       privacy: "隐私",
       install: "安装",
       source: "GitHub",
@@ -88,6 +90,20 @@ const localizedCopy = {
         ["线性", "顺滑连续，适合长时间输入。", "Cream · Alpaca · Black Ink · Keychron Red"],
         ["经典结构", "不一样的触感记忆。", "Topre · IBM Buckling Spring"],
       ],
+    },
+    community: {
+      kicker: "社区音色",
+      title: "不止内置的 21 种。",
+      titleAccent: "下一种声音，来自社区。",
+      body:
+        "浏览由创作者录制、经 Wormforce 审核的键盘音色。每个发布版本都固定作者、许可证、大小与 SHA-256，再由 Battuta 在本地完成下载和校验。",
+      bodyComing:
+        "审核目录与安装协议正在准备中。支持社区安装的 macOS 与 Windows 新版 Battuta 会和首批通过录音来源、许可与包格式审核的音色一同发布。",
+      action: "浏览社区音色",
+      actionComing: "查看社区预告",
+      note: "公开目录 · 许可先展示 · macOS 与 Windows 安全安装",
+      noteComing: "即将推出 · 审核后发布 · 不影响现有 1.2.1 功能",
+      visualLabel: "Battuta 社区音色",
     },
     stats: {
       kicker: "不只听见，也能看见",
@@ -184,6 +200,7 @@ const localizedCopy = {
       try: "Try",
       sound: "Sound",
       stats: "Stats",
+      community: "Community",
       privacy: "Privacy",
       install: "Install",
       source: "GitHub",
@@ -249,6 +266,20 @@ const localizedCopy = {
         ["Linear", "Smooth and continuous for longer sessions.", "Cream · Alpaca · Black Ink · Keychron Red"],
         ["Classic mechanisms", "A different kind of tactile memory.", "Topre · IBM Buckling Spring"],
       ],
+    },
+    community: {
+      kicker: "Community sounds",
+      title: "More than the 21 built in.",
+      titleAccent: "The next sound comes from the community.",
+      body:
+        "Browse keyboard recordings made by creators and reviewed by Wormforce. Every release pins its creator, license, byte count, and SHA-256 before Battuta downloads and verifies it locally.",
+      bodyComing:
+        "The curated catalog and install contract are being prepared. Community-capable macOS and Windows builds will ship with the first sounds that pass provenance, license, and package review.",
+      action: "Explore community sounds",
+      actionComing: "Preview the community",
+      note: "Public catalog · License shown first · Safe install on macOS and Windows",
+      noteComing: "Coming soon · Reviewed releases · Existing 1.2.1 features are unchanged",
+      visualLabel: "Battuta community sounds",
     },
     stats: {
       kicker: "Hear it, then see it",
@@ -350,6 +381,7 @@ export async function BattutaProductPage({
   const copy = localizedCopy[locale];
   const latestVersion = await getLatestBattutaVersion();
   const isEnglish = locale === "en";
+  const hasCommunityPacks = battutaCommunityPacks.length > 0;
 
   return (
     <div className="battuta-product" lang={locale}>
@@ -363,6 +395,9 @@ export async function BattutaProductPage({
             <a href="#try">{copy.navigation.try}</a>
             <a href="#sound">{copy.navigation.sound}</a>
             <a href="#stats">{copy.navigation.stats}</a>
+            <Link href={isEnglish ? battutaPaths.community.en : battutaPaths.community.zh}>
+              {copy.navigation.community}
+            </Link>
             <a href="#privacy">{copy.navigation.privacy}</a>
             <a href="#install">{copy.navigation.install}</a>
             <a href={repositoryHref} target="_blank" rel="noreferrer">
@@ -514,6 +549,35 @@ export async function BattutaProductPage({
                 <p>{examples}</p>
               </article>
             ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="community-spotlight dark-section">
+        <div className="section-inner community-spotlight-grid">
+          <div>
+            <p className="section-kicker lime">{copy.community.kicker}</p>
+            <h2>
+              <span className="headline-line">{copy.community.title}</span>
+              <span className="headline-line lime-copy">{copy.community.titleAccent}</span>
+            </h2>
+            <p className="community-spotlight-body">
+              {hasCommunityPacks ? copy.community.body : copy.community.bodyComing}
+            </p>
+            <Link
+              className="button button-primary"
+              href={isEnglish ? battutaPaths.community.en : battutaPaths.community.zh}
+            >
+              {hasCommunityPacks ? copy.community.action : copy.community.actionComing} →
+            </Link>
+            <p className="community-spotlight-note">
+              {hasCommunityPacks ? copy.community.note : copy.community.noteComing}
+            </p>
+          </div>
+          <div className="community-spotlight-visual" role="img" aria-label={copy.community.visualLabel}>
+            <span className="community-spotlight-key community-spotlight-key-one">B</span>
+            <span className="community-spotlight-key community-spotlight-key-two">C</span>
+            <span className="community-spotlight-key community-spotlight-key-three">↗</span>
           </div>
         </div>
       </section>
@@ -748,6 +812,9 @@ export async function BattutaProductPage({
           <p>{copy.footer.tagline}</p>
           <div>
             <a href={repositoryHref} target="_blank" rel="noreferrer">GitHub</a>
+            <Link href={isEnglish ? battutaPaths.community.en : battutaPaths.community.zh}>
+              {copy.navigation.community}
+            </Link>
             {isEnglish ? (
               <>
                 <Link href={battutaGuidePaths.macos}>macOS guide</Link>

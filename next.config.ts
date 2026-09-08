@@ -9,6 +9,15 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: projectRoot,
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "assets.wormforce.net",
+        pathname: "/battuta/community-media/**",
+      },
+    ],
+  },
   async redirects() {
     return [
       {
