@@ -9,6 +9,8 @@
     "lint": "eslint",
     "sync:battuta-demo-audio": "node scripts/build-battuta-demo-audio.mjs",
     "verify:battuta-community": "node scripts/verify-battuta-community.mjs",
+    "test:battuta-community": "node scripts/test-community-install-route.mjs && node scripts/test-community-proxy.mjs && node scripts/test-community-catalog.mjs && node scripts/test-playback-owner.mjs && node scripts/test-release-preview-unit.mjs",
+    "test:battuta-preview-integration": "node scripts/test-release-preview.mjs",
     "verify:battuta-community:remote": "node scripts/verify-battuta-community.mjs --remote"
   },
   "dependencies": {

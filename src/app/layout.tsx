@@ -4,6 +4,7 @@ import { Analytics } from "@vercel/analytics/react";
 import "@/styles/globals.css";
 import "@/styles/battuta.css";
 import "@/styles/battuta-community-library.css";
+import "@/styles/battuta-community-published.css";
 import "@/styles/sustech-cli.css";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";

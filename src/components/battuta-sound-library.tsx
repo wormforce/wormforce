@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { battutaPlaybackOwner } from "@/lib/battuta-playback-owner";
 import { BattutaHeroVisual } from "@/components/battuta-hero-visual";
 import {
   ArrowsClockwiseIcon,
@@ -76,7 +77,7 @@ type SwitchVisual = "blue" | "brown" | "clear" | "black" | "red" | "cream" | "na
 const manifestURL = "/battuta/demo-audio/manifest.json";
 const defaultProfileID = "mxblue";
 const profilePresentation: Record<string, ProfilePresentation> = {
-  "bcp-suit80": { brand: "community", sourceKind: "community" },
+  "bcp-suit80": { brand: "community", sourceKind: "bundled" },
   holypanda: { brand: "community", sourceKind: "bundled" },
   mxbrown: { brand: "cherry", sourceKind: "bundled" },
   mxclear: { brand: "cherry", sourceKind: "bundled" },
@@ -980,7 +981,9 @@ export function BattutaSoundLibrary({
     return false;
   }, []);
 
+  const soundOwner = useRef(Symbol("battuta-demos"));
   const clearPlayback = useCallback((resetProgress = true, preserveVisualization = false) => {
+    battutaPlaybackOwner.release(soundOwner.current);
     playbackTokenRef.current += 1;
     sampleRequestGenerationRef.current += 1;
     sampleRequestProfileRef.current = null;
@@ -1005,6 +1008,8 @@ export function BattutaSoundLibrary({
     if (resetProgress) setProgress(0);
   }, []);
 
+  useEffect(() => battutaPlaybackOwner.register(soundOwner.current, () => clearPlayback()), [clearPlayback]);
+
   const playProfile = useCallback(async function runProfile(profileID: string) {
     const engine = engineRef.current;
     if (!engine) return;
@@ -1015,6 +1020,7 @@ export function BattutaSoundLibrary({
     }
 
     clearPlayback();
+    if (!battutaPlaybackOwner.claim(soundOwner.current)) return;
     const token = playbackTokenRef.current;
     isPlayingRef.current = true;
     playingProfileRef.current = profileID;
@@ -1080,6 +1086,7 @@ export function BattutaSoundLibrary({
     const engine = engineRef.current;
     if (!engine) return;
     if (isPlayingRef.current) clearPlayback();
+    if (!battutaPlaybackOwner.claim(soundOwner.current)) return;
     if (sampleRequestProfileRef.current !== profileID) {
       sampleRequestProfileRef.current = profileID;
       sampleRequestGenerationRef.current += 1;
@@ -1168,6 +1175,7 @@ export function BattutaSoundLibrary({
     const IDs = compareIDs.filter((id) => profiles.some((profile) => profile.id === id));
     if (!engine || IDs.length < 2) return;
     clearPlayback();
+    if (!battutaPlaybackOwner.claim(soundOwner.current)) return;
     const token = playbackTokenRef.current;
     isPlayingRef.current = true;
     playingProfileRef.current = IDs[0];
@@ -1311,7 +1319,7 @@ export function BattutaSoundLibrary({
   const selectedPresentation = presentationFor(selectedProfile);
   const selectedAuthor = profileAuthor(selectedProfile, content.bundled);
   const selectedBrand = localizedBrand(selectedProfile, locale);
-  const selectedSourceLabel = selectedPresentation.sourceKind === "community"
+  const selectedSourceLabel = selectedProfile.id === "bcp-suit80" ? (locale === "en" ? "Battuta team · Self-recorded" : "Battuta 团队 · 自行录制") : selectedPresentation.sourceKind === "community"
     ? content.communitySource
     : selectedPresentation.sourceKind === "official"
       ? content.officialSource
@@ -1484,7 +1492,7 @@ export function BattutaSoundLibrary({
                   <figcaption>{content.visualNote}</figcaption>
                 </figure>
                 <footer>
-                  <div><small>{presentationFor(profile).sourceKind === "community" ? content.communityUploads : content.bundled}</small><span>{profileAuthor(profile, content.bundled)}</span></div>
+                  <div><small>{profile.id === "bcp-suit80" ? (locale === "en" ? "Self-recorded" : "自行录制") : presentationFor(profile).sourceKind === "community" ? content.communityUploads : content.bundled}</small><span>{profileAuthor(profile, content.bundled)}</span></div>
                   <button aria-label={(playing ? (locale === "en" ? "Pause recommendation: " : "暂停推荐: ") : (locale === "en" ? "Play recommendation: " : "试听推荐: ")) + profile.displayName} onClick={() => playing ? clearPlayback() : void playProfile(profile.id)}>
                     {playing ? <PauseIcon size={22} weight="fill" aria-hidden /> : <PlayIcon size={22} weight="fill" aria-hidden />}
                     {locale === "en" ? (playing ? "Pause" : "Listen") : (playing ? "暂停" : "听一听")}
@@ -1709,8 +1717,8 @@ export function BattutaSoundLibrary({
                           {presentation.sourceKind === "community" ? <UserCircleIcon size={16} weight="fill" aria-hidden /> : <WaveformIcon size={15} weight="bold" aria-hidden />}
                         </span>
                         <span>
-                          <strong>{presentation.sourceKind === "community" ? author : sourceLabel}</strong>
-                          <small>{presentation.sourceKind === "community" ? license : `${profileSamples} ${content.samples} · ${sampleRateLabel}`}</small>
+                          <strong>{presentation.sourceKind === "community" || profile.id === "bcp-suit80" ? author : sourceLabel}</strong>
+                          <small>{presentation.sourceKind === "community" || profile.id === "bcp-suit80" ? license : `${profileSamples} ${content.samples} · ${sampleRateLabel}`}</small>
                         </span>
                       </div>
                       <div className="community-library-card-actions">
