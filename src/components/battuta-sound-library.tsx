@@ -3,6 +3,11 @@
 import Image from "next/image";
 import { battutaPlaybackOwner } from "@/lib/battuta-playback-owner";
 import { BattutaHeroVisual } from "@/components/battuta-hero-visual";
+import { BattutaReleaseCard } from "@/components/battuta-release-card";
+import { BattutaPublishedPacks } from "@/components/battuta-published-packs";
+import { useBattutaCommunityCatalog } from "@/components/use-battuta-community-catalog";
+import { useBattutaCommunityFacets } from "@/components/use-battuta-community-facets";
+import { atlasCatalogQuery, mergeAtlasEntries } from "@/lib/battuta-atlas-catalog";
 import {
   ArrowsClockwiseIcon,
   ArrowRightIcon,
@@ -46,8 +51,8 @@ import {
 
 import { discoveryMix } from "@/lib/battuta-discovery";
 
-type FamilyFilter = "all" | "线性" | "段落" | "点击" | "静电容" | "屈曲弹簧";
-type SortMode = "curated" | "name" | "samples";
+type FamilyFilter = "all" | "线性" | "段落" | "点击" | "静电容" | "屈曲弹簧" | "静音" | "磁轴" | "其他";
+type SortMode = "curated" | "name";
 type PlaybackKind = "profile" | "comparison";
 type SourceKind = "official" | "community" | "bundled";
 type ProfileBrand =
@@ -91,7 +96,7 @@ const profilePresentation: Record<string, ProfilePresentation> = {
   topre: { brand: "topre", sourceKind: "bundled" },
   buckling: { brand: "ibm", sourceKind: "bundled" },
   cream: { brand: "novelkeys", sourceKind: "bundled" },
-  keychronred: { brand: "keychron", sourceKind: "community" },
+  keychronred: { brand: "keychron", sourceKind: "bundled" },
   g915brown: { brand: "logitech", sourceKind: "bundled" },
   bluealps: { brand: "alps", sourceKind: "bundled" },
   alpaca: { brand: "alpaca", sourceKind: "bundled" },
@@ -242,6 +247,9 @@ const familyEnglish: Record<string, string> = {
   "点击": "Clicky",
   "静电容": "Electro-capacitive",
   "屈曲弹簧": "Buckling spring",
+  "静音": "Silent",
+  "磁轴": "Magnetic",
+  "其他": "Other",
 };
 
 const toneEnglish: Record<string, string> = {
@@ -280,6 +288,7 @@ const copy = {
     submit: "投稿音色",
     allBrands: "全部",
     communityUploads: "社区投稿",
+    authorUnspecified: "录音作者未单独注明",
     moreBrands: "更多品牌",
     profileCount: "套",
     catalogEyebrow: "品牌 / 来源",
@@ -294,6 +303,9 @@ const copy = {
       "点击": "点击轴",
       "静电容": "静电容",
       "屈曲弹簧": "屈曲弹簧",
+      "静音": "静音",
+      "磁轴": "磁轴",
+      "其他": "其他",
     },
     familyLabel: "轴体类型",
     sortLabel: "排序方式",
@@ -301,7 +313,7 @@ const copy = {
     sortName: "名称排序",
     sortSamples: "样本数量",
     sounds: "套音色",
-    bundled: "Battuta 内置试听",
+    bundled: "试听示范 · 非社区下载",
     communitySource: "社区投稿",
     officialSource: "品牌官方",
     sourceRecorded: "来源已记录",
@@ -365,6 +377,7 @@ const copy = {
     submit: "Submit a sound",
     allBrands: "All",
     communityUploads: "Community",
+    authorUnspecified: "Recording author not specified",
     moreBrands: "More brands",
     profileCount: "sounds",
     catalogEyebrow: "Brand / source",
@@ -379,6 +392,9 @@ const copy = {
       "点击": "Clicky",
       "静电容": "Electro-capacitive",
       "屈曲弹簧": "Buckling spring",
+      "静音": "Silent",
+      "磁轴": "Magnetic",
+      "其他": "Other",
     },
     familyLabel: "Switch type",
     sortLabel: "Sort",
@@ -386,7 +402,7 @@ const copy = {
     sortName: "Name",
     sortSamples: "Sample count",
     sounds: "profiles",
-    bundled: "Battuta built-in preview",
+    bundled: "Listening demo · Not a community download",
     communitySource: "Community submission",
     officialSource: "Official brand source",
     sourceRecorded: "Source documented",
@@ -444,7 +460,7 @@ const copy = {
 function presentationFor(profile: DemoProfile): ProfilePresentation {
   return profilePresentation[profile.id] ?? {
     brand: "other",
-    sourceKind: profile.attribution?.author ? "community" : "bundled",
+    sourceKind: "bundled",
   };
 }
 
@@ -719,6 +735,7 @@ export function BattutaSoundLibrary({
   const [sourceFilter, setSourceFilter] = useState<"all" | SourceKind>("all");
   const [brandPanelOpen, setBrandPanelOpen] = useState(false);
   const [brandQuery, setBrandQuery] = useState("");
+  const [manufacturerQuery, setManufacturerQuery] = useState("");
   const [recommendationSeed, setRecommendationSeed] = useState(0);
   const [family, setFamily] = useState<FamilyFilter>("all");
   const [sort, setSort] = useState<SortMode>("curated");
@@ -734,6 +751,9 @@ export function BattutaSoundLibrary({
   const [comparisonFocusRequest, setComparisonFocusRequest] = useState(0);
   const [submissionOpen, setSubmissionOpen] = useState(false);
   const [catalogColumns, setCatalogColumns] = useState(3);
+  const catalog = useBattutaCommunityCatalog(atlasCatalogQuery(query, brandFilter, family, manufacturerQuery),
+    loadState === "ready" && (sourceFilter === "all" || sourceFilter === "community"));
+  const manufacturerFacets = useBattutaCommunityFacets(brandQuery, brandPanelOpen);
 
   const engineRef = useRef<BattutaPreviewAudio | null>(null);
   const profileWaveformRequestsRef = useRef(new Map<string, Promise<void>>());
@@ -917,6 +937,7 @@ export function BattutaSoundLibrary({
     const normalizedQuery = query.trim().toLocaleLowerCase();
     const result = profiles.filter((profile) => {
       if (!matchesBrandFilter(profile, brandFilter)) return false;
+      if (manufacturerQuery.trim() && !localizedBrand(profile, locale).toLowerCase().includes(manufacturerQuery.trim().toLowerCase())) return false;
       if (sourceFilter !== "all" && presentationFor(profile).sourceKind !== sourceFilter) return false;
       if (family !== "all" && profile.family !== family) return false;
       if (!normalizedQuery) return true;
@@ -934,9 +955,6 @@ export function BattutaSoundLibrary({
     });
 
     if (sort === "name") return [...result].sort((a, b) => a.displayName.localeCompare(b.displayName));
-    if (sort === "samples") {
-      return [...result].sort((a, b) => Object.keys(b.samples).length - Object.keys(a.samples).length);
-    }
     return [...result].sort((a, b) => {
       const brandDifference = (brandSortRank.get(presentationFor(a).brand) ?? Number.MAX_SAFE_INTEGER)
         - (brandSortRank.get(presentationFor(b).brand) ?? Number.MAX_SAFE_INTEGER);
@@ -944,9 +962,17 @@ export function BattutaSoundLibrary({
       return (profileSortRank.get(a.id) ?? Number.MAX_SAFE_INTEGER)
         - (profileSortRank.get(b.id) ?? Number.MAX_SAFE_INTEGER);
     });
-  }, [brandFilter, family, locale, profiles, query, sort, sourceFilter]);
+  }, [brandFilter, family, locale, manufacturerQuery, profiles, query, sort, sourceFilter]);
 
   const visibleProfiles = filteredProfiles;
+  const atlasEntries = mergeAtlasEntries(visibleProfiles.map(profile => ({ kind: "demo" as const,
+    id: `demo:${profile.id}`, name: profile.displayName, brand: localizedBrand(profile, locale), profile })),
+    catalog.releases.filter(release => {
+      const info = catalog.presentations[release.releaseId];
+      if (family === "屈曲弹簧" && !/buckling|屈曲/i.test(`${release.name} ${info?.switchModel ?? ""}`)) return false;
+      if (brandFilter === "more" && ["cherry", "kailh", "gateron", "topre", "ibm", "novelkeys", "keychron"].includes(info?.manufacturer?.toLowerCase() ?? "")) return false;
+      return true;
+    }), catalog.presentations, sort);
   const recommendedProfiles = useMemo(() => discoveryMix(profiles.map(profile => ({ ...profile, brand: presentationFor(profile).brand, community: presentationFor(profile).sourceKind === "community" })), recommendationSeed, 3), [profiles, recommendationSeed]);
 
   const brandFilterCounts = useMemo(() => Object.fromEntries(
@@ -1263,6 +1289,7 @@ export function BattutaSoundLibrary({
               <span className="community-library-visually-hidden">{content.search}</span>
               <input
                 type="search"
+                maxLength={160}
                 value={query}
                 onChange={(event) => { setQuery(event.target.value); }}
                 placeholder={content.search}
@@ -1311,13 +1338,14 @@ export function BattutaSoundLibrary({
           <WaveformIcon size={28} weight="duotone" />
           <p>{content.loadError}</p>
         </section>
+        <BattutaPublishedPacks locale={locale} productPath={productPath} />
       </main>
     );
   }
 
   const selectedWaveform = waveforms[selectedProfile.id];
   const selectedPresentation = presentationFor(selectedProfile);
-  const selectedAuthor = profileAuthor(selectedProfile, content.bundled);
+  const selectedAuthor = profileAuthor(selectedProfile, content.authorUnspecified);
   const selectedBrand = localizedBrand(selectedProfile, locale);
   const selectedSourceLabel = selectedProfile.id === "bcp-suit80" ? (locale === "en" ? "Battuta team · Self-recorded" : "Battuta 团队 · 自行录制") : selectedPresentation.sourceKind === "community"
     ? content.communitySource
@@ -1333,7 +1361,7 @@ export function BattutaSoundLibrary({
     ? waveformSource(activePlaybackExact)
     : waveformSource(waveformExact[selectedProfile.id]);
   const sampleRateLabel = Math.round(sampleRate / 1000) + " kHz";
-  const familyFilters: FamilyFilter[] = ["all", "线性", "段落", "点击", "静电容", "屈曲弹簧"];
+  const familyFilters: FamilyFilter[] = ["all", "线性", "段落", "点击", "静电容", "屈曲弹簧", "静音", "磁轴", "其他"];
   const selectedIsCompared = compareIDs.includes(selectedProfile.id);
   const activeCatalogTitle = brandFilter === "all"
     ? content.catalogAll
@@ -1492,7 +1520,7 @@ export function BattutaSoundLibrary({
                   <figcaption>{content.visualNote}</figcaption>
                 </figure>
                 <footer>
-                  <div><small>{profile.id === "bcp-suit80" ? (locale === "en" ? "Self-recorded" : "自行录制") : presentationFor(profile).sourceKind === "community" ? content.communityUploads : content.bundled}</small><span>{profileAuthor(profile, content.bundled)}</span></div>
+                  <div><small>{profile.id === "bcp-suit80" ? (locale === "en" ? "Self-recorded" : "自行录制") : presentationFor(profile).sourceKind === "community" ? content.communityUploads : content.bundled}</small><span>{profileAuthor(profile, content.authorUnspecified)}</span></div>
                   <button aria-label={(playing ? (locale === "en" ? "Pause recommendation: " : "暂停推荐: ") : (locale === "en" ? "Play recommendation: " : "试听推荐: ")) + profile.displayName} onClick={() => playing ? clearPlayback() : void playProfile(profile.id)}>
                     {playing ? <PauseIcon size={22} weight="fill" aria-hidden /> : <PlayIcon size={22} weight="fill" aria-hidden />}
                     {locale === "en" ? (playing ? "Pause" : "Listen") : (playing ? "暂停" : "听一听")}
@@ -1513,17 +1541,33 @@ export function BattutaSoundLibrary({
                 key={filter}
                 type="button"
                 aria-pressed={brandFilter === filter}
-                onClick={() => setBrandFilter(filter)}
+                onClick={() => { setManufacturerQuery(""); setBrandFilter(filter); }}
               >
                 <strong>{brandFilterLabel(filter)}</strong>
-                <small>{brandFilterCounts[filter]} {content.profileCount}</small>
+                <small>{brandFilterCounts[filter]} {locale === "en" ? "demos" : "套示范"}</small>
               </button>
             ))}
           </div>
           <button className="community-library-all-brands" aria-expanded={brandPanelOpen} aria-controls="community-brands-panel" onClick={() => setBrandPanelOpen(value => !value)}>{locale === "en" ? "All brands" : "全部品牌"} · {brandFilterLabel(brandFilter)}</button>
           {brandPanelOpen && <div id="community-brands-panel" className="community-library-brands-panel">
-            <label>{locale === "en" ? "Find a brand" : "查找品牌"}<input type="search" value={brandQuery} onChange={event => setBrandQuery(event.target.value)} placeholder={locale === "en" ? "Brand name…" : "输入品牌名称…"} /></label>
-            <div>{brandSortOrder.filter(brand => brandNames[brand][locale].toLowerCase().includes(brandQuery.toLowerCase()) && profiles.some(profile => presentationFor(profile).brand === brand)).map(brand => <button key={brand} aria-pressed={brandFilter === brand} onClick={() => { setBrandFilter(brand); setBrandPanelOpen(false); }} >{brandNames[brand][locale]} <small>{profiles.filter(profile => presentationFor(profile).brand === brand).length}</small></button>)}</div>
+            <label>{locale === "en" ? "Find a brand" : "查找品牌"}<input type="search" maxLength={80} value={brandQuery} onChange={event => setBrandQuery(event.target.value)} placeholder={locale === "en" ? "Brand or independent studio…" : "品牌或独立工作室名称…"} /></label>
+            <h3>{locale === "en" ? "Published recordings · Manufacturers" : "已发布录音 · 厂家分类"}</h3>
+            <p className="community-library-facet-note">{locale === "en" ? "Counts cover the entire published directory, one latest release per work. Hardware brands do not imply official submissions." : "数量来自整个公开目录，每个作品只计最新可用版本；厂家名称不代表官方投稿。"}</p>
+            {manufacturerFacets.loading && <p role="status">{locale === "en" ? "Loading published manufacturers…" : "正在加载已发布作品的厂家…"}</p>}
+            {manufacturerFacets.failed && <p role="alert">{locale === "en" ? "Manufacturer directory is unavailable, not empty." : "厂家目录暂不可用，并非没有作品。"} <button type="button" onClick={manufacturerFacets.retry}>{locale === "en" ? "Retry" : "重试"}</button></p>}
+            {manufacturerFacets.page && <>
+              <p>{locale === "en" ? `${manufacturerFacets.page.totalPacks} published works in total` : `公开目录共 ${manufacturerFacets.page.totalPacks} 个作品`}</p>
+              <div className="community-library-facet-grid">{manufacturerFacets.page.manufacturers.map(maker => <button key={maker.name} type="button" aria-pressed={manufacturerQuery.toLowerCase() === maker.name.toLowerCase()}
+                onClick={() => { setManufacturerQuery(maker.name); setBrandFilter("all"); setSourceFilter("all"); setBrandPanelOpen(false); }}>
+                <span>{maker.name}</span><small>{maker.count} {locale === "en" ? "published" : "已发布"}</small>
+              </button>)}</div>
+              {!manufacturerFacets.page.manufacturers.length && <p>{manufacturerFacets.page.totalPacks === 0
+                ? (locale === "en" ? "No works have been published yet." : "暂时还没有已发布作品。")
+                : (locale === "en" ? "No matching manufacturer was specified. Works without hardware metadata remain in All sounds." : "没有匹配的已注明厂家；未注明硬件的作品仍保留在全部音色中。")}</p>}
+              {manufacturerFacets.page.hasMore && <p>{locale === "en" ? "Showing the 50 most represented matches. Search a name to find other manufacturers." : "显示匹配作品最多的 50 个厂家，可输入名称查找其他厂家。"}</p>}
+            </>}
+            <h3>{locale === "en" ? "Listening demo brands" : "试听示范品牌"}</h3>
+            <div>{brandSortOrder.filter(brand => brandNames[brand][locale].toLowerCase().includes(brandQuery.toLowerCase()) && profiles.some(profile => presentationFor(profile).brand === brand)).map(brand => <button key={brand} aria-pressed={brandFilter === brand} onClick={() => { setManufacturerQuery(""); setBrandFilter(brand); setBrandPanelOpen(false); }} >{brandNames[brand][locale]} <small>{profiles.filter(profile => presentationFor(profile).brand === brand).length} {locale === "en" ? "demos" : "示范"}</small></button>)}</div>
             {!brandSortOrder.some(brand => brandNames[brand][locale].toLowerCase().includes(brandQuery.toLowerCase()) && profiles.some(profile => presentationFor(profile).brand === brand)) && <p>{locale === "en" ? "No matching brands." : "没有找到匹配品牌。"}</p>}
           </div>}
           <header className="community-library-catalog-header community-library-compact-header">
@@ -1532,16 +1576,20 @@ export function BattutaSoundLibrary({
               <h2 id="community-catalog-title">{activeCatalogMasthead}</h2>
               <p className="community-library-catalog-note">
                 <WaveformIcon size={17} weight="bold" aria-hidden />
-                {`${visibleProfiles.length} ${content.sounds} · ${content.catalogNote}`}
+                {locale === "en" ? `${visibleProfiles.length} demos · ${catalog.releases.length}${catalog.cursor ? "+" : ""} loaded releases · Real waveforms`
+                  : `${visibleProfiles.length} 套示范 · 已加载 ${catalog.releases.length}${catalog.cursor ? "+" : ""} 套发布音色 · 真实波形`}
               </p>
             </div>
             <div className="community-library-catalog-tools">
               <label><span className="community-library-visually-hidden">{locale === "en" ? "Source" : "音色来源"}</span><select value={sourceFilter} onChange={event => setSourceFilter(event.target.value as typeof sourceFilter)}>
                 <option value="all">{locale === "en" ? "All sources" : "全部来源"}</option>
                 <option value="bundled">{content.bundled}</option>
-                <option value="community">{content.communityUploads}</option>
+                <option value="community">{locale === "en" ? "Published · Installable" : "已发布 · 可安装"}</option>
                 {profiles.some(profile => presentationFor(profile).sourceKind === "official") && <option value="official">{locale === "en" ? "Official" : "官方提供"}</option>}
               </select></label>
+              <label className="community-library-brand-exact"><span className="community-library-visually-hidden">{locale === "en" ? "Manufacturer, including independent brands" : "厂家名称，也支持个人品牌"}</span>
+                <input type="search" maxLength={80} value={manufacturerQuery} onChange={event => { setManufacturerQuery(event.target.value); setBrandFilter("all"); }}
+                  placeholder={locale === "en" ? "Other manufacturer…" : "其他厂家（完整名称）…"} /></label>
               <label>
                 <span className="community-library-visually-hidden">{content.familyLabel}</span>
                 <select value={family} onChange={(event) => setFamily(event.target.value as FamilyFilter)}>
@@ -1555,7 +1603,6 @@ export function BattutaSoundLibrary({
                 <select value={sort} onChange={(event) => setSort(event.target.value as SortMode)}>
                   <option value="curated">{content.sortCurated}</option>
                   <option value="name">{content.sortName}</option>
-                  <option value="samples">{content.sortSamples}</option>
                 </select>
               </label>
               <button
@@ -1571,12 +1618,13 @@ export function BattutaSoundLibrary({
             </div>
           </header>
 
-          {(brandFilter !== "all" || sourceFilter !== "all" || family !== "all" || query) && <div className="community-library-active-filters">
+          {(brandFilter !== "all" || sourceFilter !== "all" || family !== "all" || query || manufacturerQuery) && <div className="community-library-active-filters">
+            {manufacturerQuery && <button onClick={() => setManufacturerQuery("")}>{manufacturerQuery} ×</button>}
             {brandFilter !== "all" && <button onClick={() => setBrandFilter("all")}>{brandFilterLabel(brandFilter)} ×</button>}
             {sourceFilter !== "all" && <button onClick={() => setSourceFilter("all")}>{sourceFilter === "community" ? content.communityUploads : content.bundled} ×</button>}
             {family !== "all" && <button onClick={() => setFamily("all")}>{content.filters[family]} ×</button>}
             {query && <button onClick={() => setQuery("")}>{query} ×</button>}
-            <button onClick={() => { setBrandFilter("all"); setSourceFilter("all"); setFamily("all"); setQuery(""); }}>{locale === "en" ? "Clear filters" : "清除筛选"}</button>
+            <button onClick={() => { setBrandFilter("all"); setSourceFilter("all"); setFamily("all"); setQuery(""); setManufacturerQuery(""); }}>{locale === "en" ? "Clear filters" : "清除筛选"}</button>
           </div>}
           {auditionOpen ? (
             <section className="community-library-audition-panel" id="community-audition" aria-labelledby="community-audition-title">
@@ -1625,9 +1673,16 @@ export function BattutaSoundLibrary({
             </aside>
           ) : null}
 
-          {visibleProfiles.length ? (
+          {catalog.loading && <p className="community-catalog-status" role="status">{locale === "en" ? "Loading published sounds…" : "正在加载已发布音色…"}</p>}
+          {catalog.failed && <div className="community-catalog-status" role="alert">{locale === "en" ? "Community releases could not be loaded. This does not mean the catalog is empty." : "社区目录暂时无法加载，这不代表没有作品。"}
+            <button type="button" onClick={catalog.retry} disabled={catalog.loading}>{locale === "en" ? "Retry" : "重试"}</button></div>}
+          {catalog.loaded && !catalog.loading && !catalog.failed && catalog.releases.length === 0 && <p className="community-catalog-status">
+            {locale === "en" ? "No published releases match these filters. Listening demos are not installable community packages." : "当前筛选下没有已发布作品。试听示范不代表已开放下载的社区音色包。"}</p>}
+          {atlasEntries.length ? (
             <section className="community-library-sound-grid" aria-label={content.title}>
-              {visibleProfiles.map((profile, index) => {
+              {atlasEntries.map((entry, index) => {
+                if (entry.kind === "release") return <BattutaReleaseCard key={entry.id} release={entry.release} presentation={entry.presentation} locale={locale} productPath={productPath} />;
+                const profile = entry.profile;
                 const presentation = presentationFor(profile);
                 const isSelected = selectedProfileID === profile.id;
                 const profileIsPlaying = playbackKind === "profile"
@@ -1636,7 +1691,7 @@ export function BattutaSoundLibrary({
                 const isCompared = compareIDs.includes(profile.id);
                 const profileSamples = Object.keys(profile.samples).length;
                 const metrics = waveformMetrics[profile.id];
-                const author = profileAuthor(profile, content.bundled);
+                const author = profileAuthor(profile, content.authorUnspecified);
                 const license = profile.attribution?.licenseName || content.sourceRecorded;
                 const sourceLabel = presentation.sourceKind === "community"
                   ? content.communitySource
@@ -1717,8 +1772,8 @@ export function BattutaSoundLibrary({
                           {presentation.sourceKind === "community" ? <UserCircleIcon size={16} weight="fill" aria-hidden /> : <WaveformIcon size={15} weight="bold" aria-hidden />}
                         </span>
                         <span>
-                          <strong>{presentation.sourceKind === "community" || profile.id === "bcp-suit80" ? author : sourceLabel}</strong>
-                          <small>{presentation.sourceKind === "community" || profile.id === "bcp-suit80" ? license : `${profileSamples} ${content.samples} · ${sampleRateLabel}`}</small>
+                          <strong title={author}>{author}</strong>
+                          <small>{`${sourceLabel} · ${license} · ${profileSamples} ${content.samples}`}</small>
                         </span>
                       </div>
                       <div className="community-library-card-actions">
@@ -1750,16 +1805,17 @@ export function BattutaSoundLibrary({
                 );
               })}
             </section>
-          ) : (
+          ) : !catalog.loading && !catalog.failed ? (
             <Fragment>
               <div className="community-library-empty-state">
                 <MagnifyingGlassIcon size={30} weight="duotone" aria-hidden />
                 <h2>{content.noResults}</h2>
                 <p>{content.noResultsHint}</p>
-                <button type="button" onClick={() => { setQuery(""); setFamily("all"); setBrandFilter("all"); setSourceFilter("all"); }}>{content.filters.all}</button>
+                <button type="button" onClick={() => { setQuery(""); setFamily("all"); setBrandFilter("all"); setSourceFilter("all"); setManufacturerQuery(""); }}>{content.filters.all}</button>
               </div>
             </Fragment>
-          )}
+          ) : null}
+          {catalog.cursor && !catalog.failed && <button type="button" className="community-catalog-more" onClick={catalog.loadMore} disabled={catalog.loading}>{locale === "en" ? "Load more published sounds" : "加载更多已发布音色"}</button>}
 
         </div>
       </section>

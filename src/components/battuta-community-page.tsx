@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { BattutaSoundLibrary } from "@/components/battuta-sound-library";
-import { BattutaPublishedPacks } from "@/components/battuta-published-packs";
 import { BattutaCommunityAccount } from "@/components/battuta-community-account";
 import {
   battutaPaths,
@@ -18,7 +17,7 @@ const copy = {
     switchLabel: "切换为英文",
     activeLocale: "ZH",
     targetLocale: "EN",
-    footer: "21 套音色均在浏览器本地播放；输入文字、试听记录与偏好不会上传。",
+    footer: "示范与已发布音色在浏览器中播放；输入文字、试听记录与偏好不会上传。",
     source: "GitHub",
     privacy: "隐私政策",
   },
@@ -30,7 +29,7 @@ const copy = {
     switchLabel: "Switch to Chinese",
     activeLocale: "EN",
     targetLocale: "ZH",
-    footer: "All 21 profiles play locally in your browser. Typed text, listening history, and preferences are never uploaded.",
+    footer: "Demos and published sounds play in your browser. Typed text, listening history, and preferences are never uploaded.",
     source: "GitHub",
     privacy: "Privacy",
   },
@@ -70,9 +69,8 @@ export function BattutaCommunityPage({ locale }: { locale: BattutaLocale }) {
         </div>
       </nav>
 
-      <BattutaSoundLibrary locale={locale} productPath={productPath} />
       <BattutaCommunityAccount locale={locale} />
-      <BattutaPublishedPacks locale={locale} productPath={productPath} />
+      <BattutaSoundLibrary locale={locale} productPath={productPath} />
 
       <section className="battuta-product-footer community-library-footer" aria-label={content.community}>
         <div className="footer-inner">

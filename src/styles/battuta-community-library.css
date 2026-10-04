@@ -319,6 +319,11 @@
 .community-library-brands-panel button, .community-library-active-filters button { padding:10px 14px; min-height:44px; background:#f4f5ef; color:#21271b; border:1px solid transparent; border-radius:12px; font:inherit; cursor:pointer; }
 .community-library-brands-panel button[aria-pressed="true"] { background:var(--community-library-accent); }
 .community-library-brands-panel small { margin-left:8px; }
+.community-library-brands-panel h3 { margin:24px 0 10px; font-size:16px; }
+.community-library-brands-panel .community-library-facet-note { max-width:75ch; line-height:1.6; color:#60675a; }
+.community-library-facet-grid button { display:flex; align-items:center; justify-content:space-between; gap:8px; text-align:left; min-width:0; }
+.community-library-facet-grid button span { overflow-wrap:anywhere; }
+.community-library-facet-grid button small { flex-shrink:0; }
 .community-library-active-filters { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:24px; }
 .community-library-catalog .community-library-compact-header h2 { font-size:clamp(28px,3.4vw,48px); line-height:1.2; letter-spacing:-.045em; }
 .community-library-compact-header { margin-top:26px; }
