@@ -1,12 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
+import { BattutaCommunityInstallButton } from "@/components/battuta-community-install-button";
 import {
   battutaPaths,
   battutaRelease,
   type BattutaLocale,
 } from "@/content/battuta";
 import {
-  communityInstallLink,
   communityPackPath,
   getLatestBattutaCommunityRelease,
   type BattutaCommunityPack,
@@ -175,9 +175,7 @@ export function BattutaCommunityPackPage({
                   </div>
                 ) : null}
 
-                <a className="button button-primary community-install-button" href={communityInstallLink(latestRelease)}>
-                  {content.install}
-                </a>
+                <BattutaCommunityInstallButton release={latestRelease} locale={locale} productPath={productPath} label={content.install} />
                 <p className="community-install-note">{content.installNote}</p>
               </>
             ) : <p>{content.noRelease}</p>}
@@ -201,7 +199,7 @@ export function BattutaCommunityPackPage({
                     <h2>{release.displayVersion}</h2>
                     <p>{formatDate(release.publishedAt, locale)} · {formatBytes(release.artifact.byteCount, locale)}</p>
                   </div>
-                  <a className="button button-outline-dark" href={communityInstallLink(release)}>{content.installRelease}</a>
+                  <BattutaCommunityInstallButton release={release} locale={locale} productPath={productPath} label={content.installRelease} />
                 </article>
               ))}
             </div>

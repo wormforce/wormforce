@@ -1,6 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { BattutaSoundLibrary } from "@/components/battuta-sound-library";
+import { BattutaPublishedPacks } from "@/components/battuta-published-packs";
+import { BattutaCommunityAccount } from "@/components/battuta-community-account";
 import {
   battutaPaths,
   battutaRelease,
@@ -69,6 +71,8 @@ export function BattutaCommunityPage({ locale }: { locale: BattutaLocale }) {
       </nav>
 
       <BattutaSoundLibrary locale={locale} productPath={productPath} />
+      <BattutaCommunityAccount locale={locale} />
+      <BattutaPublishedPacks locale={locale} productPath={productPath} />
 
       <section className="battuta-product-footer community-library-footer" aria-label={content.community}>
         <div className="footer-inner">
