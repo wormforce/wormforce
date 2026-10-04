@@ -13,5 +13,36 @@
 .community-install-feedback { max-width: 520px; margin-top: 14px; font-size: 14px; line-height: 1.6; overflow-wrap: anywhere; }
 .community-install-feedback p { margin: 8px 0; }
 .community-install-feedback a { text-decoration: underline; text-underline-offset: 4px; }
+.community-release-card .community-library-sound-header h3 { overflow-wrap: anywhere; font-size: 19px; }
+.community-release-status { display: inline-block; margin-top: 9px; color: #45610f; font-size: 10px; font-weight: 650; }
+.community-release-creator-visual { position: absolute; inset: 16px 8px 28px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 14px; color: #7a8b57; background: radial-gradient(ellipse, #e5eadb, transparent 70%); }
+.community-release-creator-visual > span { max-width: 100%; font-size: 12px; color: #687060; overflow-wrap: anywhere; text-align: center; }
+.community-release-card .community-library-sound-meta { flex-wrap: wrap; }
+.community-release-card .community-library-provenance { flex: 1; }
+.community-release-card .community-install-action:has(.community-install-feedback) { flex-basis: 100%; }
+.community-release-card .community-library-sound-header p { overflow-wrap: anywhere; }
+.community-release-card .community-install-button { min-height: 42px; padding: 11px 16px; font-size: 12px; border-radius: 13px; }
+.community-release-details { padding: 0 18px 16px; color: #72776b; font-size: 11px; overflow-wrap: anywhere; }
+.community-release-details summary { cursor: pointer; padding-block: 7px; }
+.community-release-details dl { display: grid; gap: 7px; }
+.community-release-details dl > div { display: grid; grid-template-columns: 90px minmax(0, 1fr); gap: 12px; }
+.community-release-details dd { margin: 0; color: #31362a; }
+.community-release-player { min-height: 300px; }
+.community-release-player-detail { border-radius: 18px; padding: 22px; margin-block: 18px; }
+.community-release-waveform { position: relative; flex: 1; min-height: 120px; display: grid; place-items: center; }
+.community-release-waveform svg { display: block; width: 100%; height: 120px; }
+.community-release-play { width: 46px; height: 46px; display: grid; place-items: center; background: #caff36; color: #17200d; border: none; border-radius: 50%; cursor: pointer; }
+.community-release-preview-status { color: #bdc4b6; font-size: 11px; text-align: center; }
+.community-release-preview-status button { border: 1px solid #838c76; border-radius: 8px; padding: 6px 12px; background: transparent; color: inherit; cursor: pointer; }
+.community-release-transport { display: flex; align-items: center; gap: 10px; padding-top: 12px; }
+.community-release-play { flex-shrink: 0; }
+.community-release-seek { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: stretch; gap: 8px; font-size: 10px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.community-release-seek input { width: 100%; min-width: 0; accent-color: #caff36; }
+.community-catalog-status { padding: 14px 18px; margin-block: 16px; border-radius: 13px; background: #e9ece3; color: #4a5440; font-size: 13px; line-height: 1.6; }
+.community-catalog-status button, .community-catalog-more { margin-left: 12px; padding: 9px 16px; border: 1px solid #c7cfb9; border-radius: 11px; background: white; color: #313b25; cursor: pointer; }
+.community-catalog-more { margin: 24px 0 0; }
+.community-library-brand-exact input { max-width: 180px; width: 100%; padding: 12px 14px; border: 1px solid #dee2d6; border-radius: 13px; background: white; color: #31362a; font: inherit; font-size: 12px; }
+@media (max-width: 900px) { .community-release-player-card { height: auto; min-height: 290px; } }
 @media (max-width: 1000px) { .community-published-grid { grid-template-columns: repeat(2,minmax(0,1fr)); } }
 @media (max-width: 640px) { .community-published-grid { grid-template-columns: minmax(0,1fr); } }
+@media (max-width: 640px) { .community-library-brand-exact input { max-width: none; } }

@@ -2,6 +2,25 @@ import { isCanonicalCommunityUuid, type CommunityInstallDescriptor } from "./bat
 
 export type CommunityPresentation = { manufacturer?: string; switchModel?: string; recordingAuthor?: string; description?: string; switchType?: string };
 export type CommunityCatalogPage = { schemaVersion: 1; releases: CommunityInstallDescriptor[]; nextCursor: string | null; presentations?: Record<string, CommunityPresentation> };
+export type CommunityCatalogFacets = { schemaVersion: 1; totalPacks: number; manufacturers: { name: string; count: number }[]; hasMore: boolean };
+
+export function parseCommunityFacets(value: unknown): CommunityCatalogFacets {
+  if (!value || typeof value !== "object" || Array.isArray(value)) throw Error("invalid_facets");
+  const page = value as CommunityCatalogFacets;
+  if (page.schemaVersion !== 1 || !Number.isSafeInteger(page.totalPacks) || page.totalPacks < 0
+    || typeof page.hasMore !== "boolean" || !Array.isArray(page.manufacturers) || page.manufacturers.length > 50
+    || (page.hasMore && page.manufacturers.length !== 50)) throw Error("invalid_facets");
+  const names = new Set<string>(); let sum = 0;
+  const manufacturers = page.manufacturers.map(item => {
+    if (!item || typeof item.name !== "string" || !item.name.trim() || item.name !== item.name.trim()
+      || [...item.name].length > 80 || /[\p{Cc}\p{Cs}]/u.test(item.name) || names.has(item.name.toLowerCase())
+      || !Number.isSafeInteger(item.count) || item.count < 1 || item.count > page.totalPacks) throw Error("invalid_facets");
+    names.add(item.name.toLowerCase()); sum += item.count;
+    return { name: item.name, count: item.count };
+  });
+  if (!Number.isSafeInteger(sum) || sum > page.totalPacks) throw Error("invalid_facets");
+  return { schemaVersion: 1, totalPacks: page.totalPacks, manufacturers, hasMore: page.hasMore };
+}
 
 export function parseCommunityCatalog(value: unknown): CommunityCatalogPage {
   if (!value || typeof value !== "object") throw Error("invalid_catalog");
@@ -39,18 +58,26 @@ export function parseCommunityCatalog(value: unknown): CommunityCatalogPage {
   return page;
 }
 
-export async function readCatalogResponse(response: Response): Promise<CommunityCatalogPage> {
+async function readBoundedCatalogJSON(response: Response, maximum: number, prefix: string): Promise<unknown> {
   if (!response.ok || response.headers.get("content-type")?.split(";")[0] !== "application/json" || !response.body) {
-    await response.body?.cancel(); throw Error("catalog_unavailable");
+    await response.body?.cancel(); throw Error(`${prefix}_unavailable`);
   }
   const reader = response.body.getReader(); const chunks: Uint8Array[] = []; let count = 0;
   for (;;) {
     const next = await reader.read(); if (next.done) break;
     count += next.value.length;
-    if (count > 1_048_576) { await reader.cancel(); throw Error("catalog_too_large"); }
+    if (count > maximum) { await reader.cancel(); throw Error(`${prefix}_too_large`); }
     chunks.push(next.value);
   }
   const bytes = new Uint8Array(count); let offset = 0;
   for (const chunk of chunks) { bytes.set(chunk, offset); offset += chunk.length; }
-  return parseCommunityCatalog(JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(bytes)));
+  return JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(bytes));
+}
+
+export async function readCatalogResponse(response: Response): Promise<CommunityCatalogPage> {
+  return parseCommunityCatalog(await readBoundedCatalogJSON(response, 1_048_576, "catalog"));
+}
+
+export async function readFacetsResponse(response: Response): Promise<CommunityCatalogFacets> {
+  return parseCommunityFacets(await readBoundedCatalogJSON(response, 131_072, "facets"));
 }
