@@ -1681,7 +1681,7 @@ export function BattutaSoundLibrary({
           {atlasEntries.length ? (
             <section className="community-library-sound-grid" aria-label={content.title}>
               {atlasEntries.map((entry, index) => {
-                if (entry.kind === "release") return <BattutaReleaseCard key={entry.id} release={entry.release} presentation={entry.presentation} locale={locale} productPath={productPath} />;
+                if (entry.kind === "release") return <BattutaReleaseCard key={entry.id} release={entry.release} presentation={entry.presentation} cover={catalog.covers[entry.release.releaseId]} locale={locale} productPath={productPath} />;
                 const profile = entry.profile;
                 const presentation = presentationFor(profile);
                 const isSelected = selectedProfileID === profile.id;

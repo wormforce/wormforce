@@ -1,7 +1,8 @@
 import { isCanonicalCommunityUuid, type CommunityInstallDescriptor } from "./battuta-community";
 
 export type CommunityPresentation = { manufacturer?: string; switchModel?: string; recordingAuthor?: string; description?: string; switchType?: string };
-export type CommunityCatalogPage = { schemaVersion: 1; releases: CommunityInstallDescriptor[]; nextCursor: string | null; presentations?: Record<string, CommunityPresentation> };
+export type CommunityCover = { schemaVersion: 1; available: true; format: "png"; sha256: string; byteCount: number; width: number; height: number; path: string };
+export type CommunityCatalogPage = { schemaVersion: 1; releases: CommunityInstallDescriptor[]; nextCursor: string | null; presentations?: Record<string, CommunityPresentation>; covers?: Record<string, CommunityCover> };
 export type CommunityCatalogFacets = { schemaVersion: 1; totalPacks: number; manufacturers: { name: string; count: number }[]; hasMore: boolean };
 
 export function parseCommunityFacets(value: unknown): CommunityCatalogFacets {
@@ -53,6 +54,18 @@ export function parseCommunityCatalog(value: unknown): CommunityCatalogPage {
         if (!Object.hasOwn(limits, key) || typeof value !== "string" || [...value].length > limits[key] || /[\p{Cc}\p{Cs}]/u.test(value)) throw Error("invalid_presentation");
       }
       if (info.switchType && !["linear", "tactile", "clicky", "silent", "electrocapacitive", "magnetic", "other"].includes(info.switchType)) throw Error("invalid_switch_type");
+    }
+  }
+  if (page.covers !== undefined) {
+    if (!page.covers || typeof page.covers !== "object" || Array.isArray(page.covers)) throw Error("invalid_covers");
+    for (const [id, cover] of Object.entries(page.covers)) {
+      const release = page.releases.find(release => release.releaseId === id);
+      if (!release || !cover || typeof cover !== "object" || Array.isArray(cover)
+        || Object.keys(cover).some(key => !["schemaVersion", "available", "format", "sha256", "byteCount", "width", "height", "path"].includes(key))
+        || cover.schemaVersion !== 1 || cover.available !== true || cover.format !== "png" || !/^[a-f0-9]{64}$/.test(cover.sha256)
+        || !Number.isSafeInteger(cover.byteCount) || cover.byteCount < 67 || cover.byteCount > 4 * 1024 * 1024
+        || ![cover.width, cover.height].every(n => Number.isSafeInteger(n) && n > 0 && n <= 1024)
+        || cover.path !== `battuta/packs/${release.packId}/releases/${release.releaseId}/${cover.sha256}.cover.png`) throw Error("invalid_cover_identity");
     }
   }
   return page;

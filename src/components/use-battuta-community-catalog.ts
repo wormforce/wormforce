@@ -1,11 +1,12 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { CommunityInstallDescriptor } from "@/lib/battuta-community";
-import { readCatalogResponse, type CommunityPresentation } from "@/lib/battuta-community-catalog";
+import { readCatalogResponse, type CommunityPresentation, type CommunityCover } from "@/lib/battuta-community-catalog";
 
 export function useBattutaCommunityCatalog(filters: string, enabled = true) {
   const [releases, setReleases] = useState<CommunityInstallDescriptor[]>([]);
   const [presentations, setPresentations] = useState<Record<string, CommunityPresentation>>({});
+  const [covers, setCovers] = useState<Record<string, CommunityCover>>({});
   const [cursor, setCursor] = useState<string | null>(null);
   const [loading, setLoading] = useState(enabled);
   const [failed, setFailed] = useState(false);
@@ -18,7 +19,7 @@ export function useBattutaCommunityCatalog(filters: string, enabled = true) {
     const controller = new AbortController(); pending.current = controller;
     const request = ++generation.current;
     setLoading(true); setFailed(false);
-    if (!after) { setFilterKey(filters); setReleases([]); setPresentations({}); setCursor(null); setLoaded(false); }
+    if (!after) { setFilterKey(filters); setReleases([]); setPresentations({}); setCovers({}); setCursor(null); setLoaded(false); }
     try {
       const query = new URLSearchParams(filters);
       if (after) query.set("after", after);
@@ -34,6 +35,7 @@ export function useBattutaCommunityCatalog(filters: string, enabled = true) {
         return [...merged.values()];
       });
       setPresentations(previous => ({ ...(after ? previous : {}), ...page.presentations }));
+      setCovers(previous => ({ ...(after ? previous : {}), ...page.covers }));
       setCursor(page.nextCursor); setLoaded(true);
     } catch { if (!controller.signal.aborted && request === generation.current) setFailed(true); }
     finally { if (!controller.signal.aborted && request === generation.current) setLoading(false); }
@@ -45,7 +47,7 @@ export function useBattutaCommunityCatalog(filters: string, enabled = true) {
     return () => { clearTimeout(timer); pending.current?.abort(); };
   }, [enabled, load]);
   const current = enabled && filterKey === filters;
-  return { releases: current ? releases : [], presentations: current ? presentations : {},
+  return { releases: current ? releases : [], presentations: current ? presentations : {}, covers: current ? covers : {},
     cursor: current ? cursor : null, loading: enabled && (!current || loading),
     failed: current && failed, loaded: current && loaded,
     retry: () => { if (enabled) void load(current ? cursor : null); },

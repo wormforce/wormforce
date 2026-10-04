@@ -19,6 +19,15 @@ function load(path, dependencies) {
 }
 const library = load('src/lib/battuta-community-catalog.ts', { './battuta-community': { isCanonicalCommunityUuid: uuid } });
 assert.deepEqual(library.parseCommunityCatalog(page), page);
+const cover = { schemaVersion: 1, available: true, format: 'png', sha256: 'c'.repeat(64), byteCount: 200, width: 40, height: 20,
+  path: `battuta/packs/${descriptor.packId}/releases/${descriptor.releaseId}/${'c'.repeat(64)}.cover.png` };
+const coverPage = { ...page, covers: { [descriptor.releaseId]: cover } };
+assert.deepEqual(library.parseCommunityCatalog(coverPage), coverPage);
+for (const patch of [{ path: 'https://evil.invalid/payload.svg' }, { sha256: 'd'.repeat(64) }, { width: 1025 },
+  { byteCount: 4194305 }, { format: 'svg' }, { available: false }, { url: 'https://evil.invalid' }]) {
+  assert.throws(() => library.parseCommunityCatalog({ ...page, covers: { [descriptor.releaseId]: { ...cover, ...patch } } }));
+}
+assert.throws(() => library.parseCommunityCatalog({ ...page, covers: { [descriptor.packId]: cover } }));
 for (const invalid of [null, {}, { ...page, nextCursor: 'bad' }, { ...page, releases: [descriptor, descriptor] },
   { ...page, releases: [{ ...descriptor, author: null }] },
   { ...page, releases: [{ ...descriptor, artifact: { ...descriptor.artifact, path: 'other.zip' } }] }]) {
