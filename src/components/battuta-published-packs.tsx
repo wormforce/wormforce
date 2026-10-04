@@ -8,7 +8,7 @@ import { BattutaReleaseCard } from "./battuta-release-card";
 export function BattutaPublishedPacks({ locale, productPath }: { locale: BattutaLocale; productPath: string }) {
   const en = locale === "en";
   const [filters, setFilters] = useState("");
-  const { releases, presentations, cursor, loading, failed, loaded, retry, refresh, loadMore } = useBattutaCommunityCatalog(filters);
+  const { releases, presentations, covers, cursor, loading, failed, loaded, retry, refresh, loadMore } = useBattutaCommunityCatalog(filters);
   return (
     <section id="published-packs" className="community-published-packs light-section" aria-labelledby="published-packs-heading">
       <div className="section-inner">
@@ -40,7 +40,7 @@ export function BattutaPublishedPacks({ locale, productPath }: { locale: Battuta
         ) : (
           <div className="community-library-sound-grid">
             {releases.map(release => <BattutaReleaseCard key={release.releaseId} release={release}
-              presentation={presentations[release.releaseId]} locale={locale} productPath={productPath} />)}
+              presentation={presentations[release.releaseId]} cover={covers[release.releaseId]} locale={locale} productPath={productPath} />)}
           </div>
         )}
         {cursor && !failed && <button type="button" disabled={loading} onClick={loadMore}>{en ? "Load more" : "加载更多"}</button>}

@@ -1,18 +1,21 @@
 "use client";
 import Image from "next/image";
+import { useState } from "react";
 import { KeyboardIcon, UserCircleIcon } from "@phosphor-icons/react";
 import type { BattutaLocale } from "@/content/battuta";
 import type { CommunityInstallDescriptor } from "@/lib/battuta-community";
-import type { CommunityPresentation } from "@/lib/battuta-community-catalog";
+import type { CommunityPresentation, CommunityCover } from "@/lib/battuta-community-catalog";
 import { releaseSwitchIllustration } from "@/lib/battuta-atlas-catalog";
 import { BattutaCommunityInstallButton } from "./battuta-community-install-button";
 import { BattutaReleasePlayer } from "./battuta-release-player";
 
-export function BattutaReleaseCard({ release, presentation, locale, productPath }: {
-  release: CommunityInstallDescriptor; presentation?: CommunityPresentation; locale: BattutaLocale; productPath: string;
+export function BattutaReleaseCard({ release, presentation, cover, locale, productPath }: {
+  release: CommunityInstallDescriptor; presentation?: CommunityPresentation; cover?: CommunityCover; locale: BattutaLocale; productPath: string;
 }) {
   const en = locale === "en";
   const illustration = releaseSwitchIllustration(presentation);
+  const [failedCover, setFailedCover] = useState(false);
+  const showCover = cover && !failedCover;
   return <article className="community-library-sound-card community-release-card" data-source="published" id={`release-${release.releaseId}`}>
     <div className="community-library-card-body">
       <div className="community-library-card-product">
@@ -23,10 +26,14 @@ export function BattutaReleaseCard({ release, presentation, locale, productPath 
           <span className="community-release-status">{en ? "Reviewed · Installable" : "已审核 · 可安装"}</span>
         </header>
         <figure className="community-library-switch-visual community-release-visual">
-          {illustration ? <Image src={illustration} alt={en ? "Illustrative switch, not the creator's recording hardware" : "轴体示意，非作者录音实物照片"}
+          {showCover ? <Image unoptimized src={`/api/battuta/community/v1/packs/${release.packId}/releases/${release.releaseId}/cover.png`}
+            alt={en ? "Creator-submitted, reviewed cover" : "创作者提交并审核的封面"} fill sizes="(max-width: 900px) 235px, 225px"
+            referrerPolicy="no-referrer" onError={() => setFailedCover(true)} /> : illustration ? <Image src={illustration} alt={en ? "Illustrative switch, not the creator's recording hardware" : "轴体示意，非作者录音实物照片"}
             fill sizes="(max-width: 900px) 235px, 225px" /> :
             <div className="community-release-creator-visual"><KeyboardIcon size={92} weight="duotone" aria-hidden /><span>{presentation?.manufacturer || "Battuta"}</span></div>}
-          <figcaption>{en ? "Illustration · Not a hardware photo" : "视觉示意 · 非录音实物照片"}</figcaption>
+          <figcaption>{showCover ? (en ? "Creator cover · Reviewed" : "作者封面 · 已审核")
+            : failedCover ? (en ? "Cover unavailable · Illustration" : "封面加载失败 · 视觉示意")
+            : (en ? "Illustration · Not a hardware photo" : "视觉示意 · 非录音实物照片")}</figcaption>
         </figure>
       </div>
       <BattutaReleasePlayer release={release} en={en} variant="card" />

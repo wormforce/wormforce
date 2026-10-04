@@ -58,3 +58,30 @@ assert.equal((await exports.proxyBattutaCommunity(request(publicPath))).status, 
 upstream = () => new Response(new Uint8Array(1152045), { headers: { 'Content-Type': 'audio/wav' } });
 assert.equal((await exports.proxyBattutaCommunity(request(publicPath))).status, 502);
 console.log('Community proxy checks passed: fail-closed config, fixed origin/path, minimal cookies, redirect controls, body limits.');
+const png = new Uint8Array(100); png.set([137, 80, 78, 71, 13, 10, 26, 10]);
+const publicCoverPath = publicPath.replace('/preview.wav', '/cover.png');
+const privateCoverPath = '/moderation/submissions/10000000-0000-4000-8000-000000000001/cover.png';
+for (const path of [publicCoverPath, privateCoverPath]) {
+  upstream = () => new Response(png, { headers: { 'Content-Type': 'image/png', 'Content-Length': '100', 'Set-Cookie': '__Host-battuta-session=never-public' } });
+  const result = await exports.proxyBattutaCommunity(request(path, { headers: { cookie: '__Host-battuta-session=reviewer', authorization: 'Bearer not-for-public' } }));
+  assert.equal(result.status, 200); assert.deepEqual(new Uint8Array(await result.arrayBuffer()), png);
+  assert.equal(result.headers.get('cache-control'), 'no-store'); assert.equal(result.headers.get('x-content-type-options'), 'nosniff');
+  assert.match(result.headers.get('content-security-policy'), /sandbox/);
+  if (path === publicCoverPath) {
+    assert.equal(forwarded.options.headers.get('cookie'), null); assert.equal(forwarded.options.headers.get('authorization'), null);
+    assert.equal(result.headers.get('set-cookie'), null);
+  } else assert.equal(forwarded.options.headers.get('cookie'), '__Host-battuta-session=reviewer');
+  assert.equal((await exports.proxyBattutaCommunity(request(path + '?url=https://evil.invalid'))).status, 404);
+  assert.equal((await exports.proxyBattutaCommunity(request(path, { method: 'POST' }))).status, 404);
+  for (const headers of [{ 'Content-Type': 'image/svg+xml' }, { 'Content-Type': 'image/png', 'Content-Length': '99' }]) {
+    upstream = () => new Response(png, { headers });
+    assert.equal((await exports.proxyBattutaCommunity(request(path))).status, 502);
+  }
+  upstream = () => new Response('<script>not png</script>'.padEnd(100, 'x'), { headers: { 'Content-Type': 'image/png' } });
+  assert.equal((await exports.proxyBattutaCommunity(request(path))).status, 502);
+  upstream = () => new Response(new Uint8Array(4194305), { headers: { 'Content-Type': 'image/png' } });
+  assert.equal((await exports.proxyBattutaCommunity(request(path))).status, 502);
+  upstream = () => new Response(null, { status: 303, headers: { Location: 'https://github.com' } });
+  assert.equal((await exports.proxyBattutaCommunity(request(path))).status, 502);
+}
+console.log('Cover proxy checks passed: typed bounded PNG, fixed paths, private reviewer cookies, public credential isolation, no cache/redirects.');

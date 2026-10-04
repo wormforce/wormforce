@@ -1,11 +1,13 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 type Entry = { submissionId: string; name: string; author: string };
 type Detail = Entry & { status: string; presentation?: Record<string, string> | null; rights: { confirmed: boolean; license: string }; validation: {
   byteCount: number; sha256: string; manifest: Record<string, unknown>;
   preview: { available: boolean } | null;
+  cover?: { available: true; width: number; height: number } | null;
 } };
 const base = "/api/battuta/community/v1/moderation/submissions";
 async function checkedJSON(response: Response) {
@@ -22,6 +24,7 @@ export function BattutaCommunityReview() {
   const [error, setError] = useState("");
   const [reason, setReason] = useState("");
   const [confirmed, setConfirmed] = useState(false);
+  const [loadedCover, setLoadedCover] = useState<string | null>(null);
   const [notice, setNotice] = useState("");
   const pending = useRef<AbortController | null>(null);
   const queue = useCallback(async (cursor: string | null = null) => {
@@ -37,12 +40,12 @@ export function BattutaCommunityReview() {
   }, []);
   useEffect(() => { void queue(); return () => pending.current?.abort(); }, [queue]);
   async function select(item: Entry) {
-    setBusy(true); setError(""); setDetail(null); setConfirmed(false); setReason(""); setNotice("");
+    setBusy(true); setError(""); setDetail(null); setConfirmed(false); setLoadedCover(null); setReason(""); setNotice("");
     try { setDetail(await checkedJSON(await fetch(`${base}/${item.submissionId}`, { cache: "no-store", signal: AbortSignal.timeout(20000) }))); }
     catch (e) { setError((e as Error).message); } finally { setBusy(false); }
   }
   async function decide(action: "approve" | "reject") {
-    if (!detail || !reason.trim() || (action === "approve" && !confirmed)) return;
+    if (!detail || !reason.trim() || (action === "approve" && (!confirmed || (detail.validation.cover && loadedCover !== detail.submissionId)))) return;
     setBusy(true); setError("");
     try {
       await checkedJSON(await fetch(`${base}/${detail.submissionId}`, { method: "POST",
@@ -67,12 +70,19 @@ export function BattutaCommunityReview() {
         <p>录音作者：{detail.presentation.recordingAuthor || "未填写"} · 类型：{detail.presentation.switchType || "未填写"}</p>
         <p>{detail.presentation.description}</p></section>}
       <p style={{ overflowWrap: "anywhere" }}>校验包：{detail.validation.byteCount} 字节 · SHA-256 {detail.validation.sha256}</p>
+      {detail.validation.cover && <figure><Image key={detail.submissionId} unoptimized
+        src={`${base}/${detail.submissionId}/cover.png`} alt="作者提交、服务器已重新编码的待审封面"
+        width={detail.validation.cover.width} height={detail.validation.cover.height} referrerPolicy="no-referrer"
+        style={{ maxWidth: "100%", maxHeight: 420, width: "auto", height: "auto", objectFit: "contain" }}
+        onLoad={() => setLoadedCover(detail.submissionId)} onError={() => { setLoadedCover(null); setError("封面读取失败，暂不可通过审核；请刷新后重试。"); }} />
+        <figcaption>待审封面（尚未公开）。请核对图中内容、图片来源与分享权利。</figcaption></figure>}
       {detail.validation.preview?.available ? <audio controls preload="none" src={`${base}/${detail.submissionId}/preview.wav`} aria-label="待审音色真实试听" />
         : <p>试听尚未生成，或包依赖外部基础采样；暂不可通过审核。</p>}
       <details><summary>按键映射、录音作者与来源声明</summary><pre style={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}>{JSON.stringify(detail.validation.manifest, null, 2)}</pre></details>
       <label style={{ display: "block" }}>审核原因<textarea value={reason} maxLength={2000} onChange={e => setReason(e.target.value)} disabled={busy} /></label>
-      <label style={{ display: "block" }}><input type="checkbox" checked={confirmed} onChange={e => setConfirmed(e.target.checked)} disabled={busy} />我已试听，并核对录音来源、分享许可和署名；未将轴体厂家当作录音作者。</label>
-      <button disabled={busy || !reason.trim() || !confirmed || !detail.rights.confirmed || !detail.validation.preview?.available || detail.status !== "pending_review"} onClick={() => void decide("approve")}>通过审核（不发布）</button>
+      <label style={{ display: "block" }}><input type="checkbox" checked={confirmed} onChange={e => setConfirmed(e.target.checked)} disabled={busy} />我已试听，并核对录音、封面来源、分享许可和署名；未将轴体厂家当作录音作者。</label>
+      <button disabled={busy || !reason.trim() || !confirmed || !detail.rights.confirmed || !detail.validation.preview?.available
+        || (Boolean(detail.validation.cover) && loadedCover !== detail.submissionId) || detail.status !== "pending_review"} onClick={() => void decide("approve")}>通过审核（不发布）</button>
       <button disabled={busy || !reason.trim() || detail.status !== "pending_review"} onClick={() => void decide("reject")}>拒绝并记录原因</button>
     </section>}
   </div></main>;
