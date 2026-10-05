@@ -797,7 +797,9 @@ export function BattutaSoundLibrary({
     const readyProfileWaveforms = readyProfileWaveformsRef.current;
     let disposed = false;
 
-    void fetch(manifestURL, { signal: controller.signal, cache: "force-cache" })
+    // The manifest URL is mutable: refresh authorship/licensing on each visit.
+    // Individual sprite URLs are content-hashed and can keep their audio cache.
+    void fetch(manifestURL, { signal: controller.signal, cache: "no-store" })
       .then(async (response) => {
         if (!response.ok) throw new Error("Unable to load Battuta audio manifest");
         const manifest = await response.json() as DemoManifest;
