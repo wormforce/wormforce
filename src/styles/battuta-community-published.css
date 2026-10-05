@@ -41,8 +41,9 @@
 .community-catalog-status { padding: 14px 18px; margin-block: 16px; border-radius: 13px; background: #e9ece3; color: #4a5440; font-size: 13px; line-height: 1.6; }
 .community-catalog-status button, .community-catalog-more { margin-left: 12px; padding: 9px 16px; border: 1px solid #c7cfb9; border-radius: 11px; background: white; color: #313b25; cursor: pointer; }
 .community-catalog-more { margin: 24px 0 0; }
-.community-library-brand-exact input { max-width: 180px; width: 100%; padding: 12px 14px; border: 1px solid #dee2d6; border-radius: 13px; background: white; color: #31362a; font: inherit; font-size: 12px; }
+.community-library-brand-exact, .community-library-creator-filter { min-width: 0; }
+.community-library-brand-exact input, .community-library-creator-filter input { max-width: 180px; width: 100%; min-height: 48px; padding: 12px 14px; border: 1px solid #dee2d6; border-radius: 13px; background: white; color: #31362a; font: inherit; font-size: 12px; }
 @media (max-width: 900px) { .community-release-player-card { height: auto; min-height: 290px; } }
 @media (max-width: 1000px) { .community-published-grid { grid-template-columns: repeat(2,minmax(0,1fr)); } }
 @media (max-width: 640px) { .community-published-grid { grid-template-columns: minmax(0,1fr); } }
-@media (max-width: 640px) { .community-library-brand-exact input { max-width: none; } }
+@media (max-width: 640px) { .community-library-brand-exact input, .community-library-creator-filter input { max-width: none; } }

@@ -11,13 +11,20 @@ const switchTypes: Record<string, string> = {
   "静音": "silent", "磁轴": "magnetic", "其他": "other", "屈曲弹簧": "other",
 };
 
-export function atlasCatalogQuery(search: string, brand: string, family: string, manufacturer = "") {
+export function atlasCatalogQuery(search: string, brand: string, family: string, manufacturer = "", creator = "") {
   const query = new URLSearchParams();
   if (search.trim()) query.set("q", search.trim());
   const maker = manufacturer.trim() || manufacturers[brand];
   if (maker) query.set("manufacturer", maker);
   if (switchTypes[family]) query.set("switchType", switchTypes[family]);
+  if (creator.trim()) query.set("author", creator.trim());
   return query.toString();
+}
+
+export function matchesAtlasCreator(author: string | undefined, creator: string) {
+  const search = creator.trim().toLowerCase();
+  // Match real attribution, never a manufacturer or the UI's fallback label.
+  return !search || Boolean(author?.trim().toLowerCase().includes(search));
 }
 
 export type AtlasEntry<T> =
