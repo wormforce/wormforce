@@ -7,7 +7,7 @@ import { BattutaReleaseCard } from "@/components/battuta-release-card";
 import { BattutaPublishedPacks } from "@/components/battuta-published-packs";
 import { useBattutaCommunityCatalog } from "@/components/use-battuta-community-catalog";
 import { useBattutaCommunityFacets } from "@/components/use-battuta-community-facets";
-import { atlasCatalogQuery, mergeAtlasEntries } from "@/lib/battuta-atlas-catalog";
+import { atlasCatalogQuery, matchesAtlasCreator, mergeAtlasEntries } from "@/lib/battuta-atlas-catalog";
 import {
   ArrowsClockwiseIcon,
   ArrowRightIcon,
@@ -736,6 +736,7 @@ export function BattutaSoundLibrary({
   const [brandPanelOpen, setBrandPanelOpen] = useState(false);
   const [brandQuery, setBrandQuery] = useState("");
   const [manufacturerQuery, setManufacturerQuery] = useState("");
+  const [creatorQuery, setCreatorQuery] = useState("");
   const [recommendationSeed, setRecommendationSeed] = useState(0);
   const [family, setFamily] = useState<FamilyFilter>("all");
   const [sort, setSort] = useState<SortMode>("curated");
@@ -751,7 +752,7 @@ export function BattutaSoundLibrary({
   const [comparisonFocusRequest, setComparisonFocusRequest] = useState(0);
   const [submissionOpen, setSubmissionOpen] = useState(false);
   const [catalogColumns, setCatalogColumns] = useState(3);
-  const catalog = useBattutaCommunityCatalog(atlasCatalogQuery(query, brandFilter, family, manufacturerQuery),
+  const catalog = useBattutaCommunityCatalog(atlasCatalogQuery(query, brandFilter, family, manufacturerQuery, creatorQuery),
     loadState === "ready" && (sourceFilter === "all" || sourceFilter === "community"));
   const manufacturerFacets = useBattutaCommunityFacets(brandQuery, brandPanelOpen);
 
@@ -938,6 +939,7 @@ export function BattutaSoundLibrary({
     const result = profiles.filter((profile) => {
       if (!matchesBrandFilter(profile, brandFilter)) return false;
       if (manufacturerQuery.trim() && !localizedBrand(profile, locale).toLowerCase().includes(manufacturerQuery.trim().toLowerCase())) return false;
+      if (!matchesAtlasCreator(profile.attribution?.author, creatorQuery)) return false;
       if (sourceFilter !== "all" && presentationFor(profile).sourceKind !== sourceFilter) return false;
       if (family !== "all" && profile.family !== family) return false;
       if (!normalizedQuery) return true;
@@ -962,7 +964,7 @@ export function BattutaSoundLibrary({
       return (profileSortRank.get(a.id) ?? Number.MAX_SAFE_INTEGER)
         - (profileSortRank.get(b.id) ?? Number.MAX_SAFE_INTEGER);
     });
-  }, [brandFilter, family, locale, manufacturerQuery, profiles, query, sort, sourceFilter]);
+  }, [brandFilter, creatorQuery, family, locale, manufacturerQuery, profiles, query, sort, sourceFilter]);
 
   const visibleProfiles = filteredProfiles;
   const atlasEntries = mergeAtlasEntries(visibleProfiles.map(profile => ({ kind: "demo" as const,
@@ -1590,6 +1592,9 @@ export function BattutaSoundLibrary({
               <label className="community-library-brand-exact"><span className="community-library-visually-hidden">{locale === "en" ? "Manufacturer, including independent brands" : "厂家名称，也支持个人品牌"}</span>
                 <input type="search" maxLength={80} value={manufacturerQuery} onChange={event => { setManufacturerQuery(event.target.value); setBrandFilter("all"); }}
                   placeholder={locale === "en" ? "Other manufacturer…" : "其他厂家（完整名称）…"} /></label>
+              <label className="community-library-creator-filter"><span className="community-library-visually-hidden">{locale === "en" ? "Recording author or uploader" : "录音作者或上传者"}</span>
+                <input type="search" maxLength={160} value={creatorQuery} onChange={event => setCreatorQuery(event.target.value)}
+                  placeholder={locale === "en" ? "Author or uploader…" : "创作者／上传者…"} /></label>
               <label>
                 <span className="community-library-visually-hidden">{content.familyLabel}</span>
                 <select value={family} onChange={(event) => setFamily(event.target.value as FamilyFilter)}>
@@ -1618,13 +1623,14 @@ export function BattutaSoundLibrary({
             </div>
           </header>
 
-          {(brandFilter !== "all" || sourceFilter !== "all" || family !== "all" || query || manufacturerQuery) && <div className="community-library-active-filters">
+          {(brandFilter !== "all" || sourceFilter !== "all" || family !== "all" || query || manufacturerQuery || creatorQuery) && <div className="community-library-active-filters">
             {manufacturerQuery && <button onClick={() => setManufacturerQuery("")}>{manufacturerQuery} ×</button>}
+            {creatorQuery && <button onClick={() => setCreatorQuery("")} aria-label={locale === "en" ? "Remove creator filter" : "移除创作者筛选"}>{locale === "en" ? "Creator: " : "创作者："}{creatorQuery} ×</button>}
             {brandFilter !== "all" && <button onClick={() => setBrandFilter("all")}>{brandFilterLabel(brandFilter)} ×</button>}
             {sourceFilter !== "all" && <button onClick={() => setSourceFilter("all")}>{sourceFilter === "community" ? content.communityUploads : content.bundled} ×</button>}
             {family !== "all" && <button onClick={() => setFamily("all")}>{content.filters[family]} ×</button>}
             {query && <button onClick={() => setQuery("")}>{query} ×</button>}
-            <button onClick={() => { setBrandFilter("all"); setSourceFilter("all"); setFamily("all"); setQuery(""); setManufacturerQuery(""); }}>{locale === "en" ? "Clear filters" : "清除筛选"}</button>
+            <button onClick={() => { setBrandFilter("all"); setSourceFilter("all"); setFamily("all"); setQuery(""); setManufacturerQuery(""); setCreatorQuery(""); }}>{locale === "en" ? "Clear filters" : "清除筛选"}</button>
           </div>}
           {auditionOpen ? (
             <section className="community-library-audition-panel" id="community-audition" aria-labelledby="community-audition-title">
@@ -1811,7 +1817,7 @@ export function BattutaSoundLibrary({
                 <MagnifyingGlassIcon size={30} weight="duotone" aria-hidden />
                 <h2>{content.noResults}</h2>
                 <p>{content.noResultsHint}</p>
-                <button type="button" onClick={() => { setQuery(""); setFamily("all"); setBrandFilter("all"); setSourceFilter("all"); setManufacturerQuery(""); }}>{content.filters.all}</button>
+                <button type="button" onClick={() => { setQuery(""); setFamily("all"); setBrandFilter("all"); setSourceFilter("all"); setManufacturerQuery(""); setCreatorQuery(""); }}>{content.filters.all}</button>
               </div>
             </Fragment>
           ) : null}

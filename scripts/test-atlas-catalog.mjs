@@ -6,7 +6,7 @@ const source = readFileSync(new URL('../src/lib/battuta-atlas-catalog.ts', impor
 const compiled = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText;
 const exports = {};
 new Function('exports', compiled)(exports);
-const { atlasCatalogQuery, mergeAtlasEntries, releaseSwitchIllustration } = exports;
+const { atlasCatalogQuery, matchesAtlasCreator, mergeAtlasEntries, releaseSwitchIllustration } = exports;
 const query = (...args) => new URLSearchParams(atlasCatalogQuery(...args));
 assert.equal(query('  recorder  ', 'kailh', '点击').get('q'), 'recorder');
 assert.equal(query('', 'kailh', '点击').get('manufacturer'), 'Kailh');
@@ -18,6 +18,24 @@ assert.equal(atlasCatalogQuery('', 'all', 'all'), '');
 assert.equal(query('', 'more', 'all').has('manufacturer'), false);
 assert.equal(query('', 'cherry', 'all', '  Personal Studio  ').get('manufacturer'), 'Personal Studio');
 assert.equal(query('a & b / c', 'all', 'all').get('q'), 'a & b / c');
+const combined = query(' BOX White ', 'kailh', '点击', '', ' Mange / 7b7b7b ');
+assert.deepEqual(Object.fromEntries(combined), {
+  q: 'BOX White', manufacturer: 'Kailh', switchType: 'clicky', author: 'Mange / 7b7b7b',
+});
+assert.equal(query('', 'all', 'all', '', 'A & B / c?').get('author'), 'A & B / c?');
+assert.equal(query('', 'all', 'all', '', '   ').has('author'), false);
+assert.equal(matchesAtlasCreator('Mange/clicketyclack contributors', ' CLICKETYCLACK '), true);
+assert.equal(matchesAtlasCreator('Mange/clicketyclack contributors', 'Kailh'), false);
+assert.equal(matchesAtlasCreator(undefined, 'Battuta demo'), false);
+assert.equal(matchesAtlasCreator('   ', 'Battuta'), false);
+assert.equal(matchesAtlasCreator(undefined, '   '), true);
+
+const librarySource = readFileSync(new URL('../src/components/battuta-sound-library.tsx', import.meta.url), 'utf8');
+assert.match(librarySource, /atlasCatalogQuery\(query, brandFilter, family, manufacturerQuery, creatorQuery\)/);
+assert.match(librarySource, /matchesAtlasCreator\(profile\.attribution\?\.author, creatorQuery\)/);
+assert.match(librarySource, /maxLength=\{160\} value=\{creatorQuery\}/);
+// Both clear-all paths and the individual chip must remove the creator filter.
+assert.equal((librarySource.match(/setCreatorQuery\(""\)/g) ?? []).length, 3);
 
 const release = JSON.parse(readFileSync(new URL('../tests/fixtures/battuta-community-install-descriptor.valid.json', import.meta.url)));
 const other = { ...release, releaseId: '22222222-2222-4222-8222-222222222222', packId: '33333333-3333-4333-8333-333333333333', name: 'A personal recording' };
