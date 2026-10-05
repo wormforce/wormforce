@@ -31,6 +31,8 @@ assert.equal(matchesAtlasCreator('   ', 'Battuta'), false);
 assert.equal(matchesAtlasCreator(undefined, '   '), true);
 
 const librarySource = readFileSync(new URL('../src/components/battuta-sound-library.tsx', import.meta.url), 'utf8');
+assert.match(librarySource, /fetch\(manifestURL,\s*\{[^}]*cache:\s*"no-store"/,
+  'Mutable authorship/license manifest must not reuse stale browser metadata.');
 assert.match(librarySource, /atlasCatalogQuery\(query, brandFilter, family, manufacturerQuery, creatorQuery\)/);
 assert.match(librarySource, /matchesAtlasCreator\(profile\.attribution\?\.author, creatorQuery\)/);
 assert.match(librarySource, /maxLength=\{160\} value=\{creatorQuery\}/);
