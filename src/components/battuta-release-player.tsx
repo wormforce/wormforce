@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { PauseIcon, PlayIcon } from "@phosphor-icons/react";
 import type { CommunityInstallDescriptor } from "@/lib/battuta-community";
-import { readReleasePreview, type ReleasePreview } from "@/lib/battuta-release-preview";
+import { readReleasePreview, readReleaseInspection, releaseEnvelopePath, type ReleasePreview, type ReleaseInspection } from "@/lib/battuta-release-preview";
 import { battutaPlaybackOwner } from "@/lib/battuta-playback-owner";
 
 export function BattutaReleasePlayer({ release, en, variant = "detail" }: {
@@ -14,6 +14,7 @@ export function BattutaReleasePlayer({ release, en, variant = "detail" }: {
   const owner = useRef(Symbol("battuta-release"));
   const playGeneration = useRef(0);
   const [preview, setPreview] = useState<ReleasePreview | null>(null);
+  const [inspection, setInspection] = useState<ReleaseInspection | null>(null);
   const [failed, setFailed] = useState(false);
   const [retry, setRetry] = useState(0);
   const [playing, setPlaying] = useState(false);
@@ -31,41 +32,51 @@ export function BattutaReleasePlayer({ release, en, variant = "detail" }: {
   useEffect(() => {
     if (!visible) return;
     const controller = new AbortController();
-    void fetch(`${base}/preview.json`, { cache: "no-store", signal: AbortSignal.any([controller.signal, AbortSignal.timeout(20000)]) })
+    const signal = AbortSignal.any([controller.signal, AbortSignal.timeout(20000)]);
+    void fetch(`${base}/preview.json`, { cache: "no-store", signal })
       .then(response => readReleasePreview(response, { packId: release.packId, releaseId: release.releaseId }))
-      .then(value => { if (!controller.signal.aborted) setPreview(value); })
+      .then(async value => {
+        const fragment = variant === "card"
+          ? await readReleaseInspection(await fetch(`${base}/preview.wav`, { cache: "no-store", signal }), value)
+          : null;
+        if (!controller.signal.aborted) { setPreview(value); setInspection(fragment); }
+      })
       .catch(() => { if (!controller.signal.aborted) setFailed(true); });
     return () => controller.abort();
-  }, [base, visible, release.packId, release.releaseId, retry]);
+  }, [base, visible, release.packId, release.releaseId, retry, variant]);
   useEffect(() => battutaPlaybackOwner.register(owner.current, () => {
     playGeneration.current += 1;
     audio.current?.pause();
     setPlaying(false);
   }), []);
   const db = (value: number) => value === 0 ? "−∞" : (20 * Math.log10(value)).toFixed(1);
+  const shown = inspection ?? preview;
+  const points = inspection?.points ?? preview?.peaks.map(peak => preview.peak > 0 ? peak / preview.peak : 0) ?? [];
+  const envelope = releaseEnvelopePath(points);
+  const highlight = inspection ? 0.18 : preview ? position / preview.durationSeconds : 0;
   return <section ref={root} className={`community-library-waveform-inspector community-release-player community-release-player-${variant}`} aria-label={`${en ? "Sound inspector" : "声音检查器"}: ${release.name}`}>
-    <header><strong>{en ? "Sound inspector" : "声音检查器"}</strong><span>{en ? "Recorded samples · Slow key sequence" : "真实采样 · 慢速按键试听"}</span></header>
+    <header><strong>{en ? "Sound inspector" : "声音检查器"}</strong><span>{variant === "card" ? (en ? "PCM 48 kHz / 16-bit · Single keystroke" : "PCM 48 kHz / 16-bit · 单次击键") : (en ? "Recorded samples · Slow key sequence" : "真实采样 · 慢速按键试听")}</span></header>
     {failed ? <div className="community-release-preview-status" role="status"><p>{en ? "Preview unavailable. Installation details remain below." : "试听暂不可用，安装信息仍可在下方查看。"}</p>
-      <button type="button" onClick={() => { setFailed(false); setPreview(null); setRetry(value => value + 1); audio.current?.load(); }}>{en ? "Retry preview" : "重试试听"}</button></div>
-      : !preview ? <p className="community-release-preview-status" role="status">{en ? "Loading real waveform…" : "正在加载真实波形…"}</p>
+      <button type="button" onClick={() => { setFailed(false); setPreview(null); setInspection(null); setRetry(value => value + 1); audio.current?.load(); }}>{en ? "Retry preview" : "重试试听"}</button></div>
+      : !preview || !shown ? <p className="community-release-preview-status" role="status">{en ? "Loading real waveform…" : "正在加载真实波形…"}</p>
       : <>
         <div className="community-library-inspector-ruler" aria-hidden>
-          {[0, 1 / 3, 2 / 3, 1].map((ratio, index) => <span key={index}>{(preview.durationSeconds * ratio).toFixed(1)}s</span>)}
+          {(inspection ? [0, 0.32, 0.64, 1] : [0, 1 / 3, 2 / 3, 1]).map((ratio, index) => <span key={index}>{index === 0 ? "0" : (shown.durationSeconds * ratio).toFixed(inspection ? 2 : 1)}s</span>)}
         </div>
         <div className="community-release-waveform">
-        <svg viewBox="0 0 512 120" width="100%" height="120" role="img" aria-label={en ? "Waveform from recorded samples" : "由真实采样生成的波形"}>
-          <path d="M0 60H512" stroke="#636a65" strokeWidth="0.5" />
-          {preview.peaks.map((peak, index) => {
-            const amplitude = preview.peak > 0 ? peak / preview.peak * 54 : 0;
-            return <line key={index} x1={index * 2} x2={index * 2} y1={60 - amplitude} y2={60 + amplitude}
-              stroke={index / 256 < position / preview.durationSeconds ? "#caff36" : "#b0b6ae"} strokeWidth="1" />;
-          })}
+        <svg viewBox="0 0 512 120" preserveAspectRatio="none" width="100%" height="120" role="img" aria-label={inspection ? (en ? "Recorded single-keystroke waveform · 0.25 second window" : "真实单次击键波形 · 0.25秒窗口") : (en ? "Waveform from recorded samples" : "由真实采样生成的波形")}>
+          <path d="M0 60H512" stroke="rgba(246,248,241,.12)" vectorEffect="non-scaling-stroke" />
+          {inspection?.markers.map((marker, index) => <path key={index} d={`M${marker * 512} 3V117`} stroke={index === 0 ? "#cfff3e" : "rgba(246,248,241,.22)"} vectorEffect="non-scaling-stroke" strokeWidth={index === 0 ? 1.1 : 0.75} />)}
+          <path d={envelope} fill="rgba(246,248,241,.30)" stroke="rgba(246,248,241,.66)" strokeWidth="0.8" vectorEffect="non-scaling-stroke" strokeLinejoin="round" />
+          <svg viewBox={`0 0 ${Math.max(0.001, highlight * 512)} 120`} x="0" y="0" width={highlight * 512} height="120" preserveAspectRatio="none" overflow="hidden">
+            <path d={envelope} fill="rgba(210,255,60,.46)" stroke="#d8ff73" strokeWidth="0.8" vectorEffect="non-scaling-stroke" strokeLinejoin="round" />
+          </svg>
         </svg>
         </div>
         <dl className="community-library-signal-metrics">
-          <div><dt>{en ? "Peak" : "峰值"}</dt><dd>{db(preview.peak)} dBFS</dd></div>
-          <div><dt>RMS</dt><dd>{db(preview.rms)} dBFS</dd></div>
-          <div><dt>{en ? "Duration" : "时长"}</dt><dd>{preview.durationSeconds.toFixed(2)} s</dd></div>
+          <div><dt>{en ? "Peak" : "峰值"}</dt><dd>{db(shown.peak)} dBFS</dd></div>
+          <div><dt>RMS</dt><dd>{db(shown.rms)} dBFS</dd></div>
+          <div><dt>{inspection ? (en ? "Window" : "窗口") : (en ? "Duration" : "时长")}</dt><dd>{shown.durationSeconds.toFixed(2)} s</dd></div>
         </dl>
         <div className="community-release-transport">
         <button className="community-release-play" type="button" aria-label={`${playing ? (en ? "Pause" : "暂停") : (en ? "Play" : "试听")} ${release.name}`}
@@ -86,7 +97,7 @@ export function BattutaReleasePlayer({ release, en, variant = "detail" }: {
         <div className="community-release-seek">
         <input type="range" aria-label={en ? "Preview position" : "试听进度"} min="0" max={preview.durationSeconds} step="0.01" value={Math.min(position, preview.durationSeconds)}
           onChange={event => { const next = Number(event.target.value); if (audio.current && Number.isFinite(audio.current.duration)) audio.current.currentTime = next; setPosition(next); }} />
-        <span>{position.toFixed(1)} / {preview.durationSeconds.toFixed(1)} s</span>
+        <span>{inspection ? (en ? "Full preview · " : "完整试听 · ") : ""}{position.toFixed(1)} / {preview.durationSeconds.toFixed(1)} s</span>
         </div></div>
       </>}
     <audio ref={audio} src={`${base}/preview.wav`} preload="none"

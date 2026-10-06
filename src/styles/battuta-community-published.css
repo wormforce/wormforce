@@ -30,7 +30,8 @@
 .community-release-player { min-height: 300px; }
 .community-release-player-detail { border-radius: 18px; padding: 22px; margin-block: 18px; }
 .community-release-waveform { position: relative; flex: 1; min-height: 120px; display: grid; place-items: center; }
-.community-release-waveform svg { display: block; width: 100%; height: 120px; }
+.community-release-waveform > svg { display: block; width: 100%; height: 100%; position: absolute; inset: 0; }
+.community-release-player-detail .community-release-waveform { min-height: 160px; }
 .community-release-play { width: 46px; height: 46px; display: grid; place-items: center; background: #caff36; color: #17200d; border: none; border-radius: 50%; cursor: pointer; }
 .community-release-preview-status { color: #bdc4b6; font-size: 11px; text-align: center; }
 .community-release-preview-status button { border: 1px solid #838c76; border-radius: 8px; padding: 6px 12px; background: transparent; color: inherit; cursor: pointer; }
