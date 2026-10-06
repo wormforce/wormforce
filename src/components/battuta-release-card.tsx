@@ -3,7 +3,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { KeyboardIcon, UserCircleIcon } from "@phosphor-icons/react";
 import type { BattutaLocale } from "@/content/battuta";
-import type { CommunityInstallDescriptor } from "@/lib/battuta-community";
+import { communityCompatibilityLabel, type CommunityInstallDescriptor } from "@/lib/battuta-community";
 import type { CommunityPresentation, CommunityCover } from "@/lib/battuta-community-catalog";
 import { releaseSwitchIllustration } from "@/lib/battuta-atlas-catalog";
 import { BattutaCommunityInstallButton } from "./battuta-community-install-button";
@@ -54,7 +54,7 @@ export function BattutaReleaseCard({ release, presentation, cover, locale, produ
         <div><dt>{en ? "License" : "许可"}</dt><dd>{release.license.name}</dd></div>
         <div><dt>{en ? "Package size" : "包大小"}</dt><dd>{(release.artifact.byteCount / 1024).toFixed(1)} KB</dd></div>
       </dl>
-      <p>macOS ≥ {release.minimumBattutaVersion.macos} · Windows ≥ {release.minimumBattutaVersion.windows}</p>
+      <p>{communityCompatibilityLabel(release, en)}</p>
       <p>SHA-256: {release.artifact.sha256}</p>
       <p>{en ? "The switch brand does not imply an official manufacturer submission." : "轴体品牌不代表该作品由厂家官方投稿。"}</p>
     </details>

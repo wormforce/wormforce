@@ -131,7 +131,9 @@ function validateDescriptor(descriptor, expectedPackId, context) {
 
   assertRecord(descriptor.minimumBattutaVersion, `${context}.minimumBattutaVersion`, ["macos", "windows"]);
   assertSemver(descriptor.minimumBattutaVersion.macos, `${context}.minimumBattutaVersion.macos`);
-  assertSemver(descriptor.minimumBattutaVersion.windows, `${context}.minimumBattutaVersion.windows`);
+  if (descriptor.minimumBattutaVersion.windows !== null) {
+    assertSemver(descriptor.minimumBattutaVersion.windows, `${context}.minimumBattutaVersion.windows`);
+  }
   assertPublishedAt(descriptor.publishedAt, `${context}.publishedAt`);
   assert(Buffer.byteLength(JSON.stringify(descriptor)) <= 65_536, context, "serialized descriptor exceeds 64 KiB");
 }
