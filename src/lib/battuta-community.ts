@@ -26,7 +26,7 @@ export type CommunityInstallDescriptor = {
   };
   minimumBattutaVersion: {
     macos: string;
-    windows: string;
+    windows: string | null;
   };
   publishedAt: string;
 };
@@ -56,6 +56,12 @@ const communityCatalog = catalog as unknown as BattutaCommunityCatalog;
 
 export const battutaCommunityPacks = communityCatalog.packs;
 export const battutaCommunityUpdatedAt = communityCatalog.updatedAt;
+
+export function communityCompatibilityLabel(release: CommunityInstallDescriptor, en: boolean) {
+  return `macOS ≥ ${release.minimumBattutaVersion.macos} · ${release.minimumBattutaVersion.windows === null
+    ? (en ? "Windows not available yet" : "Windows 暂未开放")
+    : `Windows ≥ ${release.minimumBattutaVersion.windows}`}`;
+}
 
 export function isCanonicalCommunityUuid(value: string) {
   return canonicalUuid.test(value);

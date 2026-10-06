@@ -38,7 +38,8 @@ export function parseCommunityCatalog(value: unknown): CommunityCatalogPage {
       || typeof release.displayVersion !== "string" || release.displayVersion.length > 80
       || !Number.isSafeInteger(release.releaseSequence) || release.releaseSequence < 1
       || typeof release.license?.name !== "string" || release.license.name.length > 480
-      || typeof release.minimumBattutaVersion?.macos !== "string" || typeof release.minimumBattutaVersion?.windows !== "string"
+      || typeof release.minimumBattutaVersion?.macos !== "string"
+      || !(release.minimumBattutaVersion?.windows === null || typeof release.minimumBattutaVersion?.windows === "string")
       || !release.artifact || !/^[a-f0-9]{64}$/.test(release.artifact.sha256)
       || !Number.isSafeInteger(release.artifact.byteCount) || release.artifact.byteCount < 1 || release.artifact.byteCount > 134217728
       || release.artifact.path !== `battuta/packs/${release.packId}/releases/${release.releaseId}/${release.artifact.sha256}.simuboardpack.zip`

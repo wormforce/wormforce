@@ -8,6 +8,7 @@ import {
 } from "@/content/battuta";
 import {
   communityPackPath,
+  communityCompatibilityLabel,
   getLatestBattutaCommunityRelease,
   type BattutaCommunityPack,
 } from "@/lib/battuta-community";
@@ -161,7 +162,7 @@ export function BattutaCommunityPackPage({
                     <div><dt>{content.attribution}</dt><dd>{latestRelease.license.attribution}</dd></div>
                   ) : null}
                   <div><dt>{content.archive}</dt><dd>{formatBytes(latestRelease.artifact.byteCount, locale)}</dd></div>
-                  <div><dt>{content.minimum}</dt><dd>macOS {latestRelease.minimumBattutaVersion.macos} · Windows {latestRelease.minimumBattutaVersion.windows}</dd></div>
+                  <div><dt>{content.minimum}</dt><dd>{communityCompatibilityLabel(latestRelease, locale === "en")}</dd></div>
                   <div><dt>{content.published}</dt><dd>{formatDate(latestRelease.publishedAt, locale)}</dd></div>
                 </dl>
 

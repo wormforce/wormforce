@@ -19,6 +19,15 @@ function load(path, dependencies) {
 }
 const library = load('src/lib/battuta-community-catalog.ts', { './battuta-community': { isCanonicalCommunityUuid: uuid } });
 assert.deepEqual(library.parseCommunityCatalog(page), page);
+const macOnly = structuredClone(descriptor);
+macOnly.minimumBattutaVersion.windows = null;
+assert.deepEqual(library.parseCommunityCatalog({ ...page, releases: [macOnly] }).releases, [macOnly]);
+for (const windows of [undefined, false, 123, {}, []]) {
+  const malformed = structuredClone(macOnly);
+  if (windows === undefined) delete malformed.minimumBattutaVersion.windows;
+  else malformed.minimumBattutaVersion.windows = windows;
+  assert.throws(() => library.parseCommunityCatalog({ ...page, releases: [malformed] }));
+}
 const cover = { schemaVersion: 1, available: true, format: 'png', sha256: 'c'.repeat(64), byteCount: 200, width: 40, height: 20,
   path: `battuta/packs/${descriptor.packId}/releases/${descriptor.releaseId}/${'c'.repeat(64)}.cover.png` };
 const coverPage = { ...page, covers: { [descriptor.releaseId]: cover } };
