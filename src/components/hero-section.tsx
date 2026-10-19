@@ -1,5 +1,5 @@
-import Image from "next/image";
 import Link from "next/link";
+import { ArrowRightIcon } from "@phosphor-icons/react/ssr";
 import type { TeamProfile } from "@/content/site";
 
 type HeroSectionProps = {
@@ -8,71 +8,61 @@ type HeroSectionProps = {
 };
 
 export function HeroSection({ team, memberCount }: HeroSectionProps) {
+  const facts = [
+    { label: "Team", value: `${memberCount} builders` },
+    { label: "Focus", value: "Applied AI, product systems, web engineering" },
+    {
+      label: "Contact",
+      value: team.contactEmail,
+      href: `mailto:${team.contactEmail}`,
+    },
+  ];
+
   return (
-    <section id="home" className="section-shell pt-20 md:pt-24">
-      <div className="content-shell grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:gap-10">
+    <section id="home" className="scroll-mt-16 pt-16 pb-20 md:pt-32 md:pb-28">
+      <div className="content-shell">
         <div className="reveal">
-          <p className="mono-label">Independent Engineering Team</p>
-          <h1 className="mt-4">
-            <Image
-              src="/handwrite.svg"
-              alt={team.name}
-              className="h-12 w-auto md:h-14"
-              width={385}
-              height={81}
-            />
-          </h1>
-          <p className="mt-4 max-w-2xl text-lg leading-8 text-[var(--color-text)] md:text-xl">
-            {team.tagline}
+          <p className="mono-label">
+            <span className="status-dot" aria-hidden />
+            Independent engineering team
           </p>
-          <p className="mt-5 max-w-2xl text-sm leading-7 text-[var(--color-muted)] md:text-base">
+          <h1 className="display-heading mt-8 max-w-[20ch]">
+            <span className="sr-only">{team.name}: </span>
+            {team.tagline}
+          </h1>
+          <p className="mt-8 max-w-xl text-base leading-7 text-[var(--color-muted)] md:text-lg md:leading-8">
             {team.description}
           </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Link
-              href="/#projects"
-              className="inline-flex items-center rounded-full border border-[#3a3a3a] bg-[#1a1a1a] px-5 py-2.5 text-sm font-semibold text-white transition hover:border-[var(--color-brand)] hover:bg-[var(--color-brand)] hover:text-black"
-            >
-              View Projects
+          <div className="mt-10 flex flex-wrap items-center gap-3">
+            <Link href="/#projects" className="btn-primary">
+              View projects
+              <ArrowRightIcon size={15} aria-hidden />
             </Link>
-            <Link
-              href="/#members"
-              className="inline-flex items-center rounded-full border border-[var(--color-border)] px-5 py-2.5 text-sm font-semibold text-[var(--color-text)] transition hover:border-[var(--color-text)] hover:text-white"
-            >
-              Meet the Team
+            <Link href="/#members" className="btn-secondary">
+              Meet the team
             </Link>
           </div>
         </div>
 
-        <aside className="card-surface reveal rounded-3xl p-6 md:p-7">
-          <p className="mono-label">Snapshot</p>
-          <dl className="mt-5 grid gap-6">
-            <div>
-              <dt className="text-xs uppercase tracking-[0.12em] text-[var(--color-muted)]">
-                Team Size
-              </dt>
-              <dd className="mt-1 text-3xl font-semibold text-white">
-                {memberCount}
+        <dl className="reveal mt-20 grid border-t border-[var(--color-border)] sm:grid-cols-3 md:mt-28">
+          {facts.map((fact) => (
+            <div
+              key={fact.label}
+              className="flex justify-between gap-6 border-b border-[var(--color-border)] py-5 sm:block sm:border-b-0 sm:pr-6"
+            >
+              <dt className="mono-label">{fact.label}</dt>
+              <dd className="text-right text-sm text-white sm:mt-3 sm:text-left sm:text-base">
+                {fact.href ? (
+                  <a href={fact.href} className="link-underline">
+                    {fact.value}
+                  </a>
+                ) : (
+                  fact.value
+                )}
               </dd>
             </div>
-            <div>
-              <dt className="text-xs uppercase tracking-[0.12em] text-[var(--color-muted)]">
-                Core Focus
-              </dt>
-              <dd className="mt-1 text-base text-[var(--color-text)]">
-                Applied AI, Product Systems, Web Engineering
-              </dd>
-            </div>
-            <div>
-              <dt className="text-xs uppercase tracking-[0.12em] text-[var(--color-muted)]">
-                Contact
-              </dt>
-              <dd className="mt-1 text-sm text-[var(--color-text)]">
-                {team.contactEmail}
-              </dd>
-            </div>
-          </dl>
-        </aside>
+          ))}
+        </dl>
       </div>
     </section>
   );

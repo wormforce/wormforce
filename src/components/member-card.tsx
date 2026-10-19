@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ArrowUpRightIcon } from "@phosphor-icons/react/ssr";
 import { MemberAvatar } from "@/components/member-avatar";
 import type { MemberProfile } from "@/content/members";
 
@@ -14,31 +15,31 @@ export function MemberCard({ member }: MemberCardProps) {
     .slice(0, 2);
 
   return (
-    <article className="card-surface reveal group rounded-3xl p-4 transition hover:-translate-y-0.5 hover:border-[var(--color-text)] md:p-5">
-      <MemberAvatar
-        src={member.avatar}
-        alt={member.name}
-        initials={initials}
-        className="aspect-[4/3] w-full rounded-2xl border border-[var(--color-border)]"
-        objectPosition={member.avatarObjectPosition ?? "center"}
-      />
-
-      <div className="mt-4">
-        <h3 className="text-xl font-semibold text-white">{member.name}</h3>
-        <p className="mt-1 text-sm text-[var(--color-muted)]">{member.role}</p>
-        <p className="mt-3 text-sm leading-7 text-[var(--color-muted)]">
-          {member.shortBio}
-        </p>
+    <Link href={`/members/${member.slug}`} className="reveal group block">
+      <div className="overflow-hidden rounded-xl bg-[var(--color-bg-soft)]">
+        <MemberAvatar
+          src={member.avatar}
+          alt={member.name}
+          initials={initials}
+          className="media-zoom aspect-[4/3] w-full sm:aspect-[4/5]"
+          objectPosition={member.avatarObjectPosition ?? "center"}
+        />
       </div>
 
-      <div className="mt-5">
-        <Link
-          href={`/members/${member.slug}`}
-          className="inline-flex items-center text-sm font-medium text-[var(--color-text)] transition group-hover:text-white"
-        >
-          View {member.name}&apos;s profile {"->"}
-        </Link>
+      <div className="mt-5 flex items-start justify-between gap-4">
+        <div>
+          <h3 className="text-xl font-medium tracking-tight text-white">{member.name}</h3>
+          <p className="mt-1 text-sm text-[var(--color-muted)]">{member.role}</p>
+        </div>
+        <ArrowUpRightIcon
+          className="arrow-nudge mt-1 shrink-0 text-[var(--color-muted)] transition-colors group-hover:text-white"
+          size={18}
+          aria-hidden
+        />
       </div>
-    </article>
+      <p className="mt-3 text-sm leading-6 text-[var(--color-muted)]">
+        {member.shortBio}
+      </p>
+    </Link>
   );
 }

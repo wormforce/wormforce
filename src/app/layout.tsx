@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, Space_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Space_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import "@/styles/globals.css";
 import "@/styles/battuta.css";
@@ -11,10 +11,17 @@ import { SiteHeader } from "@/components/site-header";
 import { teamProfile } from "@/content/site";
 import { absoluteUrl } from "@/lib/utils";
 
-const spaceGrotesk = Space_Grotesk({
-  variable: "--font-space-grotesk",
+const geistSans = Geist({
+  variable: "--font-geist-sans",
   subsets: ["latin"],
 });
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+// Battuta product styles still reference Space Mono.
 
 const spaceMono = Space_Mono({
   variable: "--font-space-mono",
@@ -64,12 +71,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${spaceGrotesk.variable} ${spaceMono.variable} bg-[var(--color-bg)] text-[var(--color-text)] antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${spaceMono.variable} bg-[var(--color-bg)] text-[var(--color-text)] antialiased`}
       >
-        <div className="site-radial-bg" aria-hidden />
-        <div className="relative min-h-screen">
+        <div className="relative flex min-h-screen flex-col">
           <SiteHeader />
-          <main>{children}</main>
+          <main className="flex-1">{children}</main>
           <SiteFooter />
         </div>
         {process.env.VERCEL ? <Analytics /> : null}
