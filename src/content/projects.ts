@@ -33,8 +33,8 @@ export const projects: ProjectProfile[] = [
     seoDescription:
       "sustech cli 是面向南科大学生、脚本与智能体的命令行工具，支持课表、课程、校车、Blackboard、校园服务及版本化 JSON 输出。",
     updatedAt: "2026-08-29",
-    coverImage: "/sustech-cli/sustech-cli-frutiger-social-2400x1260.png",
-    coverImageAlt: "白色背景上的 sustech cli 字标",
+    coverImage: "/sustech-cli/sustech-cli-frutiger-dark-2400x1260.png",
+    coverImageAlt: "深色背景上的 sustech cli 字标与安装命令",
     highlights: [
       "一条 npm 命令全局安装，无需 Python 运行环境。",
       "公开数据、教务、Blackboard 与校园服务统一入口。",
