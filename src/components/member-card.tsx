@@ -19,8 +19,9 @@ export function MemberCard({ member }: MemberCardProps) {
       <div className="overflow-hidden rounded-xl bg-[var(--color-bg-soft)]">
         <MemberAvatar
           src={member.avatar}
-          alt={member.name}
+          alt=""
           initials={initials}
+          sizes="(min-width: 1232px) 384px, (min-width: 1024px) calc((100vw - 80px) / 3), (min-width: 640px) calc((100vw - 56px) / 2), calc(100vw - 32px)"
           className="media-zoom aspect-[4/3] w-full sm:aspect-[4/5]"
           objectPosition={member.avatarObjectPosition ?? "center"}
         />

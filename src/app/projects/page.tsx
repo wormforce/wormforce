@@ -61,7 +61,7 @@ export default function ProjectsPage() {
           />
 
           <div className="mt-14 md:mt-20">
-            <ProjectList projects={projects} headingLevel="h2" />
+            <ProjectList projects={projects} headingLevel="h2" priorityCount={1} />
           </div>
         </div>
       </section>

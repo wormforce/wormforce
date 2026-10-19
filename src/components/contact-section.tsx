@@ -14,7 +14,7 @@ export function ContactSection({ team }: ContactSectionProps) {
         <div className="reveal grid gap-6 border-t border-[var(--color-border)] pt-6 md:grid-cols-[1fr_2fr] md:gap-10">
           <p className="mono-label self-start">Contact</p>
           <div>
-            <h2 className="section-heading">Let&apos;s build something useful.</h2>
+            <h2 className="wf-section-heading">Let&apos;s build something useful.</h2>
             <p className="mt-6 max-w-xl text-base leading-7 text-[var(--color-muted)] md:text-lg md:leading-8">
               For collaborations, consulting, or product partnership inquiries,
               reach out through email or our social channels.

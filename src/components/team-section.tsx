@@ -31,7 +31,10 @@ export function TeamSection({ team }: TeamSectionProps) {
                   key={principle}
                   className="grid grid-cols-[3rem_1fr] items-baseline border-b border-[var(--color-border)] py-5 text-base text-[var(--color-text)] md:text-lg"
                 >
-                  <span className="font-[family-name:var(--font-mono-stack)] text-xs text-[var(--color-subtle)]">
+                  <span
+                    className="font-[family-name:var(--font-mono-stack)] text-xs text-[var(--color-subtle)]"
+                    aria-hidden
+                  >
                     {String(index + 1).padStart(2, "0")}
                   </span>
                   {principle}

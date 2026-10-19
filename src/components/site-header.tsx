@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
 const englishNavItems = [
@@ -22,11 +22,37 @@ const chineseNavItems = [
 
 export function SiteHeader() {
   const pathname = usePathname();
-  // The menu belongs to the path it was opened on, so navigating closes it.
-  const [menuPath, setMenuPath] = useState<string | null>(null);
-  const menuOpen = menuPath === pathname;
-  const setMenuOpen = (open: boolean) => setMenuPath(open ? pathname : null);
+  const headerRef = useRef<HTMLElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [menuPathname, setMenuPathname] = useState(pathname);
   const [scrolled, setScrolled] = useState(false);
+
+  // Any route change, including Back/Forward, closes the menu.
+  if (menuPathname !== pathname) {
+    setMenuPathname(pathname);
+    setMenuOpen(false);
+  }
+
+  // Same-page navigation (hash links, the logo on /) doesn't change the
+  // pathname, so also close on any click outside the header and on Escape.
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onPointerDown = (event: PointerEvent) => {
+      if (!headerRef.current?.contains(event.target as Node)) setMenuOpen(false);
+    };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      setMenuOpen(false);
+      menuButtonRef.current?.focus();
+    };
+    document.addEventListener("pointerdown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [menuOpen]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -55,11 +81,12 @@ export function SiteHeader() {
 
   return (
     <header
+      ref={headerRef}
       className={cn(
         "top-0 z-50 border-b transition-colors duration-300",
         hasProductSubnav ? "relative lg:sticky" : "sticky",
         scrolled || menuOpen
-          ? "border-[var(--color-border)] bg-[color-mix(in_srgb,var(--color-bg)_80%,transparent)] backdrop-blur-xl"
+          ? "border-[var(--color-border)] bg-[color-mix(in_srgb,var(--color-bg)_92%,transparent)] backdrop-blur-xl"
           : "border-transparent",
       )}
       lang={isChineseBattutaPage ? "zh-CN" : "en"}
@@ -69,6 +96,7 @@ export function SiteHeader() {
           href="/"
           className="inline-flex min-h-11 items-center gap-3 transition-opacity hover:opacity-70"
           aria-label="Wormforce home"
+          onClick={() => setMenuOpen(false)}
         >
           <Image
             src="/icon.svg"
@@ -107,6 +135,7 @@ export function SiteHeader() {
         </nav>
 
         <button
+          ref={menuButtonRef}
           type="button"
           className="inline-flex min-h-11 items-center gap-2 text-sm text-[var(--color-text)] md:hidden"
           aria-expanded={menuOpen}
@@ -136,7 +165,7 @@ export function SiteHeader() {
       {menuOpen ? (
         <nav
           id="mobile-nav"
-          className="content-shell border-t border-[var(--color-border)] pt-2 pb-6 md:hidden"
+          className="content-shell max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain border-t border-[var(--color-border)] pt-2 pb-6 md:hidden"
         >
           <ul>
             {navItems.map((item) => (

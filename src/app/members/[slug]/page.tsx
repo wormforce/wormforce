@@ -133,7 +133,7 @@ export default async function MemberPage({ params }: MemberPageProps) {
           </header>
 
           <div className="mt-14 grid gap-12 border-t border-[var(--color-border)] pt-10 md:mt-20 md:grid-cols-[1fr_2fr] md:gap-10">
-            <aside className="reveal md:sticky md:top-24 md:self-start">
+            <aside className="reveal">
               <div className="max-w-sm overflow-hidden rounded-xl bg-[var(--color-bg-soft)]">
                 <MemberAvatar
                   src={member.avatar}
@@ -144,6 +144,7 @@ export default async function MemberPage({ params }: MemberPageProps) {
                     .join("")
                     .slice(0, 2)}
                   className="aspect-[4/5] w-full"
+                  sizes="(min-width: 1232px) 384px, (min-width: 768px) calc((100vw - 72px) / 3), (min-width: 416px) 384px, calc(100vw - 32px)"
                   priority
                   objectPosition={member.avatarObjectPosition ?? "center"}
                 />

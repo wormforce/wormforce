@@ -10,6 +10,8 @@ type MemberAvatarProps = {
   initials: string;
   className?: string;
   priority?: boolean;
+  /** Rendered width hints for next/image; callers pass their layout's widths. */
+  sizes?: string;
   /** "top" = top-center crop, "center" = default */
   objectPosition?: "top" | "center";
 };
@@ -20,6 +22,7 @@ export function MemberAvatar({
   initials,
   className,
   priority = false,
+  sizes = "(min-width: 1024px) 320px, (min-width: 768px) 40vw, 100vw",
   objectPosition = "center",
 }: MemberAvatarProps) {
   const [failed, setFailed] = useState(false);
@@ -27,7 +30,10 @@ export function MemberAvatar({
   return (
     <div className={cn("relative overflow-hidden", className)}>
       {failed ? (
-        <div className="flex h-full w-full items-center justify-center bg-[linear-gradient(140deg,#262626,#101010)] text-3xl font-semibold text-[var(--color-text)]">
+        <div
+          className="flex h-full w-full items-center justify-center bg-[linear-gradient(140deg,#262626,#101010)] text-3xl font-semibold text-[var(--color-text)]"
+          aria-hidden={alt === "" || undefined}
+        >
           {initials}
         </div>
       ) : (
@@ -36,7 +42,7 @@ export function MemberAvatar({
           alt={alt}
           fill
           priority={priority}
-          sizes="(min-width: 1024px) 320px, (min-width: 768px) 40vw, 100vw"
+          sizes={sizes}
           className={cn(
             "object-cover",
             objectPosition === "top" && "object-top",

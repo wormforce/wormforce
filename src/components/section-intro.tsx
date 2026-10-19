@@ -19,7 +19,7 @@ export function SectionIntro({
     <div className="reveal grid gap-6 border-t border-[var(--color-border)] pt-6 md:grid-cols-[1fr_2fr] md:gap-10">
       <p className="mono-label self-start">{label}</p>
       <div>
-        <Heading className="section-heading">{title}</Heading>
+        <Heading className="wf-section-heading">{title}</Heading>
         {description || action ? (
           <div className="mt-5 flex flex-col items-start gap-6 md:flex-row md:items-end md:justify-between">
             {description ? (

@@ -69,10 +69,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} ${spaceMono.variable} bg-[var(--color-bg)] text-[var(--color-text)] antialiased`}
-      >
+    <html
+      lang="en"
+      className={`${geistSans.variable} ${geistMono.variable} ${spaceMono.variable}`}
+    >
+      <body className="bg-[var(--color-bg)] text-[var(--color-text)] antialiased">
         <div className="relative flex min-h-screen flex-col">
           <SiteHeader />
           <main className="flex-1">{children}</main>

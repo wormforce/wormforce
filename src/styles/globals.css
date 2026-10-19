@@ -8,7 +8,7 @@
   --color-border-strong: rgba(255, 255, 255, 0.2);
   --color-text: #ededed;
   --color-muted: #8f8f8f;
-  --color-subtle: #5e5e5e;
+  --color-subtle: #7a7a7a;
   --color-brand: #ffffff;
   --color-brand-soft: rgba(255, 255, 255, 0.05);
   --color-live: #4ade80;
@@ -33,14 +33,18 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Product pages keep the browser defaults they were designed against. */
+:root:has(.battuta-product) {
+  color-scheme: normal;
+}
+
 body {
   font-family: var(--font-sans-stack);
-  font-feature-settings: "ss01", "cv11";
   background: var(--color-bg);
   color: var(--color-text);
 }
 
-::selection {
+:root:not(:has(.battuta-product, .sustech-cli-product)) ::selection {
   background: rgba(255, 255, 255, 0.9);
   color: #0a0a0a;
 }
@@ -86,7 +90,7 @@ body {
   text-wrap: balance;
 }
 
-.section-heading {
+.wf-section-heading {
   font-size: clamp(2rem, 4.4vw, 3.5rem);
   font-weight: 500;
   line-height: 1.05;
