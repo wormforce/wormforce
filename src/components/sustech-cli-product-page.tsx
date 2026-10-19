@@ -345,7 +345,9 @@ export function SustechCliProductPage() {
       <nav className="sc-nav" aria-label="sustech cli 产品导航">
         <div className="sc-container sc-nav-inner">
           <a className="sc-brand" href="#sc-top" aria-label="sustech cli 首页">
-            <Image src="/sustech-cli/sustech-cli-frutiger.svg" alt="sustech cli" width={926} height={184} priority />
+            {/* Lazy + high fetch priority: the browser only fetches the variant that isn't display:none. */}
+            <Image className="sc-brand-light" src="/sustech-cli/sustech-cli-frutiger.svg" alt="sustech cli" width={926} height={184} fetchPriority="high" />
+            <Image className="sc-brand-dark" src="/sustech-cli/sustech-cli-frutiger-dark.svg" alt="" width={926} height={184} fetchPriority="high" aria-hidden />
           </a>
           <div className="sc-nav-links">
             <a href="#capabilities">能力</a>

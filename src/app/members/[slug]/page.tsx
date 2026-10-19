@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ArrowLeftIcon, ArrowUpRightIcon } from "@phosphor-icons/react/ssr";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 import { JsonLd } from "@/components/json-ld";
@@ -78,7 +79,7 @@ function renderInlineLinks(text: string): ReactNode[] {
       <a
         key={`${url}-${matchIndex}`}
         href={url}
-        className="font-semibold text-white underline decoration-white/55 underline-offset-4 transition hover:text-[var(--color-brand)] hover:decoration-white"
+        className="text-white underline decoration-white/30 underline-offset-4 transition-colors hover:decoration-white"
         target="_blank"
         rel="noopener noreferrer"
       >
@@ -111,147 +112,148 @@ export default async function MemberPage({ params }: MemberPageProps) {
   return (
     <>
       <JsonLd data={memberStructuredData(member)} />
-      <section className="section-shell pt-24">
+      <section className="section-shell pt-10 md:pt-16">
         <div className="content-shell">
           <Link
             href="/#members"
-            className="mono-label inline-flex items-center transition hover:text-white"
+            className="mono-label transition-colors hover:text-white"
           >
-            {"<-"} Back to members
+            <ArrowLeftIcon size={13} aria-hidden />
+            Members
           </Link>
 
-          <div className="mt-6 grid items-start gap-8 lg:grid-cols-[320px_minmax(0,1fr)]">
-            <aside className="card-surface reveal rounded-3xl p-5">
-              <MemberAvatar
-                src={member.avatar}
-                alt={member.name}
-                initials={member.name
-                  .split(" ")
-                  .map((part) => part[0])
-                  .join("")
-                  .slice(0, 2)}
-                className="h-[280px] w-full rounded-2xl border border-[var(--color-border)]"
-                priority
-                objectPosition={member.avatarObjectPosition ?? "center"}
-              />
-              <h1 className="mt-5 text-2xl font-semibold text-white">
-                {member.name}
-              </h1>
-              <p className="mt-2 whitespace-pre-line text-sm text-[var(--color-muted)]">
-                {profileRole}
-              </p>
-              <p className="mt-4 whitespace-pre-line text-sm leading-7 text-[var(--color-muted)]">
-                {profileShortBio}
-              </p>
+          <header className="reveal mt-12 md:mt-20">
+            <h1 className="display-heading">{member.name}</h1>
+            <p className="mt-6 whitespace-pre-line text-lg leading-8 text-[var(--color-text)] md:text-xl">
+              {profileRole}
+            </p>
+            <p className="mt-3 whitespace-pre-line text-base leading-7 text-[var(--color-muted)]">
+              {profileShortBio}
+            </p>
+          </header>
+
+          <div className="mt-14 grid gap-12 border-t border-[var(--color-border)] pt-10 md:mt-20 md:grid-cols-[1fr_2fr] md:gap-10">
+            <aside className="reveal">
+              <div className="max-w-sm overflow-hidden rounded-xl bg-[var(--color-bg-soft)]">
+                <MemberAvatar
+                  src={member.avatar}
+                  alt={member.name}
+                  initials={member.name
+                    .split(" ")
+                    .map((part) => part[0])
+                    .join("")
+                    .slice(0, 2)}
+                  className="aspect-[4/5] w-full"
+                  sizes="(min-width: 1232px) 384px, (min-width: 768px) calc((100vw - 72px) / 3), (min-width: 416px) 384px, calc(100vw - 32px)"
+                  priority
+                  objectPosition={member.avatarObjectPosition ?? "center"}
+                />
+              </div>
+
+              <h2 className="mono-label mt-10">Links</h2>
+              <ul className="mt-4 max-w-sm border-t border-[var(--color-border)]">
+                {member.links.map((link) => {
+                  const isMail = link.url.startsWith("mailto:");
+
+                  return (
+                    <li key={`${member.slug}-${link.label}`} className="border-b border-[var(--color-border)]">
+                      <a
+                        href={link.url}
+                        className="group flex min-h-12 items-center justify-between gap-4 text-sm text-[var(--color-text)] transition-colors hover:text-white"
+                        target={isMail ? undefined : "_blank"}
+                        rel={isMail ? undefined : "noopener noreferrer"}
+                      >
+                        {link.label}
+                        <ArrowUpRightIcon
+                          className="arrow-nudge text-[var(--color-muted)] group-hover:text-white"
+                          size={14}
+                          aria-hidden
+                        />
+                      </a>
+                    </li>
+                  );
+                })}
+              </ul>
             </aside>
 
-            <article className="card-surface reveal rounded-3xl p-6 md:p-8">
+            <div className="reveal min-w-0 space-y-16">
               {member.fullBio ? (
-                <>
-                  <h2 className="text-2xl font-semibold text-white">Profile</h2>
-                  <div className="mt-4 space-y-4 text-sm leading-8 text-[var(--color-muted)] md:text-base">
+                <section aria-labelledby="profile-heading">
+                  <h2 id="profile-heading" className="mono-label">Profile</h2>
+                  <div className="mt-6 space-y-5 text-lg leading-8 text-[var(--color-text)] md:text-xl md:leading-9">
                     {member.fullBio.split(/\n{2,}/).map((paragraph, index) => (
                       <p key={`${member.slug}-bio-${index}`}>
                         {renderInlineLinks(paragraph)}
                       </p>
                     ))}
                   </div>
-                </>
+                </section>
               ) : null}
 
-              <h3
-                className={
-                  member.fullBio
-                    ? "mt-8 text-lg font-semibold text-white"
-                    : "text-lg font-semibold text-white"
-                }
-              >
-                Core Skills
-              </h3>
-              <ul className="mt-4 flex flex-wrap gap-2">
-                {member.skills.map((skill) => (
-                  <li
-                    key={skill}
-                    className="rounded-full border border-[var(--color-border)] bg-[var(--color-brand-soft)] px-3 py-1.5 text-xs font-medium text-[var(--color-text)]"
-                  >
-                    {skill}
-                  </li>
-                ))}
-              </ul>
-
-              <h3 className="mt-8 text-lg font-semibold text-white">Links</h3>
-              <div className="mt-4 flex flex-wrap gap-3">
-                {member.links.map((link) => (
-                  <a
-                    key={`${member.slug}-${link.label}`}
-                    href={link.url}
-                    className="rounded-full border border-[var(--color-border)] px-4 py-2 text-sm text-[var(--color-muted)] transition hover:border-[var(--color-text)] hover:text-white"
-                    target={link.url.startsWith("mailto:") ? undefined : "_blank"}
-                    rel={
-                      link.url.startsWith("mailto:")
-                        ? undefined
-                        : "noopener noreferrer"
-                    }
-                  >
-                    {link.label}
-                  </a>
-                ))}
-              </div>
-            </article>
-
-            {member.publications?.length ? (
-              <section
-                aria-labelledby="publications-heading"
-                className="card-surface reveal rounded-3xl p-6 md:p-8 lg:col-span-2"
-              >
-                <h2
-                  id="publications-heading"
-                  className="text-2xl font-semibold text-white"
-                >
-                  Publications
-                </h2>
-                <ul className="mt-6 grid gap-4 xl:grid-cols-2">
-                  {member.publications.map((publication) => (
+              <section aria-labelledby="skills-heading">
+                <h2 id="skills-heading" className="mono-label">Core skills</h2>
+                <ul className="mt-6 flex flex-wrap gap-2">
+                  {member.skills.map((skill) => (
                     <li
-                      key={`${member.slug}-${publication.title}`}
-                      className="flex h-full flex-col justify-between rounded-2xl border border-[var(--color-border)] bg-[var(--color-brand-soft)] p-5"
+                      key={skill}
+                      className="rounded-full border border-[var(--color-border-strong)] px-3.5 py-1.5 text-sm text-[var(--color-text)]"
                     >
-                      <div>
-                        {publication.url ? (
-                          <a
-                            href={publication.url}
-                            className="text-sm font-semibold text-white transition hover:underline"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            {publication.title}
-                          </a>
-                        ) : (
-                          <p className="text-sm font-semibold text-white">
-                            {publication.title}
-                          </p>
-                        )}
-                        <p className="mt-2 text-xs leading-6 text-[var(--color-muted)]">
-                          {publication.year
-                            ? `${publication.venue} (${publication.year})`
-                            : publication.venue}
-                        </p>
-                      </div>
-                      {publication.pdfUrl ? (
-                        <a
-                          href={publication.pdfUrl}
-                          className="mt-4 inline-flex text-xs text-[var(--color-muted)] transition hover:text-white"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          PDF
-                        </a>
-                      ) : null}
+                      {skill}
                     </li>
                   ))}
                 </ul>
               </section>
-            ) : null}
+
+              {member.publications?.length ? (
+                <section aria-labelledby="publications-heading">
+                  <h2 id="publications-heading" className="mono-label">
+                    Publications
+                  </h2>
+                  <ol className="mt-6 border-t border-[var(--color-border)]">
+                    {member.publications.map((publication) => (
+                      <li
+                        key={`${member.slug}-${publication.title}`}
+                        className="flex flex-col gap-3 border-b border-[var(--color-border)] py-6 sm:flex-row sm:items-start sm:justify-between sm:gap-8"
+                      >
+                        <div className="min-w-0">
+                          {publication.url ? (
+                            <a
+                              href={publication.url}
+                              className="text-base leading-7 font-medium text-white underline decoration-transparent underline-offset-4 transition-colors hover:decoration-white/60"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              {publication.title}
+                            </a>
+                          ) : (
+                            <p className="text-base leading-7 font-medium text-white">
+                              {publication.title}
+                            </p>
+                          )}
+                          <p className="mt-2 text-sm leading-6 text-[var(--color-muted)]">
+                            {publication.year
+                              && !publication.venue.includes(String(publication.year))
+                              ? `${publication.venue} · ${publication.year}`
+                              : publication.venue}
+                          </p>
+                        </div>
+                        {publication.pdfUrl ? (
+                          <a
+                            href={publication.pdfUrl}
+                            className="mono-label shrink-0 transition-colors hover:text-white sm:pt-1.5"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            PDF
+                            <ArrowUpRightIcon size={12} aria-hidden />
+                          </a>
+                        ) : null}
+                      </li>
+                    ))}
+                  </ol>
+                </section>
+              ) : null}
+            </div>
           </div>
         </div>
       </section>
